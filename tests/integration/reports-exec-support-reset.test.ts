@@ -82,11 +82,11 @@ describe('Reports (S-J)', () => {
 
 describe('Executive KPIs (S-L)', () => {
   beforeAll(() => { db = freshDb(); resetTokens(); });
-  it('TC-063 opening cohort 19 ticketed / 5 cancelled / 1 voided; 5/19 and 1/19; void not in numerator', async () => {
+  it('TC-063 opening cohort 23 ticketed / 5 cancelled / 1 voided; 5/23 and 1/23; void not in numerator', async () => {
     const c = (await call(exec.GET, { as: U.cxo, params: { view: 'cancellations' } })).data;
-    expect(c.totals.ticketed).toBe(19); expect(c.totals.cancelled).toBe(5); expect(c.totals.voided).toBe(1);
-    expect(c.totals.cancellationRatePct).toBeCloseTo(26.3158, 3);
-    expect(c.totals.voidRatePct).toBeCloseTo(5.2632, 3);
+    expect(c.totals.ticketed).toBe(23); expect(c.totals.cancelled).toBe(5); expect(c.totals.voided).toBe(1);
+    expect(c.totals.cancellationRatePct).toBeCloseTo(21.7391, 3);
+    expect(c.totals.voidRatePct).toBeCloseTo(4.3478, 3);
   });
   it('TC-048 ranking reconciles: agency sums equal totals; Orbit is high-volume/lower-margin, Aster highest cancellation', async () => {
     const o = (await call(exec.GET, { as: U.cxo, params: { view: 'overview' } })).data;
@@ -224,8 +224,8 @@ describe('Reset and replay (S-M)', () => {
     expect(h1).toBe(h2);
     expect(xlsxHash()).toBe(x0);
     const k = (await call(exec.GET, { as: U.cxo, params: { view: 'overview' } })).data.total;
-    expect(k.grossBookingValueMinor).toBe(25620000); expect(k.netPlatformRevenueMinor).toBe(594100); expect(k.estimatedContributionMinor).toBe(527600);
+    expect(k.grossBookingValueMinor).toBe(46120000); expect(k.netPlatformRevenueMinor).toBe(2434100); expect(k.estimatedContributionMinor).toBe(2353600);
     for (const [as, cash] of [[U.skyA, 20100000], [U.orbA, 3890300], [U.astA, 3000000]] as const) expect((await call(wallet.GET, { as })).data.walletCashMinor).toBe(cash);
-    expect(db.select().from(s.bookings).all()).toHaveLength(24);
+    expect(db.select().from(s.bookings).all()).toHaveLength(28);
   });
 });

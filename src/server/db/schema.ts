@@ -306,6 +306,7 @@ export const bookings = sqliteTable('bookings', {
   failureReason: text('failure_reason'),
   bookingSnapshotJson: text('booking_snapshot_json').notNull(),
   updatedAt: text('updated_at').notNull(),
+  parentBookingId: text('parent_booking_id'), // set on a child booking created by a PNR split
 }, (t) => [
   index('bookings_agency_booked_idx').on(t.agencyId, t.bookedAt),
   index('bookings_agency_status_idx').on(t.agencyId, t.bookingStatus),
@@ -602,3 +603,21 @@ export const demoMetadata = sqliteTable('demo_metadata', {
   key: text('key').primaryKey(),
   value: text('value').notNull(),
 });
+
+/** Maker-checker: critical OTA changes wait here until an approver (CXO) decides. */
+export const approvalRequests = sqliteTable('approval_requests', {
+  id: text('id').primaryKey(),
+  kind: text('kind').notNull(), // CREDIT_POLICY_CHANGE | AGENCY_STATUS_CHANGE
+  agencyId: text('agency_id'),
+  summary: text('summary').notNull(),
+  payloadJson: text('payload_json').notNull(),
+  status: text('status').notNull(), // PENDING | APPROVED | REJECTED
+  requestedBy: text('requested_by').notNull(),
+  requestedByName: text('requested_by_name'),
+  requestedAt: text('requested_at').notNull(),
+  decidedBy: text('decided_by'),
+  decidedByName: text('decided_by_name'),
+  decidedAt: text('decided_at'),
+  decisionNote: text('decision_note'),
+  resultJson: text('result_json'),
+}, (t) => [index('approval_status_idx').on(t.status, t.requestedAt)]);

@@ -48,6 +48,29 @@
       "expectedStatus": "RECEIVED"
     }
   ],
+  "historicalCredited": [
+    {
+      "id": "pay_sky_opening",
+      "agencyId": "agency_skyline",
+      "agencyHint": "HFVA-SKY-001",
+      "externalRef": "UTR26110501",
+      "receivedOffset": "D-30"
+    },
+    {
+      "id": "pay_orb_opening",
+      "agencyId": "agency_orbit",
+      "agencyHint": "HFVA-ORB-001",
+      "externalRef": "UTR26110502",
+      "receivedOffset": "D-30"
+    },
+    {
+      "id": "pay_ast_opening",
+      "agencyId": "agency_aster",
+      "agencyHint": "HFVA-AST-001",
+      "externalRef": "UTR26110503",
+      "receivedOffset": "D-30"
+    }
+  ],
   "replayCommands": [
     {
       "id": "pay_duplicate_replay",

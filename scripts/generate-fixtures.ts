@@ -245,15 +245,23 @@ const ROUTES: Record<string, [string, string, string, string]> = {
   HFB1016: ['DEL', 'DXB', 'EK', 'FLEX'], HFB1017: ['BOM', 'GOI', '6E', 'SAVER'], HFB1018: ['DEL', 'BLR', 'AI', 'SAVER'],
   HFB1019: ['BOM', 'GOI', '6E', 'SAVER'], HFB1020: ['BLR', 'DEL', '6E', 'FLEX'], HFB1021: ['GOI', 'BOM', '6E', 'FLEX'],
   HFB1022: ['BOM', 'DEL', '6E', 'SAVER'], HFB1023: ['DEL', 'BOM', 'AI', 'STANDARD'], HFB1024: ['BOM', 'GOI', '6E', 'SAVER'],
+  HFB1025: ['BOM', 'SIN', 'SQ', 'FLEX'], HFB1026: ['DEL', 'DXB', 'EK', 'STANDARD'], HFB1027: ['BOM', 'FRA', 'LH', 'STANDARD'], HFB1028: ['BOM', 'SIN', 'SQ', 'SAVER'],
 };
 const DUR: Record<string, number> = { 'BOM-LHR': 600, 'BOM-DEL': 130, 'BOM-GOI': 75, 'BOM-SIN': 330, 'DEL-DXB': 230, 'BLR-DEL': 165, 'DEL-BLR': 170, 'DEL-BOM': 130, 'BOM-FRA': 560, 'GOI-BOM': 80 };
 const PAX = ['Aarav Mehta', 'Diya Sharma', 'Kabir Singh', 'Anika Reddy', 'Vihaan Patel', 'Saanvi Iyer', 'Arjun Das', 'Myra Kulkarni', 'Reyansh Bose', 'Kiara Menon', 'Ishaan Gill', 'Tara Pillai', 'Advait Rao', 'Navya Joshi', 'Atharv Jain', 'Aadhya Nair', 'Dhruv Chawla', 'Pari Saxena', 'Rudra Bhat', 'Ira Banerjee', 'Shaurya Malik', 'Meher Kohli', 'Vivaan Ghosh', 'Riya Dutta'];
+// Multi-passenger bookings (PNR split / partial cancellation demonstrations)
+const MULTI_PAX: Record<string, string[]> = {
+  HFB1025: ['Mr Rohan Kapoor', 'Ms Sneha Kapoor'],
+  HFB1026: ['Mr Amit Khanna', 'Ms Pooja Khanna', 'Mr Kunal Khanna'],
+  HFB1027: ['Mr Varun Shetty', 'Ms Lakshmi Shetty'],
+  HFB1028: ['Ms Farah Qureshi', 'Mr Imran Qureshi'],
+};
 write('bookings.json', {
   note: 'Generated from seed-contract.v1.json — amounts, statuses, offsets and policy snapshots are copied verbatim; routes/airlines/passengers are fixture assignments with no money effect.',
   bookings: contract.historicalBookings.map((b: any, i: number) => {
     const [o, d, al, brand] = ROUTES[b.id];
     return { ...b, origin: o, destination: d, airlineCode: al, airlineName: AIRLINES[al], flightNumber: `${al} ${700 + i + 1}`,
-      brandCode: brand, cabin: 'ECONOMY', durationMin: DUR[`${o}-${d}`], passengerName: `${PAX[i]}`,
+      brandCode: brand, cabin: 'ECONOMY', durationMin: DUR[`${o}-${d}`], passengerName: MULTI_PAX[b.id]?.[0] ?? `${PAX[i]}`, passengerNames: MULTI_PAX[b.id] ?? [`${PAX[i]}`],
       originTz: AIRPORTS[o].tz, destinationTz: AIRPORTS[d].tz };
   }),
 });
@@ -278,6 +286,11 @@ write('payments.json', {
     { id: 'pay_wrong_amount', agencyHint: 'HFVA-SKY-001', externalRef: 'UTR26119002', amountMinor: 1234500, currency: 'INR', expectedAmountMinor: 1000000, receivedOffset: 'H-4', expectedStatus: 'RECEIVED' },
     { id: 'pay_missing_rate', agencyHint: 'HFVA-SKY-001', externalRef: 'UTR26119003', amountMinor: 5000, currency: 'USD', receivedOffset: 'H-6', expectedStatus: 'RECEIVED' },
   ],
+  historicalCredited: [
+    { id: 'pay_sky_opening', agencyId: 'agency_skyline', agencyHint: 'HFVA-SKY-001', externalRef: 'UTR26110501', receivedOffset: 'D-30' },
+    { id: 'pay_orb_opening', agencyId: 'agency_orbit', agencyHint: 'HFVA-ORB-001', externalRef: 'UTR26110502', receivedOffset: 'D-30' },
+    { id: 'pay_ast_opening', agencyId: 'agency_aster', agencyHint: 'HFVA-AST-001', externalRef: 'UTR26110503', receivedOffset: 'D-30' },
+  ],
   replayCommands: [{ id: 'pay_duplicate_replay', replaysExternalRef: 'UTR26111001', note: 'Test input only — replays the same event, never a second row.' }],
 });
 
@@ -289,6 +302,11 @@ write('import-pnrs.json', {
     { key: 'imp_hub_ops', provider: 'SABRE', pcc: 'H7FA', pnr: 'SBD303', ownerAgencyId: null, airlinePnr: '6E7Z3M', itinerary: { origin: 'BOM', destination: 'GOI', airlineCode: '6E', flightNumber: '6E 803', departureOffset: 'D+6', durationMin: 75, cabin: 'ECONOMY' }, passengers: ['Leela Fernandes'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2400803001'], fareRuleProfileId: 'A_FLEXIBLE', agencySellMinor: 640000, supplierCostMinor: 590000, bookedOffset: 'D-1' },
     { key: 'imp_duplicate', provider: 'SABRE', pcc: 'S9KY', pnr: 'SBD404', ownerAgencyId: 'agency_skyline', airlinePnr: 'AI4D0W', itinerary: { origin: 'BOM', destination: 'DEL', airlineCode: 'AI', flightNumber: 'AI 710', departureOffset: 'D-4', durationMin: 130, cabin: 'ECONOMY' }, passengers: ['Ira Banerjee'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2410000010'], fareRuleProfileId: 'A_FLEXIBLE', agencySellMinor: 1700000, supplierCostMinor: 1400000, bookedOffset: 'D-15', alreadyImportedAsBooking: 'HFB1010' },
     { key: 'imp_no_ticket', provider: 'SABRE', pcc: 'H7FA', pnr: 'SBD505', ownerAgencyId: 'agency_aster', airlinePnr: '6E5T2K', itinerary: { origin: 'BLR', destination: 'DEL', airlineCode: '6E', flightNumber: '6E 805', departureOffset: 'D+7', durationMin: 165, cabin: 'ECONOMY' }, passengers: ['Omkar Patil'], ticketStatus: 'NOT_ISSUED', ticketNumbers: [], fareRuleProfileId: 'B_RESTRICTED', agencySellMinor: 720000, supplierCostMinor: 670000, bookedOffset: 'D-1' },
+    { key: 'imp_sky_family', provider: 'SABRE', pcc: 'S9KY', pnr: 'SBD111', ownerAgencyId: 'agency_skyline', airlinePnr: '6E3H8R', itinerary: { origin: 'BOM', destination: 'GOI', airlineCode: '6E', flightNumber: '6E 811', departureOffset: 'D+12', durationMin: 75, cabin: 'ECONOMY' }, passengers: ['Mr Sameer Joshi', 'Ms Anjali Joshi'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2400811001', '098-2400811002'], fareRuleProfileId: 'A_FLEXIBLE', agencySellMinor: 1100000, supplierCostMinor: 1020000, bookedOffset: 'D-4' },
+    { key: 'imp_sky_corp', provider: 'SABRE', pcc: 'S9KY', pnr: 'SBD112', ownerAgencyId: 'agency_skyline', airlinePnr: 'AI6P2L', itinerary: { origin: 'DEL', destination: 'BLR', airlineCode: 'AI', flightNumber: 'AI 812', departureOffset: 'D+5', durationMin: 170, cabin: 'ECONOMY' }, passengers: ['Mr Deepak Malhotra'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2400812001'], fareRuleProfileId: 'B_RESTRICTED', agencySellMinor: 690000, supplierCostMinor: 640000, bookedOffset: 'D-3' },
+    { key: 'imp_sky_trio', provider: 'SABRE', pcc: 'S9KY', pnr: 'SBD113', ownerAgencyId: 'agency_skyline', airlinePnr: 'AI9C4T', itinerary: { origin: 'BOM', destination: 'DEL', airlineCode: 'AI', flightNumber: 'AI 813', departureOffset: 'D+15', durationMin: 130, cabin: 'ECONOMY' }, passengers: ['Mr Harish Menon', 'Ms Lata Menon', 'Mr Arvind Menon'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2400813001', '098-2400813002', '098-2400813003'], fareRuleProfileId: 'A_FLEXIBLE', agencySellMinor: 2070000, supplierCostMinor: 1920000, bookedOffset: 'D-2' },
+    { key: 'imp_orb_team', provider: 'SABRE', pcc: 'O4RB', pnr: 'SBD212', ownerAgencyId: 'agency_orbit', airlinePnr: '6E1M7Q', itinerary: { origin: 'BLR', destination: 'DEL', airlineCode: '6E', flightNumber: '6E 812', departureOffset: 'D+8', durationMin: 165, cabin: 'ECONOMY' }, passengers: ['Mr Prakash Iyer', 'Ms Revathi Iyer'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2400822001', '098-2400822002'], fareRuleProfileId: 'A_FLEXIBLE', agencySellMinor: 1360000, supplierCostMinor: 1260000, bookedOffset: 'D-2' },
+    { key: 'imp_ast_ok', provider: 'SABRE', pcc: 'H7FA', pnr: 'SBD313', ownerAgencyId: 'agency_aster', airlinePnr: 'AI3W8N', itinerary: { origin: 'DEL', destination: 'BOM', airlineCode: 'AI', flightNumber: 'AI 833', departureOffset: 'D+9', durationMin: 130, cabin: 'ECONOMY' }, passengers: ['Ms Gauri Sethi'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2400833001'], fareRuleProfileId: 'A_FLEXIBLE', agencySellMinor: 720000, supplierCostMinor: 670000, bookedOffset: 'D-1' },
   ],
   negativeTests: [
     { key: 'imp_bad_pcc', provider: 'SABRE', pcc: 'O4RB', pnr: 'SBD101', actorAgency: 'agency_orbit', expected: 'PNR_NOT_FOUND' },

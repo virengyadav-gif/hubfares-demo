@@ -1,5 +1,5 @@
 {
-  "fixtureVersion": "hubfares-v1.1-seed-002",
+  "fixtureVersion": "hubfares-v1.2-seed-003",
   "clockPolicy": {
     "anchorUtc": "DEMO_FIXED_NOW or single reset instant",
     "offsetSyntax": "D+/-n => n*24h; H+/-n => n hours",
@@ -9,8 +9,8 @@
   },
   "agencyOpeningLedger": {
     "agency_skyline": {
-      "openingWalletCreditMinor": 30000000,
-      "walletTicketDebitsMinor": 10900000,
+      "openingWalletCreditMinor": 38960000,
+      "walletTicketDebitsMinor": 19860000,
       "walletRefundCreditsMinor": 1000000,
       "walletCashMinor": 20100000,
       "walletHoldMinor": 1500000,
@@ -23,8 +23,8 @@
       "creditOverdueBlocked": false
     },
     "agency_orbit": {
-      "openingWalletCreditMinor": 2000000,
-      "walletTicketDebitsMinor": 0,
+      "openingWalletCreditMinor": 9640000,
+      "walletTicketDebitsMinor": 7640000,
       "walletRefundCreditsMinor": 1890300,
       "walletCashMinor": 3890300,
       "walletHoldMinor": 0,
@@ -37,8 +37,8 @@
       "creditOverdueBlocked": false
     },
     "agency_aster": {
-      "openingWalletCreditMinor": 3000000,
-      "walletTicketDebitsMinor": 0,
+      "openingWalletCreditMinor": 6900000,
+      "walletTicketDebitsMinor": 3900000,
       "walletRefundCreditsMinor": 0,
       "walletCashMinor": 3000000,
       "walletHoldMinor": 0,
@@ -729,6 +729,139 @@
         "supplierTaxMinor": 65000,
         "historicalCoreFeeMinor": 50000
       }
+    },
+    {
+      "id": "HFB1025",
+      "agencyId": "agency_skyline",
+      "source": "PORTAL",
+      "status": "TICKETED",
+      "tripType": "ONE_WAY",
+      "bookedOffset": "D-2",
+      "departureOffset": "D+16",
+      "fareRuleProfileId": "A_FLEXIBLE",
+      "fareRuleProfileVersion": 1,
+      "sellMinor": 4100000,
+      "supplierCostMinor": 3800000,
+      "currency": "INR",
+      "funding": "WALLET",
+      "passengers": 2,
+      "provider": "SABRE",
+      "pcc": "S9KY",
+      "pnr": "SBX025",
+      "ticketNumber": "098-2410000025",
+      "ticketNumbers": [
+        "098-2410000025",
+        "098-2410000125"
+      ],
+      "refundPolicyId": "refund_sky_v1",
+      "refundPolicyVersion": 1,
+      "refundPayoutMode": "SUPPLIER_SETTLEMENT",
+      "baseFareSnapshot": {
+        "supplierBaseMinor": 1640000,
+        "supplierTaxMinor": 260000,
+        "historicalCoreFeeMinor": 150000,
+        "perAdult": true
+      }
+    },
+    {
+      "id": "HFB1026",
+      "agencyId": "agency_skyline",
+      "source": "PORTAL",
+      "status": "TICKETED",
+      "tripType": "ONE_WAY",
+      "bookedOffset": "D-1",
+      "departureOffset": "D+18",
+      "fareRuleProfileId": "A_FLEXIBLE",
+      "fareRuleProfileVersion": 1,
+      "sellMinor": 4860000,
+      "supplierCostMinor": 4500000,
+      "currency": "INR",
+      "funding": "WALLET",
+      "passengers": 3,
+      "provider": "SABRE",
+      "pcc": "S9KY",
+      "pnr": "SBX026",
+      "ticketNumber": "098-2410000026",
+      "ticketNumbers": [
+        "098-2410000026",
+        "098-2410000126",
+        "098-2410000226"
+      ],
+      "refundPolicyId": "refund_sky_v1",
+      "refundPolicyVersion": 1,
+      "refundPayoutMode": "SUPPLIER_SETTLEMENT",
+      "baseFareSnapshot": {
+        "supplierBaseMinor": 1290000,
+        "supplierTaxMinor": 210000,
+        "historicalCoreFeeMinor": 120000,
+        "perAdult": true
+      }
+    },
+    {
+      "id": "HFB1027",
+      "agencyId": "agency_orbit",
+      "source": "PORTAL",
+      "status": "TICKETED",
+      "tripType": "ONE_WAY",
+      "bookedOffset": "D-2",
+      "departureOffset": "D+20",
+      "fareRuleProfileId": "A_FLEXIBLE",
+      "fareRuleProfileVersion": 1,
+      "sellMinor": 7640000,
+      "supplierCostMinor": 7000000,
+      "currency": "INR",
+      "funding": "WALLET",
+      "passengers": 2,
+      "provider": "SABRE",
+      "pcc": "O4RB",
+      "pnr": "SBX027",
+      "ticketNumber": "098-2410000027",
+      "ticketNumbers": [
+        "098-2410000027",
+        "098-2410000127"
+      ],
+      "refundPolicyId": "refund_orb_v1",
+      "refundPolicyVersion": 1,
+      "refundPayoutMode": "IMMEDIATE_IF_ELIGIBLE",
+      "baseFareSnapshot": {
+        "supplierBaseMinor": 2990000,
+        "supplierTaxMinor": 510000,
+        "historicalCoreFeeMinor": 320000,
+        "perAdult": true
+      }
+    },
+    {
+      "id": "HFB1028",
+      "agencyId": "agency_aster",
+      "source": "PORTAL",
+      "status": "TICKETED",
+      "tripType": "ONE_WAY",
+      "bookedOffset": "D-6",
+      "departureOffset": "D+10",
+      "fareRuleProfileId": "B_RESTRICTED",
+      "fareRuleProfileVersion": 1,
+      "sellMinor": 3900000,
+      "supplierCostMinor": 3360000,
+      "currency": "INR",
+      "funding": "WALLET",
+      "passengers": 2,
+      "provider": "SABRE",
+      "pcc": "H7FA",
+      "pnr": "SBX028",
+      "ticketNumber": "098-2410000028",
+      "ticketNumbers": [
+        "098-2410000028",
+        "098-2410000128"
+      ],
+      "refundPolicyId": "refund_ast_v1",
+      "refundPolicyVersion": 1,
+      "refundPayoutMode": "SUPPLIER_SETTLEMENT",
+      "baseFareSnapshot": {
+        "supplierBaseMinor": 1420000,
+        "supplierTaxMinor": 260000,
+        "historicalCoreFeeMinor": 270000,
+        "perAdult": true
+      }
     }
   ],
   "historicalRefundClaims": [
@@ -823,26 +956,26 @@
     "agency_skyline": "Prepaid only, refund payout by booking-time supplier-settlement policy v1."
   },
   "expectedKpisAtFullSeedCohort": {
-    "openingTicketedCount": 19,
+    "openingTicketedCount": 23,
     "openingCancelledCount": 5,
     "openingVoidedCount": 1,
     "openingPnrUnticketedCount": 2,
     "openingFailedCount": 3,
-    "grossBookingValueMinor": 25620000,
-    "initialSupplierCostMinor": 21340000,
+    "grossBookingValueMinor": 46120000,
+    "initialSupplierCostMinor": 40000000,
     "agencyRefundObligationMinor": 4585900,
     "agencyWalletRefundPaidMinor": 2890300,
     "agencyRefundPendingMinor": 1695600,
     "supplierExpectedRefundMinor": 4200900,
     "supplierReceivedRefundMinor": 900000,
     "supplierReceivableMinor": 3300900,
-    "variableOperatingExpenseMinor": 66500,
+    "variableOperatingExpenseMinor": 80500,
     "agencyRebateExpenseMinor": 0,
     "passThroughExpenseMinor": 0,
-    "retainedAgencySalesMinor": 21034100,
-    "retainedSupplierCostMinor": 20440000,
-    "netPlatformRevenueMinor": 594100,
-    "estimatedContributionMinor": 527600
+    "retainedAgencySalesMinor": 41534100,
+    "retainedSupplierCostMinor": 39100000,
+    "netPlatformRevenueMinor": 2434100,
+    "estimatedContributionMinor": 2353600
   },
   "roundTripScenario": {
     "scenarioId": "roundtrip_bom_lon_return",

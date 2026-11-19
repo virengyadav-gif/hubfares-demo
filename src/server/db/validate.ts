@@ -36,7 +36,8 @@ export function validateStructure(): Check[] {
   add('No OTA user holds Hubfares role', users.filter((u) => u.agencyId).every((u) => u.role.startsWith('AGENCY_')));
   add('Synthetic emails only (example.com)', users.every((u) => u.email.endsWith('.example.com')));
   const bks = loadFixture('bookings.json').bookings as any[];
-  add('24 historical bookings', bks.length === 24);
+  const contractBookings = loadFixture('seed-contract.v1.json').historicalBookings.length;
+  add(`${contractBookings} historical bookings`, bks.length === contractBookings);
   add('Tickets only on ticketed-state bookings', bks.every((b) => (b.ticketNumber ? ['TICKETED', 'CANCELLED', 'VOIDED', 'IMPORTED_TICKETED'].includes(b.status) : !['TICKETED', 'CANCELLED', 'VOIDED', 'IMPORTED_TICKETED'].includes(b.status))));
   add('FAILED bookings have no PNR', bks.filter((b) => b.status === 'FAILED').every((b) => b.pnr === null));
   const pnrs = bks.filter((b) => b.pnr).map((b) => `${b.pcc}:${b.pnr}`);
@@ -68,8 +69,8 @@ export function validateSeededState(db: DB, anchorIso: string): Check[] {
   const contract = loadFixture('seed-contract.v1.json');
   const add = (name: string, ok: boolean, detail?: string) => out.push({ name, ok, detail });
   const count = (t: string) => Number((db.get(sql.raw(`SELECT count(*) AS n FROM "${t}"`)) as any).n);
-  add('24 seeded bookings', count('bookings') === 24);
-  add('6 refund claims', count('refund_claims') === 6);
+  add(`${contract.historicalBookings.length} seeded bookings`, count('bookings') === contract.historicalBookings.length);
+  add(`${contract.historicalRefundClaims.length} refund claims`, count('refund_claims') === contract.historicalRefundClaims.length);
   add('Exactly 2 fare profiles in DB', count('fare_rule_profiles') === 2);
   for (const [agencyId, exp] of Object.entries<any>(contract.agencyOpeningLedger)) {
     const p = fundingPosition(db, agencyId, anchorIso);
@@ -90,7 +91,7 @@ export function validateSeededState(db: DB, anchorIso: string): Check[] {
     ['variableOperatingExpenseMinor', k.variableOperatingExpenseMinor, e.variableOperatingExpenseMinor], ['estimatedContributionMinor', k.estimatedContributionMinor, e.estimatedContributionMinor],
   ];
   for (const [n, got, want] of pairs) add(`KPI oracle ${n}`, got === want, `got ${got} want ${want}`);
-  add('Cancellation rate 5/19 excludes void; void 1/19', k.cancelledCount === 5 && k.voidedCount === 1 && k.ticketedCount === 19);
+  add(`Cancellation rate ${e.openingCancelledCount}/${e.openingTicketedCount} excludes void; void ${e.openingVoidedCount}/${e.openingTicketedCount}`, k.cancelledCount === e.openingCancelledCount && k.voidedCount === e.openingVoidedCount && k.ticketedCount === e.openingTicketedCount);
   const dupPay = db.all(sql.raw(`SELECT external_ref, count(*) n FROM wallet_ledger_entries WHERE external_ref IS NOT NULL GROUP BY agency_id, external_ref HAVING n > 1`));
   add('No external payment ref credited twice', dupPay.length === 0);
   const dupRefund = db.all(sql.raw(`SELECT refund_id, count(*) n FROM wallet_ledger_entries WHERE type='REFUND_CREDIT' GROUP BY refund_id HAVING n > 1`));

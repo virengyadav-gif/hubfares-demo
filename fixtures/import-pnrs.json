@@ -138,6 +138,154 @@
       "agencySellMinor": 720000,
       "supplierCostMinor": 670000,
       "bookedOffset": "D-1"
+    },
+    {
+      "key": "imp_sky_family",
+      "provider": "SABRE",
+      "pcc": "S9KY",
+      "pnr": "SBD111",
+      "ownerAgencyId": "agency_skyline",
+      "airlinePnr": "6E3H8R",
+      "itinerary": {
+        "origin": "BOM",
+        "destination": "GOI",
+        "airlineCode": "6E",
+        "flightNumber": "6E 811",
+        "departureOffset": "D+12",
+        "durationMin": 75,
+        "cabin": "ECONOMY"
+      },
+      "passengers": [
+        "Mr Sameer Joshi",
+        "Ms Anjali Joshi"
+      ],
+      "ticketStatus": "TICKETED",
+      "ticketNumbers": [
+        "098-2400811001",
+        "098-2400811002"
+      ],
+      "fareRuleProfileId": "A_FLEXIBLE",
+      "agencySellMinor": 1100000,
+      "supplierCostMinor": 1020000,
+      "bookedOffset": "D-4"
+    },
+    {
+      "key": "imp_sky_corp",
+      "provider": "SABRE",
+      "pcc": "S9KY",
+      "pnr": "SBD112",
+      "ownerAgencyId": "agency_skyline",
+      "airlinePnr": "AI6P2L",
+      "itinerary": {
+        "origin": "DEL",
+        "destination": "BLR",
+        "airlineCode": "AI",
+        "flightNumber": "AI 812",
+        "departureOffset": "D+5",
+        "durationMin": 170,
+        "cabin": "ECONOMY"
+      },
+      "passengers": [
+        "Mr Deepak Malhotra"
+      ],
+      "ticketStatus": "TICKETED",
+      "ticketNumbers": [
+        "098-2400812001"
+      ],
+      "fareRuleProfileId": "B_RESTRICTED",
+      "agencySellMinor": 690000,
+      "supplierCostMinor": 640000,
+      "bookedOffset": "D-3"
+    },
+    {
+      "key": "imp_sky_trio",
+      "provider": "SABRE",
+      "pcc": "S9KY",
+      "pnr": "SBD113",
+      "ownerAgencyId": "agency_skyline",
+      "airlinePnr": "AI9C4T",
+      "itinerary": {
+        "origin": "BOM",
+        "destination": "DEL",
+        "airlineCode": "AI",
+        "flightNumber": "AI 813",
+        "departureOffset": "D+15",
+        "durationMin": 130,
+        "cabin": "ECONOMY"
+      },
+      "passengers": [
+        "Mr Harish Menon",
+        "Ms Lata Menon",
+        "Mr Arvind Menon"
+      ],
+      "ticketStatus": "TICKETED",
+      "ticketNumbers": [
+        "098-2400813001",
+        "098-2400813002",
+        "098-2400813003"
+      ],
+      "fareRuleProfileId": "A_FLEXIBLE",
+      "agencySellMinor": 2070000,
+      "supplierCostMinor": 1920000,
+      "bookedOffset": "D-2"
+    },
+    {
+      "key": "imp_orb_team",
+      "provider": "SABRE",
+      "pcc": "O4RB",
+      "pnr": "SBD212",
+      "ownerAgencyId": "agency_orbit",
+      "airlinePnr": "6E1M7Q",
+      "itinerary": {
+        "origin": "BLR",
+        "destination": "DEL",
+        "airlineCode": "6E",
+        "flightNumber": "6E 812",
+        "departureOffset": "D+8",
+        "durationMin": 165,
+        "cabin": "ECONOMY"
+      },
+      "passengers": [
+        "Mr Prakash Iyer",
+        "Ms Revathi Iyer"
+      ],
+      "ticketStatus": "TICKETED",
+      "ticketNumbers": [
+        "098-2400822001",
+        "098-2400822002"
+      ],
+      "fareRuleProfileId": "A_FLEXIBLE",
+      "agencySellMinor": 1360000,
+      "supplierCostMinor": 1260000,
+      "bookedOffset": "D-2"
+    },
+    {
+      "key": "imp_ast_ok",
+      "provider": "SABRE",
+      "pcc": "H7FA",
+      "pnr": "SBD313",
+      "ownerAgencyId": "agency_aster",
+      "airlinePnr": "AI3W8N",
+      "itinerary": {
+        "origin": "DEL",
+        "destination": "BOM",
+        "airlineCode": "AI",
+        "flightNumber": "AI 833",
+        "departureOffset": "D+9",
+        "durationMin": 130,
+        "cabin": "ECONOMY"
+      },
+      "passengers": [
+        "Ms Gauri Sethi"
+      ],
+      "ticketStatus": "TICKETED",
+      "ticketNumbers": [
+        "098-2400833001"
+      ],
+      "fareRuleProfileId": "A_FLEXIBLE",
+      "agencySellMinor": 720000,
+      "supplierCostMinor": 670000,
+      "bookedOffset": "D-1"
     }
   ],
   "negativeTests": [

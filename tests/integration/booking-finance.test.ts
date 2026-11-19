@@ -131,7 +131,7 @@ describe('Booking lifecycle, funding and passbook', () => {
     const ops = await call(bookings.GET, { as: U.ops, url: '/api/v1/bookings?agencyId=agency_skyline' });
     expect(ops.data.some((x: any) => x.id === b.data.bookingId && x.bookingStatus === 'TICKETED')).toBe(true);
     const k = (await call(exec.GET, { as: U.cxo, params: { view: 'overview' } })).data.total;
-    expect(k.grossBookingValueMinor).toBe(25620000 + 3063250);
+    expect(k.grossBookingValueMinor).toBe(46120000 + 3063250);
   });
   it('TC-025 price change requires explicit acceptance; decline leaves no booking/charge', async () => {
     const q = await quoteFor(U.sky, [{ offerId: 'offer_001', brandId: 'brand_001_saver' }]);

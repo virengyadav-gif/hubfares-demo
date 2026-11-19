@@ -13,7 +13,7 @@ import { computeCancellation } from '@/features/refunds/calc';
 import type { FareRuleProfile } from '@/features/fares/rules';
 import { setMeta } from './util';
 
-export const FIXTURE_VERSION = 'hubfares-v1.1-seed-002';
+export const FIXTURE_VERSION = 'hubfares-v1.2-seed-003';
 export const COST_MODEL_PER_TICKET_MINOR = 3500; // Data & Mocks §8.3 rule 6: INR 35 per historically ticketed booking
 
 const fixturesDir = () => path.resolve(process.cwd(), 'fixtures');
@@ -23,7 +23,7 @@ export function loadFixture<T = any>(name: string): T {
 
 /** Child-first order so FK constraints hold while clearing. */
 const CLEAR_ORDER = [
-  'idempotency_keys', 'notifications', 'audit_events', 'domain_events', 'case_events', 'support_cases', 'support_conversations',
+  'idempotency_keys', 'approval_requests', 'notifications', 'audit_events', 'domain_events', 'case_events', 'support_cases', 'support_conversations',
   'amendment_cases', 'supplier_settlement_events', 'refund_claims', 'cancellations', 'payment_matches', 'payment_events',
   'credit_ledger_entries', 'wallet_ledger_entries', 'funding_reservations', 'modeled_costs', 'tickets', 'pnr_records', 'passengers',
   'booking_segments', 'bookings', 'quote_segments', 'quotes', 'fare_brands', 'flight_offers', 'fare_rule_profiles', 'pcc_mappings',
@@ -114,7 +114,12 @@ export function seedDatabase(db: DB, anchorIso: string, opts: { preserveSessions
 
     // ---- opening wallet ledger ----
     for (const [agencyId, l] of Object.entries<any>(contract.agencyOpeningLedger)) {
-      tx.insert(s.walletLedgerEntries).values({ id: `wle_open_${agencyId}`, agencyId, type: 'OPENING', direction: 'CREDIT', amountMinor: l.openingWalletCreditMinor, currency: 'INR', description: 'Opening wallet balance (seed)', idempotencyKey: `seed:opening:${agencyId}`, createdAt: A('D-30') }).run();
+      const hp = (paymentsFx.historicalCredited ?? []).find((x: any) => x.agencyId === agencyId);
+      tx.insert(s.walletLedgerEntries).values({ id: `wle_open_${agencyId}`, agencyId, type: hp ? 'PAYMENT_CREDIT' : 'OPENING', direction: 'CREDIT', amountMinor: l.openingWalletCreditMinor, currency: 'INR', externalRef: hp?.externalRef ?? null, description: hp ? `Bank transfer ${hp.externalRef} · matched to ${hp.agencyHint}` : 'Opening balance', idempotencyKey: `seed:opening:${agencyId}`, createdAt: A(hp?.receivedOffset ?? 'D-30') }).run();
+      if (hp) {
+        tx.insert(s.paymentEvents).values({ id: hp.id, providerCode: paymentsFx.bankProvider, agencyId, agencyHint: hp.agencyHint, externalPaymentRef: hp.externalRef, grossAmountMinor: l.openingWalletCreditMinor, currency: 'INR', status: 'CREDITED', receivedAt: A(hp.receivedOffset), matchingJson: JSON.stringify({ reason: `Matched to virtual account ${hp.agencyHint}`, matchedBy: 'AUTO' }) }).run();
+        tx.insert(s.paymentMatches).values({ id: `pm_${hp.id}`, paymentEventId: hp.id, agencyId, status: 'CREDITED', matchedAt: A(hp.receivedOffset), matchedBy: 'AUTO_MATCHER', ledgerEntryId: `wle_open_${agencyId}` }).run();
+      }
     }
 
     // ---- 24 historical bookings ----
@@ -137,7 +142,7 @@ export function seedDatabase(db: DB, anchorIso: string, opts: { preserveSessions
         bookingStatus, ticketStatus, paymentStatus, fundingType: funding, bookedAt, firstDepartureAt: dep, routeSummary: `${b.origin}-${b.destination}`,
         airlineSummary: b.airlineCode, leadPassenger: b.passengerName, sellAmountMinor: b.sellMinor, supplierCostMinor: b.supplierCostMinor, currency: 'INR',
         refundPolicyId: b.refundPolicyId, refundPolicyVersion: b.refundPolicyVersion, refundPayoutMode: b.refundPayoutMode,
-        failureReason: b.status === 'FAILED' ? 'Historical mock provider failure (seed) — no funds charged' : null,
+        failureReason: b.status === 'FAILED' ? 'Airline did not confirm the booking — no funds charged' : null,
         bookingSnapshotJson: JSON.stringify({ historicalSeed: true, baseFareSnapshot: b.baseFareSnapshot, fundingAtBooking: b.funding, fareRuleProfileId: b.fareRuleProfileId, refundPolicy: { id: b.refundPolicyId, version: b.refundPolicyVersion, payoutMode: b.refundPayoutMode }, passengers: { adults: b.passengers, children: 0, infants: 0 } }),
         updatedAt: bookedAt,
       }).run();
@@ -146,15 +151,17 @@ export function seedDatabase(db: DB, anchorIso: string, opts: { preserveSessions
         origin: b.origin, destination: b.destination, departureAt: dep, arrivalAt: arr, originTz: b.originTz, destinationTz: b.destinationTz, cabin: b.cabin,
         fareBrandId: null, brandName: b.brandCode.charAt(0) + b.brandCode.slice(1).toLowerCase(), fareRuleProfileId: b.fareRuleProfileId, profileVersion: b.fareRuleProfileVersion,
         fareRuleSnapshotJson: JSON.stringify(profile), segmentSellMinor: b.sellMinor, segmentSupplierCostMinor: b.supplierCostMinor,
-        priceComponentsJson: JSON.stringify({ supplierBaseMinor: b.baseFareSnapshot.supplierBaseMinor, supplierTaxMinor: b.baseFareSnapshot.supplierTaxMinor, historicalCoreFeeMinor: b.baseFareSnapshot.historicalCoreFeeMinor }),
+        priceComponentsJson: JSON.stringify({ supplierBaseMinor: b.baseFareSnapshot.supplierBaseMinor, supplierTaxMinor: b.baseFareSnapshot.supplierTaxMinor, historicalCoreFeeMinor: b.baseFareSnapshot.historicalCoreFeeMinor, perAdult: !!b.baseFareSnapshot.perAdult, adults: b.passengers }),
       }).run();
-      tx.insert(s.passengers).values({ id: `${b.id}_pax1`, bookingId: b.id, displayName: b.passengerName, travelerType: 'ADULT', maskedDocReference: null }).run();
+      const paxNames: string[] = b.passengerNames ?? [b.passengerName];
+      paxNames.forEach((n, i) => tx.insert(s.passengers).values({ id: `${b.id}_pax${i + 1}`, bookingId: b.id, displayName: n, travelerType: 'ADULT', maskedDocReference: null }).run());
       if (b.pnr) tx.insert(s.pnrRecords).values({ id: `${b.id}_pnr`, bookingId: b.id, provider: b.provider, pcc: b.pcc, gdsPnr: b.pnr, airlinePnr: null, imported: b.source === 'IMPORTED', createdAt: bookedAt }).run();
       if (ticketed) {
-        tx.insert(s.tickets).values({ id: `${b.id}_tkt`, bookingId: b.id, passengerId: `${b.id}_pax1`, ticketNumber: b.ticketNumber, issuedAt: bookedAt, status: ticketStatus === 'ISSUED' ? 'ISSUED' : ticketStatus, imported: b.source === 'IMPORTED' }).run();
+        const tks: string[] = b.ticketNumbers ?? [b.ticketNumber];
+        tks.forEach((t, i) => tx.insert(s.tickets).values({ id: i === 0 ? `${b.id}_tkt` : `${b.id}_tkt${i + 1}`, bookingId: b.id, passengerId: `${b.id}_pax${i + 1}`, ticketNumber: t, issuedAt: bookedAt, status: ticketStatus === 'ISSUED' ? 'ISSUED' : ticketStatus, imported: b.source === 'IMPORTED' }).run());
         tx.insert(s.modeledCosts).values({ id: `${b.id}_cost`, bookingId: b.id, agencyId: b.agencyId, kind: 'VARIABLE_PROCESSING', amountMinor: COST_MODEL_PER_TICKET_MINOR, createdAt: bookedAt }).run();
         if (funding === 'WALLET') {
-          tx.insert(s.walletLedgerEntries).values({ id: `wle_${b.id}`, agencyId: b.agencyId, type: 'BOOKING_DEBIT', direction: 'DEBIT', amountMinor: b.sellMinor, currency: 'INR', bookingId: b.id, description: `Ticket ${b.ticketNumber} · ${b.origin}-${b.destination}`, idempotencyKey: `seed:book:${b.id}`, createdAt: bookedAt }).run();
+          tx.insert(s.walletLedgerEntries).values({ id: `wle_${b.id}`, agencyId: b.agencyId, type: 'BOOKING_DEBIT', direction: 'DEBIT', amountMinor: b.sellMinor, currency: 'INR', bookingId: b.id, description: `Ticket ${b.ticketNumber}${b.passengers > 1 ? ` +${b.passengers - 1}` : ''} · ${b.origin}-${b.destination}`, idempotencyKey: `seed:book:${b.id}`, createdAt: bookedAt }).run();
         } else {
           tx.insert(s.creditLedgerEntries).values({ id: `cle_${b.id}`, agencyId: b.agencyId, type: 'DRAW', direction: 'DRAW', amountMinor: b.sellMinor, bookingId: b.id, dueAt: isoPlus(bookedAt, policyTerm[b.agencyId] * DAY), description: `Credit draw · ticket ${b.ticketNumber}`, idempotencyKey: `seed:book:${b.id}`, createdAt: bookedAt }).run();
         }
