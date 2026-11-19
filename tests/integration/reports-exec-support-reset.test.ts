@@ -16,7 +16,6 @@ import * as caseList from '@/app/api/v1/support-cases/route';
 import * as caseOne from '@/app/api/v1/support-cases/[id]/route';
 import * as amend from '@/app/api/v1/amendments/route';
 import * as amendQ from '@/app/api/v1/amendments/quote/route';
-import * as amendOne from '@/app/api/v1/amendments/[id]/route';
 import * as manual from '@/app/api/v1/manual-orders/route';
 import * as reset from '@/app/api/v1/demo/reset/route';
 import * as quotes from '@/app/api/v1/quotes/route';
@@ -182,13 +181,19 @@ describe('OTA Help chatbot → Operations (S-K)', () => {
     expect((await call(caseOne.PATCH, { as: U.sky, method: 'PATCH', params: { id: caseId }, body: { status: 'CLOSED' } })).status).toBe(403);
     expect((await call(caseOne.GET, { as: U.orb, params: { id: caseId } })).status).toBe(404);
   });
-  it('TC-054 guided amendment (fare diff + B profile fee), Ops timeline, manual order: no ticket/ledger', async () => {
-    const q = await call(amendQ.POST, { as: U.sky, body: { bookingId: 'HFB1002', type: 'DATE_CHANGE', optionId: 'opt_plus1' } });
-    expect(q.data.amendmentChargeMinor).toBe(200000);
-    expect(q.data.guided).toBe(true);
-    const a = await call(amend.POST, { as: U.sky, body: { bookingId: 'HFB1002', type: 'DATE_CHANGE', optionId: 'opt_plus1' } });
-    for (const st of ['APPROVED', 'REISSUED_CLOSED']) expect((await call(amendOne.PATCH, { as: U.ops, method: 'PATCH', params: { id: a.data.id }, body: {} })).data.status).toBe(st);
-    expect(db.select().from(s.tickets).where(eq(s.tickets.bookingId, 'HFB1002')).all()).toHaveLength(1);
+  it('TC-054 date change quote → confirm reissues tickets and debits once; Ops sees it; offline order posts no ledger', async () => {
+    const q = await call(amendQ.POST, { as: U.sky, body: { bookingId: 'HFB1002', legIndex: 0, newDate: '2026-11-29' } });
+    expect(q.data.permitted).toBe(true);
+    expect(q.data.breakdown).toEqual({ fareDifferenceMinor: 72000, airlineChangeFeeMinor: 200000, serviceFeeMinor: 5000 });
+    expect(q.data.totalMinor).toBe(277000);
+    const a = await call(amend.POST, { as: U.sky, idem: 'tc054', body: { bookingId: 'HFB1002', legIndex: 0, newDate: '2026-11-29', expectedTotalMinor: 277000 } });
+    expect(a.status).toBe(201);
+    expect(a.data.newTickets).toHaveLength(1);
+    const tix = db.select().from(s.tickets).where(eq(s.tickets.bookingId, 'HFB1002')).all();
+    expect(tix.filter((t) => t.status === 'EXCHANGED')).toHaveLength(1);
+    expect(tix.filter((t) => t.status === 'ISSUED').map((t) => t.ticketNumber)).toEqual(a.data.newTickets);
+    const ops = await call(amend.GET, { as: U.ops });
+    expect(ops.data.find((x: any) => x.id === a.data.amendmentId).status).toBe('COMPLETED');
     const ledger0 = db.select({ n: sql<number>`count(*)` }).from(s.walletLedgerEntries).get()!.n;
     const m = await call(manual.POST, { as: U.ops, body: { agencyId: 'agency_orbit', origin: 'BOM', destination: 'DEL', travelDate: '2026-12-05', airline: 'AI', passengerName: 'Offline Pax', supplierReference: 'SUP-REF-77', amountMinor: 900000 } });
     expect(m.data.status).toBe('MANUAL_RECORDED');

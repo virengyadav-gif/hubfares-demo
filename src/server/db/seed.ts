@@ -228,8 +228,6 @@ export function seedDatabase(db: DB, anchorIso: string, opts: { preserveSessions
         prev = st;
       });
     }
-    const am = guided.seedAmendment;
-    tx.insert(s.amendmentCases).values({ id: am.id, agencyId: am.agencyId, bookingId: am.bookingId, type: am.type, status: am.status, quoteJson: JSON.stringify({ option: 'Same flight, next day', fareDifferenceMinor: 45000, amendmentChargeMinor: 200000, profileId: 'B_RESTRICTED', slab: 'S2', guided: true }), createdBy: 'user_sky_agent', createdAt: A(am.createdOffset), updatedAt: A(am.createdOffset), timelineJson: JSON.stringify([{ at: A(am.createdOffset), status: 'REQUESTED' }, { at: A(am.createdOffset), status: 'QUOTED' }]) }).run();
   });
 }
 

@@ -89,7 +89,7 @@ function cancelInTx(tx: Tx, ctx: SessionCtx, bookingId: string, mode: 'CANCEL' |
     const cxl = nextId(tx, 'cxl');
     tx.insert(s.cancellations).values({ id: cxl, bookingId, agencyId: b.agencyId, mode, quoteSnapshotJson: JSON.stringify(q), segmentSlabBreakdownJson: JSON.stringify(q.segments), estimatedRefundMinor: q.estimatedAgencyRefundMinor, status: 'CONFIRMED', idempotencyKey: idemKey, requestedAt: at, requestedBy: ctx.userId }).run();
     tx.update(s.bookings).set({ bookingStatus: 'CANCELLED', ticketStatus: 'CANCELLED', paymentStatus: q.estimatedAgencyRefundMinor > 0 ? 'REFUND_PENDING' : 'CHARGED', updatedAt: at }).where(eq(s.bookings.id, bookingId)).run();
-    tx.update(s.tickets).set({ status: 'CANCELLED' }).where(eq(s.tickets.bookingId, bookingId)).run();
+    tx.update(s.tickets).set({ status: 'CANCELLED' }).where(and(eq(s.tickets.bookingId, bookingId), eq(s.tickets.status, 'ISSUED'))).run();
     const claimId = nextCode(tx, 'RFD', 2000);
     const refund = q.estimatedAgencyRefundMinor;
     const timeline: any[] = [{ at, status: 'REQUESTED' }, { at, status: 'VALIDATED', note: `Slabs ${q.segments.map((x) => `${x.route}:${x.slab}`).join(', ')}` }];
