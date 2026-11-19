@@ -12,12 +12,15 @@ export const sabreMock: GdsAdapter = {
     return { status: 'SAME', priceDeltaMinor: 0 };
   },
   createBooking(scenario, seq) {
-    if (scenario === 'booking_fail') return { ok: false, code: 'BOOKING_PROVIDER_SIM_FAILURE', message: 'Simulated Sabre booking failure (scenario booking_fail) — no PNR created' };
+    if (scenario === 'booking_fail') return { ok: false, code: 'BOOKING_PROVIDER_SIM_FAILURE', message: 'The airline did not confirm this booking — no PNR was created and no funds were charged' };
     return { ok: true, pnr: `SBN${String(seq).padStart(3, '0')}` };
   },
   issueTicket(scenario, seqStart, paxCount) {
-    if (scenario === 'ticket_fail') return { ok: false, code: 'TICKETING_SIM_FAILURE', message: 'Simulated ticketing failure (scenario ticket_fail) — hold released, no charge' };
+    if (scenario === 'ticket_fail') return { ok: false, code: 'TICKETING_SIM_FAILURE', message: 'Ticketing could not be completed by the airline — the hold was released and nothing was charged' };
     return { ok: true, ticketNumbers: Array.from({ length: paxCount }, (_, i) => `098-2400${String(seqStart + i).padStart(6, '0')}`) };
+  },
+  listPnrs() {
+    return loadFixture<{ records: ImportedPnr[] }>('import-pnrs.json').records;
   },
   retrievePnr(pnr, pcc) {
     const recs = loadFixture<{ records: ImportedPnr[] }>('import-pnrs.json').records;

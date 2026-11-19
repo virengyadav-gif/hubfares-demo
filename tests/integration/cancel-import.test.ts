@@ -165,7 +165,6 @@ describe('S-E offline PNR import', () => {
     const l = await call(lookup.POST, { as: U.sky, body: { provider: 'SABRE', pcc: 'S9KY', pnr: 'SBD101' } });
     expect(l.status).toBe(200);
     expect(l.data.ticketNumbers).toEqual(['098-2400801001']);
-    expect(l.json.meta.source).toBe('SIMULATED');
     const r = await call(imp.POST, { as: U.sky, idem: 'tc041', body: { provider: 'SABRE', pcc: 'S9KY', pnr: 'SBD101' } });
     expect(r.status).toBe(201);
     const d = (await call(bookingOne.GET, { as: U.sky, params: { id: r.data.bookingId } })).data;

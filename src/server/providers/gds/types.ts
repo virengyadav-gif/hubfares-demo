@@ -15,4 +15,5 @@ export interface GdsAdapter {
   createBooking(scenario: BookingScenario, seq: number): { ok: true; pnr: string } | { ok: false; code: 'BOOKING_PROVIDER_SIM_FAILURE'; message: string };
   issueTicket(scenario: TicketScenario, seqStart: number, paxCount: number): { ok: true; ticketNumbers: string[] } | { ok: false; code: 'TICKETING_SIM_FAILURE'; message: string };
   retrievePnr(pnr: string, pcc: string): ImportedPnr | null;
+  listPnrs(): ImportedPnr[];
 }
