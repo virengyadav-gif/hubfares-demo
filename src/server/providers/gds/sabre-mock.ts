@@ -28,7 +28,7 @@ export const sabreMock: GdsAdapter = {
   },
 };
 export function gdsAdapter(provider: string): GdsAdapter {
-  if (process.env.DEMO_MODE && process.env.DEMO_MODE !== 'mock') throw new AppError('INTEGRATION_NOT_CONNECTED', 'Live GDS integrations are not configured in this POC');
+  if (process.env.DEMO_MODE && process.env.DEMO_MODE !== 'mock') throw new AppError('INTEGRATION_NOT_CONNECTED', 'Live supplier integrations are not configured');
   if (provider === 'SABRE') return sabreMock;
-  throw new AppError('INTEGRATION_NOT_CONNECTED', `${provider} is a planned integration — adapter not connected in this POC`);
+  throw new AppError('INTEGRATION_NOT_CONNECTED', `${provider} is not connected`);
 }

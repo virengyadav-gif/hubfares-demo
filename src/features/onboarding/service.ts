@@ -18,7 +18,7 @@ const PAN_RE = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
 const MOBILE_RE = /^\+?[0-9]{10,13}$/;
 const person = z.object({ salutation: z.enum(['Mr', 'Ms', 'Mx']), firstName: z.string().trim().min(1).max(40), lastName: z.string().trim().min(1).max(40), email: z.string().trim().email(), mobile: z.string().trim().regex(MOBILE_RE, 'Enter a valid mobile number (e.g. +919000000000)') });
 export const draftSchema = z.object({
-  organization: z.object({ agencyName: z.string().trim().min(2).max(120), turnoverInr: z.coerce.number().int().min(0).max(1e12), entityType: z.enum(['PROPRIETORSHIP', 'PARTNERSHIP', 'LLP', 'PRIVATE_LIMITED', 'PUBLIC_LIMITED']), pan: z.string().trim().toUpperCase().regex(PAN_RE, 'PAN format: 5 letters, 4 digits, 1 letter (synthetic demo values only)'), gstin: z.string().trim().toUpperCase().max(15).optional().or(z.literal('')), registrationNumber: z.string().trim().max(30).optional().or(z.literal('')), website: z.string().trim().max(120).optional().or(z.literal('')) }),
+  organization: z.object({ agencyName: z.string().trim().min(2).max(120), turnoverInr: z.coerce.number().int().min(0).max(1e12), entityType: z.enum(['PROPRIETORSHIP', 'PARTNERSHIP', 'LLP', 'PRIVATE_LIMITED', 'PUBLIC_LIMITED']), pan: z.string().trim().toUpperCase().regex(PAN_RE, 'PAN format: 5 letters, 4 digits, 1 letter'), gstin: z.string().trim().toUpperCase().max(15).optional().or(z.literal('')), registrationNumber: z.string().trim().max(30).optional().or(z.literal('')), website: z.string().trim().max(120).optional().or(z.literal('')) }),
   director: person, finance: person,
   communication: z.object({ email: z.string().trim().email(), mobile: z.string().trim().regex(MOBILE_RE), website: z.string().trim().max(120).optional().or(z.literal('')) }),
   address: z.object({ line1: z.string().trim().min(3).max(120), line2: z.string().trim().max(120).optional().or(z.literal('')), country: z.string().trim().min(2), state: z.string().trim().min(2), city: z.string().trim().min(2), postalCode: z.string().trim().regex(/^[0-9A-Z -]{4,10}$/i, 'Enter a valid PIN/postal code') }),
@@ -88,7 +88,7 @@ function duplicateCheck(tx: Tx, appId: string, d: Draft) {
   const name = d.organization.agencyName.trim().toLowerCase();
   if (tx.select().from(s.agencies).all().some((a) => a.displayName.toLowerCase() === name || a.legalName.toLowerCase() === name)) throw new AppError('DUPLICATE_RECORD', 'An agency with this name is already registered');
   const others = tx.select().from(s.registrationApplications).where(and(ne(s.registrationApplications.id, appId), inArray(s.registrationApplications.status, ['SUBMITTED', 'UNDER_REVIEW', 'MORE_INFO_REQUIRED', 'APPROVED']))).all();
-  if (others.some((o) => o.pan === d.organization.pan)) throw new AppError('DUPLICATE_RECORD', 'This PAN is already used by another registration (synthetic duplicate check)');
+  if (others.some((o) => o.pan === d.organization.pan)) throw new AppError('DUPLICATE_RECORD', 'This PAN is already used by another registration');
   if (tx.select().from(s.users).all().some((u) => u.email === d.director.email.toLowerCase())) throw new AppError('DUPLICATE_RECORD', 'Director email is already a registered user');
 }
 export function submitApplication(db: DB, id: string, token: string, draftInput: unknown) {
@@ -184,7 +184,7 @@ export function decideApplication(db: DB, ctx: SessionCtx, id: string, input: z.
       return { id, status: st, emailSentTo: emailTo };
     }
     const pan = tx.select().from(s.kycChecks).where(and(eq(s.kycChecks.applicationId, id), eq(s.kycChecks.checkType, 'PAN'))).orderBy(desc(s.kycChecks.checkedAt), desc(s.kycChecks.id)).get();
-    if (pan?.mockResult !== 'VERIFIED') throw new AppError('INVALID_STATE', 'Approval requires a completed mock PAN verification (green tick)');
+    if (pan?.mockResult !== 'VERIFIED') throw new AppError('INVALID_STATE', 'Approval requires a completed PAN verification (green tick)');
     const d = draftSchema.parse(JSON.parse(a.agencyDraftJson));
     const slug = d.organization.agencyName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 24);
     const agencyId = `agency_${slug}`;

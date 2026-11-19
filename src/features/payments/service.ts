@@ -22,7 +22,7 @@ export function paymentRefForAgency(agencyId: string): string | null {
 
 /** Matching rules: currency INR, recognised agency virtual reference, amount equals any declared intimation. */
 function evaluateMatch(tx: Tx, ev: typeof s.paymentEvents.$inferSelect): { ok: true; agencyId: string } | { ok: false; status: 'UNMATCHED' | 'EXCEPTION' | 'REJECTED'; reason: string } {
-  if (ev.currency !== 'INR') return { ok: false, status: 'REJECTED', reason: `Unsupported currency ${ev.currency} — no INR wallet credit (demo rate table is display-only)` };
+  if (ev.currency !== 'INR') return { ok: false, status: 'REJECTED', reason: `Unsupported currency ${ev.currency} — wallet credits are in INR only` };
   const m = JSON.parse(ev.matchingJson || '{}');
   const agencyId = ev.agencyId ?? agencyPaymentRefs()[ev.agencyHint ?? ''];
   if (!agencyId) return { ok: false, status: 'UNMATCHED', reason: `Unrecognised agency reference "${ev.agencyHint ?? '—'}"` };
@@ -34,12 +34,12 @@ function evaluateMatch(tx: Tx, ev: typeof s.paymentEvents.$inferSelect): { ok: t
 function creditWallet(tx: Tx, ctx: SessionCtx | null, ev: typeof s.paymentEvents.$inferSelect, agencyId: string, by: string) {
   const at = nowIso();
   const wle = nextId(tx, 'wle');
-  tx.insert(s.walletLedgerEntries).values({ id: wle, agencyId, type: 'PAYMENT_CREDIT', direction: 'CREDIT', amountMinor: ev.grossAmountMinor, currency: 'INR', externalRef: ev.externalPaymentRef, description: `Demo bank transfer ${ev.externalPaymentRef} matched`, idempotencyKey: `payment:${BANK}:${ev.externalPaymentRef}`, createdAt: at }).run();
+  tx.insert(s.walletLedgerEntries).values({ id: wle, agencyId, type: 'PAYMENT_CREDIT', direction: 'CREDIT', amountMinor: ev.grossAmountMinor, currency: 'INR', externalRef: ev.externalPaymentRef, description: `Bank transfer ${ev.externalPaymentRef} matched`, idempotencyKey: `payment:${BANK}:${ev.externalPaymentRef}`, createdAt: at }).run();
   tx.insert(s.paymentMatches).values({ id: nextId(tx, 'pmatch'), paymentEventId: ev.id, agencyId, status: 'CREDITED', matchedAt: at, matchedBy: by, ledgerEntryId: wle }).run();
   tx.update(s.paymentEvents).set({ status: 'CREDITED', agencyId, matchingJson: JSON.stringify({ ...JSON.parse(ev.matchingJson || '{}'), matchedAt: at, ledgerEntryId: wle, matchedBy: by }) }).where(eq(s.paymentEvents.id, ev.id)).run();
   audit(tx, { userId: ctx?.userId ?? null, role: ctx?.role ?? 'SYSTEM' }, 'PAYMENT_MATCHED', 'payment_event', ev.id, agencyId, { ref: ev.externalPaymentRef, amountMinor: ev.grossAmountMinor });
   domainEvent(tx, 'payment.credited', 'payment_event', ev.id, agencyId, { amountMinor: ev.grossAmountMinor });
-  notify(tx, { audience: 'AGENCY', agencyId, kind: 'PAYMENT_CREDITED', referenceId: ev.id, title: `Wallet credited ₹${(ev.grossAmountMinor / 100).toFixed(2)} — demo payment ${ev.externalPaymentRef}` });
+  notify(tx, { audience: 'AGENCY', agencyId, kind: 'PAYMENT_CREDITED', referenceId: ev.id, title: `Wallet credited ₹${(ev.grossAmountMinor / 100).toFixed(2)} — bank transfer ${ev.externalPaymentRef}` });
   return wle;
 }
 export function matchPaymentEvent(db: DB, ctx: SessionCtx | null, eventId: string, idemKey: string, by = 'AUTO_MATCHER') {
@@ -110,7 +110,15 @@ export function listPaymentEvents(db: Tx, ctx: SessionCtx, agencyId?: string) {
   const scope = agencyScope(ctx, agencyId);
   let rows = db.select().from(s.paymentEvents).orderBy(desc(s.paymentEvents.receivedAt)).all();
   if (scope) { const ref = paymentRefForAgency(scope); rows = rows.filter((r) => r.agencyId === scope || (!r.agencyId && r.agencyHint === ref && r.status !== 'CREDITED')); }
-  return rows.map((r) => ({ ...r, matching: JSON.parse(r.matchingJson), matchingJson: undefined }));
+  const names = Object.fromEntries(db.select().from(s.agencies).all().map((a) => [a.id, a.displayName]));
+  return rows.map((r) => { const m = JSON.parse(r.matchingJson); return { ...r, agencyName: r.agencyId ? names[r.agencyId] : null, matching: m, matchingJson: undefined, bankStatus: 'Received', ...reconStatus(r.status, m) }; });
+}
+/** Display reconciliation status: every bank event is Received; matching then yields Awaiting Match / Matched / Unmatched / Rejected with a reason. */
+export function reconStatus(status: string, m: any): { reconStatus: 'Awaiting Match' | 'Matched' | 'Unmatched' | 'Rejected'; exceptionReason: string | null } {
+  if (status === 'CREDITED' || status === 'MATCHED') return { reconStatus: 'Matched', exceptionReason: null };
+  if (status === 'REJECTED') return { reconStatus: 'Rejected', exceptionReason: m?.reason ?? 'Rejected by Finance' };
+  if (status === 'UNMATCHED' || status === 'EXCEPTION') return { reconStatus: 'Unmatched', exceptionReason: m?.reason ?? 'No matching agency reference' };
+  return { reconStatus: 'Awaiting Match', exceptionReason: null };
 }
 
 export function walletSummary(db: Tx, ctx: SessionCtx, agencyId?: string) {
@@ -119,7 +127,7 @@ export function walletSummary(db: Tx, ctx: SessionCtx, agencyId?: string) {
   const pos = fundingPosition(db, id, nowIso());
   const ag = db.select().from(s.agencies).where(eq(s.agencies.id, id)).get();
   const refund = db.select().from(s.agencyPolicies).where(and(eq(s.agencyPolicies.agencyId, id), eq(s.agencyPolicies.type, 'REFUND'))).all();
-  return { ...pos, agencyName: ag?.displayName, paymentReference: paymentRefForAgency(id), bankDetails: { beneficiary: 'Hubfares Distribution (Demo)', bank: 'Demo Bank — simulated', virtualAccount: paymentRefForAgency(id), ifsc: 'DEMO0000001', note: 'Demo payment details — no real bank account' }, refundPolicies: refund.map((r) => ({ id: r.id, version: r.version, effectiveFrom: r.effectiveFrom, config: JSON.parse(r.configJson) })) };
+  return { ...pos, agencyName: ag?.displayName, paymentReference: paymentRefForAgency(id), bankDetails: { beneficiary: 'Hubfares Distribution Pvt Ltd', bank: 'Hubfares collections account', virtualAccount: paymentRefForAgency(id), ifsc: 'HUBF0000001', note: 'Quote the virtual account reference so the transfer is matched automatically' }, refundPolicies: refund.map((r) => ({ id: r.id, version: r.version, effectiveFrom: r.effectiveFrom, config: JSON.parse(r.configJson) })) };
 }
 export const passbookSchema = z.object({ agencyId: z.string().optional(), from: z.string().optional(), to: z.string().optional(), q: z.string().optional() });
 /** Live passbook from the wallet ledger: opening balance (before window) + entries + running closing balance. */
@@ -146,7 +154,7 @@ export function recordCreditRepayment(db: DB, ctx: SessionCtx, input: z.infer<ty
     const pos = fundingPosition(tx, input.agencyId, nowIso());
     if (input.amountMinor > pos.creditOutstandingMinor) throw new AppError('VALIDATION_ERROR', 'Repayment exceeds credit outstanding');
     const id = nextId(tx, 'cle');
-    tx.insert(s.creditLedgerEntries).values({ id, agencyId: input.agencyId, type: 'REPAYMENT', direction: 'REPAY', amountMinor: input.amountMinor, description: `Simulated credit repayment${input.note ? ` — ${input.note}` : ''}`, idempotencyKey: `repay:${idemKey}`, createdAt: nowIso() }).run();
+    tx.insert(s.creditLedgerEntries).values({ id, agencyId: input.agencyId, type: 'REPAYMENT', direction: 'REPAY', amountMinor: input.amountMinor, description: `Credit repayment${input.note ? ` — ${input.note}` : ''}`, idempotencyKey: `repay:${idemKey}`, createdAt: nowIso() }).run();
     audit(tx, { userId: ctx.userId, role: ctx.role }, 'CREDIT_REPAYMENT', 'agency', input.agencyId, input.agencyId, { amountMinor: input.amountMinor });
     return { creditEntryId: id, position: fundingPosition(tx, input.agencyId, nowIso()) };
   }));

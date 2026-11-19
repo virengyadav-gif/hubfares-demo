@@ -80,7 +80,7 @@ export function saveAdvanced(db: DB, ctx: SessionCtx, id: string | null, input: 
       tx.insert(s.advancedCommercialDrafts).values({ id, ruleName: input.ruleName, headerJson: JSON.stringify(input.header), criteriaJson: JSON.stringify(input.criteria), expressionLinesJson: JSON.stringify(input.lines), priority: input.priority, enabled: input.enabled, draftRevision: 1, historyJson: JSON.stringify([{ revision: 1, at, by: ctx.userId, note: input.note || 'Draft created' }]), updatedAt: at }).run();
     }
     audit(tx, { userId: ctx.userId, role: ctx.role }, 'ADVANCED_DRAFT_SAVED', 'advanced_draft', id, null, { evaluated: false });
-    return { id, evaluated: false, notice: 'Guided demo — expressions such as 5*BF / 1*TF are stored as text and never executed.' };
+    return { id, evaluated: false, notice: 'Draft rule — expressions such as 5*BF / 1*TF are saved for review and are not applied to pricing.' };
   });
 }
 

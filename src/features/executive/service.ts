@@ -15,17 +15,26 @@ export function overview(db: Tx, f: KpiFilter) {
     return { agencyId: a.id, agencyName: a.displayName, status: a.status, ...k, creditOutstandingMinor: pos.creditOutstandingMinor, overdueMinor: pos.overdueMinor, creditLimitMinor: pos.creditLimitMinor, creditBlocked: pos.creditBlocked, walletCashMinor: pos.walletCashMinor };
   });
   const credit = byAgency.reduce((a, x) => ({ outstanding: a.outstanding + x.creditOutstandingMinor, overdue: a.overdue + x.overdueMinor, limit: a.limit + x.creditLimitMinor }), { outstanding: 0, overdue: 0, limit: 0 });
-  return { total, byAgency, credit, dateBasis: 'booking date (booked_at cohort)', illustrative: true };
+  return { total, byAgency, credit, dateBasis: 'booking date', period: { from: f.from ?? null, to: f.to ?? null } };
 }
-export function salesTrends(db: Tx, f: KpiFilter) {
+export type Granularity = 'daily' | 'weekly' | 'monthly';
+/** Bucket label for a timestamp: day (YYYY-MM-DD), ISO week starting Monday (week of YYYY-MM-DD) or month (YYYY-MM). */
+export function bucketKey(iso: string, g: Granularity): string {
+  const d = iso.slice(0, 10);
+  if (g === 'monthly') return d.slice(0, 7);
+  if (g === 'weekly') { const t = new Date(`${d}T00:00:00Z`); const dow = (t.getUTCDay() + 6) % 7; return new Date(t.getTime() - dow * 86400000).toISOString().slice(0, 10); }
+  return d;
+}
+export function salesTrends(db: Tx, f: KpiFilter & { granularity?: Granularity }) {
   const d = cohortRows(db, f);
   const tix = new Set(d.tix.map((t) => t.bookingId));
   const ticketed = d.rows.filter((b) => tix.has(b.id));
   const byDay: Record<string, { date: string; gbvMinor: number; bookings: number; cancellations: number }> = {};
-  for (const b of ticketed) { const k = b.bookedAt.slice(0, 10); (byDay[k] ??= { date: k, gbvMinor: 0, bookings: 0, cancellations: 0 }); byDay[k].gbvMinor += b.sellAmountMinor; byDay[k].bookings++; if (b.bookingStatus === 'CANCELLED') byDay[k].cancellations++; }
+  const bucket = (iso: string) => bucketKey(iso, f.granularity ?? 'daily');
+  for (const b of ticketed) { const k = bucket(b.bookedAt); (byDay[k] ??= { date: k, gbvMinor: 0, bookings: 0, cancellations: 0 }); byDay[k].gbvMinor += b.sellAmountMinor; byDay[k].bookings++; if (b.bookingStatus === 'CANCELLED') byDay[k].cancellations++; }
   const group = (key: (b: typeof ticketed[number]) => string) => Object.values(ticketed.reduce((m, b) => { const k = key(b); (m[k] ??= { key: k, gbvMinor: 0, bookings: 0, cancelled: 0, voided: 0 }); m[k].gbvMinor += b.sellAmountMinor; m[k].bookings++; if (b.bookingStatus === 'CANCELLED') m[k].cancelled++; if (b.bookingStatus === 'VOIDED') m[k].voided++; return m; }, {} as Record<string, any>)).sort((a: any, b: any) => b.gbvMinor - a.gbvMinor);
   const INTL = new Set(['LHR', 'SIN', 'DXB', 'FRA']);
-  return { daily: Object.values(byDay).sort((a, b) => a.date.localeCompare(b.date)), byRoute: group((b) => b.routeSummary), byAirline: group((b) => b.airlineSummary), byJourney: group((b) => (b.routeSummary.split('-').some((x) => INTL.has(x)) ? 'International' : 'Domestic')), bySource: group((b) => b.source), dateBasis: 'booking date' };
+  return { daily: Object.values(byDay).sort((a, b) => a.date.localeCompare(b.date)), byRoute: group((b) => b.routeSummary), byAirline: group((b) => b.airlineSummary), byJourney: group((b) => (b.routeSummary.split('-').some((x) => INTL.has(x)) ? 'International' : 'Domestic')), bySource: group((b) => b.source), granularity: f.granularity ?? 'daily', dateBasis: 'booking date' };
 }
 export function cancellations(db: Tx, f: KpiFilter) {
   const d = cohortRows(db, f);
@@ -66,7 +75,7 @@ export function operations(db: Tx) {
     ticketingIssues: bookings.filter((b) => ['BOOKING_FAILED', 'TICKETING_FAILED'].includes(b.bookingStatus)).length,
     pendingTicketing: bookings.filter((b) => b.bookingStatus === 'PNR_CREATED').length,
     refundsPendingSupplier: claims.filter((c) => c.supplierStatus === 'PENDING').length,
-    workload, seededNote: 'Approval duration and SLA examples are partly seeded (guided).',
+    workload,
   };
 }
 export function drilldownBookings(db: Tx, f: KpiFilter & { status?: string }) {

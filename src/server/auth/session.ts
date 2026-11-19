@@ -25,7 +25,7 @@ export function hashPassword(userId: string, password: string) {
 }
 export function login(db: DB, email: string, password: string): { token: string; ctx: SessionCtx } {
   const u = db.select().from(users).where(eq(users.email, email.trim().toLowerCase())).get();
-  if (!u || !verifyPassword(u.passwordHash, password)) throw new AppError('UNAUTHORIZED', 'Invalid demo credentials');
+  if (!u || !verifyPassword(u.passwordHash, password)) throw new AppError('UNAUTHORIZED', 'Invalid email or password');
   if (u.status !== 'ACTIVE') throw new AppError('FORBIDDEN', 'This user account is inactive');
   if (u.agencyId) {
     const a = db.select().from(agencies).where(eq(agencies.id, u.agencyId)).get();

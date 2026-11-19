@@ -53,7 +53,7 @@ describe('Search, pricing, FX, commercial separation', () => {
     expect(o5.brands.find((b: any) => b.id === 'brand_005_saver').sellMinor).toBe(3063250);
     const profiles = new Set(r.data.outbound.results.flatMap((o: any) => o.brands.map((b: any) => b.ruleProfileId)));
     expect(profiles).toEqual(new Set(['A_FLEXIBLE', 'B_RESTRICTED']));
-    expect(r.json.meta.source).toBe('SIMULATED');
+    expect(r.data.outbound.results.every((o: any) => o.providerCode === undefined)).toBe(true); // supplier routing hidden from OTAs
     expect(r.data.outbound.dateStrip).toHaveLength(7);
   });
   it('TC-020 unsupported route → honest empty/validation, never invented offers', async () => {

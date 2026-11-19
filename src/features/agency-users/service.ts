@@ -36,7 +36,7 @@ export function createAgencyUser(db: DB, ctx: SessionCtx, input: z.infer<typeof 
     tx.insert(s.users).values({ id, agencyId, name: input.name, email: input.email, mobile: input.mobile, role: input.role, status: 'ACTIVE', passwordHash: hashPassword(id, DEMO_INITIAL_PASSWORD), createdAt: nowIso() }).run();
     if (input.role === 'AGENCY_AGENT') for (const k of ['BOOK', 'CANCEL', 'FINANCE_VIEW'] as const) tx.insert(s.userPermissions).values({ id: `perm_${id}_${k}`, userId: id, permissionKey: k, allowed: input.permissions[k] ?? true }).run();
     audit(tx, { userId: ctx.userId, role: ctx.role }, 'USER_CREATED', 'user', id, agencyId, { role: input.role });
-    return { id, agencyId, email: input.email, role: input.role, initialPassword: 'Operator-documented demo password' };
+    return { id, agencyId, email: input.email, role: input.role, initialPassword: 'Default initial password' };
   });
 }
 export function updateUser(db: DB, ctx: SessionCtx, userId: string, input: z.infer<typeof updateUserSchema>) {

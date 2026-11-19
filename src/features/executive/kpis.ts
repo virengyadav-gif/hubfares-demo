@@ -9,7 +9,7 @@ const INTL = new Set(['LHR', 'SIN', 'DXB', 'FRA']);
 export function cohortRows(db: Tx, f: KpiFilter) {
   const conds = [] as any[];
   if (f.from) conds.push(gte(bookings.bookedAt, f.from));
-  if (f.to) conds.push(lte(bookings.bookedAt, f.to));
+  if (f.to) conds.push(lte(bookings.bookedAt, f.to.length === 10 ? `${f.to}T23:59:59.999Z` : f.to));
   if (f.agencyId) conds.push(eq(bookings.agencyId, f.agencyId));
   let rows = db.select().from(bookings).where(conds.length ? and(...conds) : undefined).all();
   if (f.airline) rows = rows.filter((b) => b.airlineSummary.split('/').includes(f.airline!));

@@ -250,3 +250,19 @@ describe('Reset and replay (S-M)', () => {
     expect(db.select().from(s.bookings).all()).toHaveLength(28);
   });
 });
+
+describe('P1-13/17 management date range and daily / weekly / monthly views', () => {
+  beforeAll(() => { db = freshDb(); resetTokens(); });
+  it('weekly and monthly buckets sum to the daily totals; a date-only "to" includes that whole day', async () => {
+    const d = (await call(exec.GET, { as: U.cxo, url: '/api/v1/executive/sales-trends?granularity=daily', params: { view: 'sales-trends' } })).data;
+    const w = (await call(exec.GET, { as: U.cxo, url: '/api/v1/executive/sales-trends?granularity=weekly', params: { view: 'sales-trends' } })).data;
+    const m = (await call(exec.GET, { as: U.cxo, url: '/api/v1/executive/sales-trends?granularity=monthly', params: { view: 'sales-trends' } })).data;
+    const sum = (x: any[]) => x.reduce((a, r) => a + r.gbvMinor, 0);
+    expect(sum(w.daily)).toBe(sum(d.daily)); expect(sum(m.daily)).toBe(sum(d.daily));
+    expect(m.daily.every((r: any) => /^\d{4}-\d{2}$/.test(r.date))).toBe(true);
+    expect(w.granularity).toBe('weekly');
+    const today = (await call(exec.GET, { as: U.cxo, url: '/api/v1/executive/overview?from=2026-11-18&to=2026-11-18', params: { view: 'overview' } })).data;
+    expect(today.period).toEqual({ from: '2026-11-18', to: '2026-11-18' });
+    expect(today.total.bookingsTotal).toBeGreaterThan(0);
+  });
+});

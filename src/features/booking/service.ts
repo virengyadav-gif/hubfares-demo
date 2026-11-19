@@ -34,7 +34,7 @@ export function createQuote(db: DB, ctx: SessionCtx, input: z.infer<typeof quote
     const brand = offer?.brands.find((b) => b.id === l.brandId);
     if (!offer || !brand) throw new AppError('VALIDATION_ERROR', `Leg ${i + 1}: unknown offer or fare brand`);
     if (Date.parse(offer.departureAt) <= nowMs()) throw new AppError('VALIDATION_ERROR', `Leg ${i + 1}: this flight has already departed`);
-    if (offer.seatsLeft <= 0) throw new AppError('VALIDATION_ERROR', `Leg ${i + 1}: sold out in demo inventory`);
+    if (offer.seatsLeft <= 0) throw new AppError('VALIDATION_ERROR', `Leg ${i + 1}: this flight is sold out`);
     return { offer, brand };
   });
   if (input.tripType === 'ROUND_TRIP') {
@@ -94,7 +94,7 @@ export function revalidateQuote(db: DB, ctx: SessionCtx, id: string, scenario: '
     const r = gdsAdapter('SABRE').revalidateFare(scenario);
     if (r.status === 'UNAVAILABLE') {
       tx.update(s.quotes).set({ status: 'UNAVAILABLE' }).where(eq(s.quotes.id, id)).run();
-      return { status: 'UNAVAILABLE' as const, quote: getQuote(tx, ctx, id), scenario, message: 'Simulated Sabre revalidation: fare no longer available. No booking or charge was made.' };
+      return { status: 'UNAVAILABLE' as const, quote: getQuote(tx, ctx, id), scenario, message: 'This fare is no longer available. No booking or charge was made.' };
     }
     if (r.status === 'SAME') {
       tx.update(s.quotes).set({ status: 'REVALIDATED' }).where(eq(s.quotes.id, id)).run();
@@ -109,7 +109,7 @@ export function revalidateQuote(db: DB, ctx: SessionCtx, id: string, scenario: '
     tx.update(s.quotes).set({ status: 'SUPERSEDED' }).where(eq(s.quotes.id, id)).run();
     tx.insert(s.quotes).values({ ...q, id: nid, status: 'PRICE_CHANGED', previousQuoteId: id, createdAt: created, expiresAt: isoPlus(created, QUOTE_TTL_MS), sellAmountMinor: newSegs.reduce((a, x) => a + x.legSellMinor, 0) * pax, supplierCostMinor: newSegs.reduce((a, x) => a + x.legSupplierCostMinor, 0) * pax }).run();
     for (const g of newSegs) tx.insert(s.quoteSegments).values(g).run();
-    return { status: 'CHANGED' as const, previousQuote: getQuote(tx, ctx, id), quote: getQuote(tx, ctx, nid), scenario, message: 'Simulated Sabre revalidation returned a new price. Accept the revised itinerary total to continue.' };
+    return { status: 'CHANGED' as const, previousQuote: getQuote(tx, ctx, id), quote: getQuote(tx, ctx, nid), scenario, message: 'The airline returned a new price. Accept the revised itinerary total to continue.' };
   });
 }
 export function decideRevisedQuote(db: DB, ctx: SessionCtx, id: string, accept: boolean) {
@@ -202,7 +202,7 @@ export function issueTicket(db: DB, ctx: SessionCtx, bookingId: string, input: z
       tx.update(s.fundingReservations).set({ status: 'RELEASED', updatedAt: at }).where(eq(s.fundingReservations.id, res.id)).run();
       audit(tx, { userId: ctx.userId, role: ctx.role }, 'TICKETING_FAILED', 'booking', bookingId, b.agencyId, { code: r.code });
       domainEvent(tx, 'booking.ticketing_failed', 'booking', bookingId, b.agencyId);
-      notify(tx, { audience: 'HUB', agencyId: b.agencyId, kind: 'TICKETING_FAILED', referenceId: bookingId, title: `Ticketing failed for ${bookingId} (simulated) — hold released` });
+      notify(tx, { audience: 'HUB', agencyId: b.agencyId, kind: 'TICKETING_FAILED', referenceId: bookingId, title: `Ticketing failed for ${bookingId} — hold released` });
       return { bookingId, bookingStatus: 'TICKETING_FAILED', error: { code: r.code, message: r.message } };
     }
     r.ticketNumbers.forEach((t, i) => tx.insert(s.tickets).values({ id: `${bookingId}_tkt${i + 1}`, bookingId, passengerId: paxRows[i]?.id ?? null, ticketNumber: t, issuedAt: at, status: 'ISSUED', imported: false }).run());
@@ -217,8 +217,10 @@ export function issueTicket(db: DB, ctx: SessionCtx, bookingId: string, input: z
     tx.insert(s.modeledCosts).values({ id: `${bookingId}_cost`, bookingId, agencyId: b.agencyId, kind: 'VARIABLE_PROCESSING', amountMinor: cost, createdAt: at }).run();
     audit(tx, { userId: ctx.userId, role: ctx.role }, 'TICKET_ISSUED', 'booking', bookingId, b.agencyId, { tickets: r.ticketNumbers, walletDebitMinor: res.walletHoldMinor, creditDrawMinor: res.creditHoldMinor });
     domainEvent(tx, 'booking.ticketed', 'booking', bookingId, b.agencyId, { amountMinor: b.sellAmountMinor });
-    notify(tx, { audience: 'AGENCY', agencyId: b.agencyId, kind: 'TICKETED', referenceId: bookingId, title: `Ticket issued (simulated) for ${b.routeSummary} · ${r.ticketNumbers.join(', ')}` });
-    return { bookingId, bookingStatus: 'TICKETED', ticketNumbers: r.ticketNumbers, walletDebitMinor: res.walletHoldMinor, creditDrawMinor: res.creditHoldMinor };
+    notify(tx, { audience: 'AGENCY', agencyId: b.agencyId, kind: 'TICKETED', referenceId: bookingId, title: `Ticket issued for ${b.routeSummary} · ${r.ticketNumbers.join(', ')}` });
+    const after = fundingPosition(tx, b.agencyId, at);
+    return { bookingId, bookingStatus: 'TICKETED', ticketNumbers: r.ticketNumbers, walletDebitMinor: res.walletHoldMinor, creditDrawMinor: res.creditHoldMinor,
+      balanceAfter: { walletCashMinor: after.walletCashMinor, availableWalletMinor: after.availableWalletMinor, availableCreditMinor: after.availableCreditMinor, creditEnabled: after.creditEnabled } };
   }));
 }
 
@@ -231,7 +233,7 @@ export function listBookings(db: Tx, ctx: SessionCtx, f: z.infer<typeof listSche
   if (f.source) conds.push(eq(s.bookings.source, f.source));
   if (f.provider) conds.push(eq(s.bookings.provider, f.provider));
   if (f.from) conds.push(gte(s.bookings.bookedAt, f.from));
-  if (f.to) conds.push(lte(s.bookings.bookedAt, f.to));
+  if (f.to) conds.push(lte(s.bookings.bookedAt, f.to.length === 10 ? `${f.to}T23:59:59.999Z` : f.to));
   if (f.route) conds.push(like(s.bookings.routeSummary, `%${f.route.toUpperCase()}%`));
   if (f.airline) conds.push(like(s.bookings.airlineSummary, `%${f.airline.toUpperCase()}%`));
   let rows = db.select().from(s.bookings).where(conds.length ? and(...conds) : undefined).orderBy(desc(s.bookings.bookedAt), s.bookings.id).limit(f.limit).all();

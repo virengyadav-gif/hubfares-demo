@@ -24,8 +24,8 @@ export function loadCoreRules(db: Tx): CoreRule[] {
 }
 export function validateSearch(i: SearchInput) {
   const errs: Record<string, string> = {};
-  if (!CITY_TO_AIRPORTS[i.origin]) errs.origin = 'Unsupported airport in demo';
-  if (!CITY_TO_AIRPORTS[i.destination]) errs.destination = 'Unsupported airport in demo';
+  if (!CITY_TO_AIRPORTS[i.origin]) errs.origin = 'This airport is not served yet';
+  if (!CITY_TO_AIRPORTS[i.destination]) errs.destination = 'This airport is not served yet';
   if (i.origin === i.destination) errs.destination = 'Destination must differ from origin';
   if (i.adults + i.children < 1) errs.adults = 'At least one adult or child traveller is required';
   if (i.infants > i.adults) errs.infants = 'Each infant must travel with an adult';
@@ -66,7 +66,7 @@ function legSearch(db: Tx, agencyId: string, origin: string, destination: string
     const cands = priced.filter((o) => localYmd(o.departureAt, o.originTz) === day && o.seatsLeft > 0 && o.fromSellMinor !== null);
     return { date: day, cheapestSellMinor: cands.length ? Math.min(...cands.map((c) => c.fromSellMinor!)) : null };
   });
-  const results = priced.filter((o) => sameDay.some((s) => s.id === o.id)).map((o) => ({ ...o, soldOut: o.seatsLeft <= 0 }));
+  const results = priced.filter((o) => sameDay.some((s) => s.id === o.id)).map((o) => ({ ...o, providerCode: undefined, soldOut: o.seatsLeft <= 0 }));
   return { results, dateStrip: strip };
 }
 export function searchFlights(db: Tx, agencyId: string, i: SearchInput) {
@@ -74,7 +74,7 @@ export function searchFlights(db: Tx, agencyId: string, i: SearchInput) {
   const outbound = legSearch(db, agencyId, i.origin, i.destination, i.departureDate, i);
   const inbound = i.tripType === 'ROUND_TRIP' && i.returnDate ? legSearch(db, agencyId, i.destination, i.origin, i.returnDate, i) : null;
   const profiles = db.select().from(fareRuleProfiles).all().map((p) => JSON.parse(p.dataJson));
-  return { criteria: i, outbound, inbound, profiles, provider: 'SABRE', mode: 'MOCK', notice: 'Simulated Sabre response — synthetic offers, not live airline inventory.' };
+  return { criteria: i, outbound, inbound, profiles };
 }
 /** Suggested seeded dates per route so the operator always lands on inventory (relative to the reset anchor). */
 export function seededDates(db: Tx) {

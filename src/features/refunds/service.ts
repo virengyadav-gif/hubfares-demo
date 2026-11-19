@@ -191,7 +191,7 @@ export function availableSettlementScenarios(): Scenario[] {
   const r = loadFixture('refunds.json');
   const fixed = r.supplierReceiptScenarios.filter((x: any) => !x.initiallyPosted);
   // Generic full-expected receipt for claims created live during the demo (amount = claim's own expected supplier refund).
-  return [...fixed, { id: 'settle_live_full', refundClaimId: '*', externalRef: '', amountMinor: 0, supplierId: 'supplier_sabre_mock', generic: true, note: 'Full expected supplier refund for a live demo claim' }];
+  return [...fixed, { id: 'settle_live_full', refundClaimId: '*', externalRef: '', amountMinor: 0, supplierId: 'supplier_sabre_mock', generic: true, note: 'Full expected supplier refund' }];
 }
 
 export const settlementSchema = z.object({ scenarioId: z.string() });
@@ -211,11 +211,11 @@ export function postSupplierSettlement(db: DB, ctx: SessionCtx, claimId: string,
     const at = nowIso();
     const matched = amount === c.supplierExpectedMinor;
     const evId = nextId(tx, 'sse');
-    tx.insert(s.supplierSettlementEvents).values({ id: evId, refundId: claimId, supplierId: sc.supplierId, externalRef: ref, amountMinor: amount, status: matched ? 'MATCHED' : 'EXCEPTION', receivedAt: at, note: matched ? 'Simulated supplier receipt matched expected amount' : `Expected ${c.supplierExpectedMinor}, received ${amount} — Operations exception` }).run();
+    tx.insert(s.supplierSettlementEvents).values({ id: evId, refundId: claimId, supplierId: sc.supplierId, externalRef: ref, amountMinor: amount, status: matched ? 'MATCHED' : 'EXCEPTION', receivedAt: at, note: matched ? 'Supplier receipt matched the expected amount' : `Expected ${c.supplierExpectedMinor}, received ${amount} — Operations exception` }).run();
     const tl = JSON.parse(c.timelineJson);
     let status = c.status;
     if (matched) {
-      tl.push({ at, status: 'SUPPLIER_FUNDS_RECEIVED', amountMinor: amount, note: `Mock receipt ${ref} (no wallet effect)` });
+      tl.push({ at, status: 'SUPPLIER_FUNDS_RECEIVED', amountMinor: amount, note: `Supplier receipt ${ref} (no wallet effect)` });
       if (c.payoutMode === 'SUPPLIER_SETTLEMENT' && c.agencyPayoutStatus !== 'CREDITED') status = 'SUPPLIER_RECEIVED_PAYOUT_ELIGIBLE';
       else if (c.agencyPayoutStatus === 'CREDITED') { status = 'RECONCILED_CLOSED'; tl.push({ at, status: 'RECONCILED_CLOSED' }); }
       tx.update(s.refundClaims).set({ supplierStatus: 'RECEIVED', supplierReceivedMinor: amount, status, updatedAt: at, timelineJson: JSON.stringify(tl) }).where(eq(s.refundClaims.id, claimId)).run();
