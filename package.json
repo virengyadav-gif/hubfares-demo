@@ -2,9 +2,9 @@
   "name": "hubfares-poc",
   "version": "1.1.1",
   "private": true,
-  "description": "Hubfares B2B travel distribution & operations platform — capability POC (mock mode)",
+  "description": "Hubfares B2B travel distribution & operations platform \u2014 capability POC (mock mode)",
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev --turbopack -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
     "typecheck": "tsc --noEmit",
@@ -18,7 +18,8 @@
     "demo:reset": "tsx scripts/reset-demo.ts",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "smoke": "tsx scripts/smoke.ts"
+    "smoke": "tsx scripts/smoke.ts",
+    "demo": "npm run demo:reset && npm run build && npm run start"
   },
   "engines": {
     "node": ">=20"
