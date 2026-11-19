@@ -51,10 +51,10 @@ export function validateStructure(): Check[] {
   if (fs.existsSync(rowsFile)) {
     const rr = JSON.parse(fs.readFileSync(rowsFile, 'utf8')).reports as Record<string, any[]>;
     const types = Object.keys(rr);
-    add('Six report datasets', types.length === 6);
+    add('Five report datasets', types.length === 5);
     add('Each report has exactly 100 rows', types.every((t) => rr[t].length === 100));
     add('Report scope 40/35/25 per agency', types.every((t) => ['agency_skyline:40', 'agency_orbit:35', 'agency_aster:25'].every((x) => { const [a, n] = x.split(':'); return rr[t].filter((r) => r.AgencyId === a).length === Number(n); })));
-    add('Six XLSX binaries present', types.every((t) => fs.existsSync(path.resolve(`fixtures/reports/${t}.xlsx`))));
+    add('Five XLSX binaries present', types.every((t) => fs.existsSync(path.resolve(`fixtures/reports/${t}.xlsx`))));
   } else add('Report fixtures built (run npm run reports:build)', false);
   const docsDir = path.resolve('fixtures/documents');
   add('Synthetic documents present', ['sample-company-registration.pdf', 'sample-pan-card.pdf', 'sample-identity-masked.pdf', 'sample-unreadable-scan.png', 'extraction-expected.json'].every((f) => fs.existsSync(path.join(docsDir, f))));

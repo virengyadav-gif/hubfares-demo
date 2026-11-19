@@ -46,14 +46,18 @@ async function sha(as: string, type: string) { return crypto.createHash('sha256'
 
 describe('Reports (S-J)', () => {
   beforeAll(() => { db = freshDb(); resetTokens(); });
-  it('TC-044 Hub roles download six genuine XLSX with 100 sample rows each', async () => {
+  it('TC-044 Hub roles download five genuine XLSX (no "Others") with 100 rows each, report title and status column', async () => {
     const c = await call(cat.GET, { as: U.ops });
-    expect(c.data.reports).toHaveLength(6);
+    expect(c.data.reports).toHaveLength(5);
+    expect(c.data.reports.some((r: any) => r.type === 'other-transactions')).toBe(false);
     for (const r of REPORTS) {
       const x = await xlsxRows(U.ops, r.type);
       expect(x.rows).toHaveLength(100);
-      expect(x.banner).toContain('SAMPLE EXTRACT - NOT LIVE');
+      expect(x.banner).toContain(r.title);
+      expect(x.rows.every((row) => !!row.Status)).toBe(true);
+      expect(x.banner).not.toMatch(/sample/i);
     }
+    expect(Object.keys((await xlsxRows(U.ops, 'airline-transactions')).rows[0])).toContain('GDS');
     expect((await xlsxRows(U.cxo, 'refund-transactions')).rows).toHaveLength(100);
   });
   it('TC-045 OTA downloads are server-scoped 40/35/25; forged agencyId ignored', async () => {
@@ -64,7 +68,19 @@ describe('Reports (S-J)', () => {
     }
     const c = await call(cat.GET, { as: U.sky });
     expect(c.data.reports.every((r: any) => r.rowCount === 40)).toBe(true);
+    const ota = (await xlsxRows(U.sky, 'airline-transactions')).rows[0];
+    expect(Object.keys(ota)).not.toContain('GDS'); expect(Object.keys(ota)).not.toContain('SupplierChargeINR');
     expect((await call(dl.GET, { params: { type: 'airline-transactions' } })).status).toBe(401);
+  });
+  it('P1-13/20 date range and status filters narrow the download; filename and banner carry the period', async () => {
+    const c = (await call(cat.GET, { as: U.ops })).data.reports.find((r: any) => r.type === 'refund-transactions');
+    expect(c.statuses).toEqual(['CREDITED', 'PENDING']);
+    const all = (await xlsxRows(U.ops, 'refund-transactions')).rows;
+    const from = c.lastDate.slice(0, 8) + '01';
+    const x = await xlsxRows(U.ops, 'refund-transactions', `/api/v1/reports/refund-transactions/download?from=${from}&to=${c.lastDate}&status=CREDITED`);
+    expect(x.rows.length).toBe(all.filter((r) => String(r.TransactionDate).slice(0, 10) >= from && r.Status === 'CREDITED').length);
+    expect(x.rows.every((r) => r.Status === 'CREDITED')).toBe(true);
+    expect(x.banner).toContain(`Period ${from} to ${c.lastDate}`);
   });
   it('TC-046 new booking does not change frozen reports; live CXO does change', async () => {
     const h0 = await sha(U.ops, 'booking-transactions');
