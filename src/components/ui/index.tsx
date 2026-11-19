@@ -46,8 +46,8 @@ const TONES: Record<string, string> = {
   blue: 'bg-info-50 text-info-600 ring-info-600/20', gray: 'bg-slate-100 text-slate-600 ring-slate-500/20', orange: 'bg-brand-50 text-brand-700 ring-brand-600/20',
   violet: 'bg-violet-50 text-violet-700 ring-violet-600/20', dark: 'bg-ink-800 text-white ring-ink-800',
 };
-export function Badge({ tone = 'gray', children, className, icon }: { tone?: keyof typeof TONES | string; children: ReactNode; className?: string; icon?: ReactNode }) {
-  return <span className={cx('inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11.5px] font-semibold ring-1 ring-inset whitespace-nowrap', TONES[tone] ?? TONES.gray, className)}>{icon}{children}</span>;
+export function Badge({ tone = 'gray', children, className, icon, ...rest }: { tone?: keyof typeof TONES | string; children: ReactNode; className?: string; icon?: ReactNode; [k: `data-${string}`]: string | undefined }) {
+  return <span {...rest} className={cx('inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11.5px] font-semibold ring-1 ring-inset whitespace-nowrap', TONES[tone] ?? TONES.gray, className)}>{icon}{children}</span>;
 }
 const STATUS_TONE: Record<string, string> = {
   TICKETED: 'green', ISSUED: 'green', CREDITED: 'green', MATCHED: 'green', VERIFIED: 'green', ACTIVE: 'green', APPROVED: 'green', RECEIVED: 'blue', RESOLVED: 'green', CLOSED: 'gray', RECONCILED_CLOSED: 'green', CLOSED_SETTLED_VOID: 'green', REISSUED_CLOSED: 'green', CHARGED: 'gray', REFUNDED: 'green',
