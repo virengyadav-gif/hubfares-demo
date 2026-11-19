@@ -9,14 +9,14 @@ test.describe.serial('Hubfares connected demo (E2E)', () => {
     const ctx = await browser.newContext(); const page = await ctx.newPage();
     await page.goto('/partner/register');
     await expect(page.getByText('Upload your business documents to automatically prefill available details. Review extracted information before submitting.')).toBeVisible();
-    await page.getByTestId('file-input').setInputFiles([path.resolve('fixtures/documents/company-registration-demo.pdf'), path.resolve('fixtures/documents/pan-card-demo.pdf'), path.resolve('fixtures/documents/identity-masked-demo.pdf')]);
+    await page.getByTestId('file-input').setInputFiles([path.resolve('fixtures/documents/sample-company-registration.pdf'), path.resolve('fixtures/documents/sample-pan-card.pdf'), path.resolve('fixtures/documents/sample-identity-masked.pdf')]);
     const review = page.getByTestId('extraction-review');
     await expect(review).toContainText('Bluebird Travels');
     await expect(review).toContainText('Review required');
     await expect(page.getByText('Not verified').first()).toBeVisible();
     for (let i = 0; i < 30; i++) { const b = review.getByRole('button', { name: /^(Accept|Use extracted)$/ }).first(); if (!(await b.count())) break; await b.click(); }
     await expect(page.locator('input[name="organization.agencyName"]')).toHaveValue('Bluebird Travels');
-    await expect(page.locator('input[name="organization.pan"]')).toHaveValue('DEMOB0777B');
+    await expect(page.locator('input[name="organization.pan"]')).toHaveValue('AAKCB0777B');
     await page.locator('input[name="organization.turnoverInr"]').fill('25000000');
     await page.locator('input[name="director.email"]').fill('riya@bluebird.example.com');
     await page.locator('input[name="director.mobile"]').fill('+919000000777');

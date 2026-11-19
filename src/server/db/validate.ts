@@ -57,7 +57,7 @@ export function validateStructure(): Check[] {
     add('Six XLSX binaries present', types.every((t) => fs.existsSync(path.resolve(`fixtures/reports/${t}.xlsx`))));
   } else add('Report fixtures built (run npm run reports:build)', false);
   const docsDir = path.resolve('fixtures/documents');
-  add('Synthetic documents present', ['company-registration-demo.pdf', 'pan-card-demo.pdf', 'identity-masked-demo.pdf', 'unreadable-demo.png', 'extraction-expected.json'].every((f) => fs.existsSync(path.join(docsDir, f))));
+  add('Synthetic documents present', ['sample-company-registration.pdf', 'sample-pan-card.pdf', 'sample-identity-masked.pdf', 'sample-unreadable-scan.png', 'extraction-expected.json'].every((f) => fs.existsSync(path.join(docsDir, f))));
   const chat = loadFixture('chatbot-scenarios.json');
   add('Chatbot main menu has 7 intents + language', chat.menu.length === 7 && chat.languages.length === 3);
   return out;

@@ -1,5 +1,5 @@
 {
-  "company-registration-demo.pdf": {
+  "sample-company-registration.pdf": {
     "documentType": "BUSINESS_REGISTRATION",
     "engine": "PDF_TEXT",
     "fields": {
@@ -16,11 +16,11 @@
         "minConfidence": 0.9
       },
       "gstin": {
-        "value": "27DEMOB0777B1Z1",
+        "value": "27AAKCB0777B1Z1",
         "minConfidence": 0.9
       },
       "addressLine1": {
-        "value": "14 Demo Riverside Plaza, Koregaon Park",
+        "value": "14 Riverside Plaza, Koregaon Park",
         "minConfidence": 0.85
       },
       "city": {
@@ -54,12 +54,12 @@
       }
     }
   },
-  "pan-card-demo.pdf": {
+  "sample-pan-card.pdf": {
     "documentType": "PAN",
     "engine": "PDF_TEXT",
     "fields": {
       "pan": {
-        "value": "DEMOB0777B",
+        "value": "AAKCB0777B",
         "minConfidence": 0.9
       },
       "agencyName": {
@@ -72,7 +72,7 @@
       }
     }
   },
-  "identity-masked-demo.pdf": {
+  "sample-identity-masked.pdf": {
     "documentType": "IDENTITY_MASKED",
     "engine": "PDF_TEXT",
     "fields": {
@@ -86,7 +86,7 @@
       }
     }
   },
-  "unreadable-demo.png": {
+  "sample-unreadable-scan.png": {
     "documentType": "UNKNOWN",
     "engine": "UNSUPPORTED",
     "error": "DOCUMENT_UNREADABLE",

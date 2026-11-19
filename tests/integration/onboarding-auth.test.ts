@@ -26,11 +26,11 @@ import * as wallet from '@/app/api/v1/wallet/route';
 
 let db: ReturnType<typeof freshDb>;
 const draft = {
-  organization: { agencyName: 'Bluebird Travels', turnoverInr: 25000000, entityType: 'PRIVATE_LIMITED', pan: 'DEMOB0777B', gstin: '27DEMOB0777B1Z1', registrationNumber: 'U63090MH2021PTC000777', website: '' },
+  organization: { agencyName: 'Bluebird Travels', turnoverInr: 25000000, entityType: 'PRIVATE_LIMITED', pan: 'AAKCB0777B', gstin: '27AAKCB0777B1Z1', registrationNumber: 'U63090MH2021PTC000777', website: '' },
   director: { salutation: 'Ms', firstName: 'Riya', lastName: 'Kulkarni', email: 'riya@bluebird.example.com', mobile: '+919000000777' },
   finance: { salutation: 'Mr', firstName: 'Kunal', lastName: 'Shah', email: 'finance@bluebird.example.com', mobile: '+919000000778' },
   communication: { email: 'hello@bluebird.example.com', mobile: '+919000000777', website: '' },
-  address: { line1: '14 Demo Riverside Plaza', line2: '', country: 'India', state: 'Maharashtra', city: 'Pune', postalCode: '411001' },
+  address: { line1: '14 Riverside Plaza', line2: '', country: 'India', state: 'Maharashtra', city: 'Pune', postalCode: '411001' },
   acknowledged: true,
 };
 async function upload(appId: string, token: string, file: string, type: string) {
@@ -59,10 +59,10 @@ describe('Auth, onboarding, KYC, approval, users and isolation', () => {
     appId = c.data.id; token = c.data.token;
     expect(c.data.status).toBe('DRAFT');
     const before = (await call(opsApps.GET, { as: U.ops })).data.length;
-    const up = await upload(appId, token, 'company-registration-demo.pdf', 'application/pdf');
+    const up = await upload(appId, token, 'sample-company-registration.pdf', 'application/pdf');
     expect(up.status).toBe(200);
-    await upload(appId, token, 'pan-card-demo.pdf', 'application/pdf');
-    await upload(appId, token, 'identity-masked-demo.pdf', 'application/pdf');
+    await upload(appId, token, 'sample-pan-card.pdf', 'application/pdf');
+    await upload(appId, token, 'sample-identity-masked.pdf', 'application/pdf');
     const sub = await call(submit.POST, { url: `/api/v1/applications/${appId}/submit`, params: { id: appId }, body: { draft }, headers: { 'x-application-token': token } });
     expect(sub.status, JSON.stringify(sub.error)).toBe(200);
     expect(sub.data.status).toBe('SUBMITTED');
@@ -86,7 +86,7 @@ describe('Auth, onboarding, KYC, approval, users and isolation', () => {
   });
   it('TC-003 supported PDF extracts editable fields with source + confidence; low-confidence flagged', async () => {
     const c = await call(apps.POST, { body: { draft: {} } });
-    const up = await upload(c.data.id, c.data.token, 'company-registration-demo.pdf', 'application/pdf');
+    const up = await upload(c.data.id, c.data.token, 'sample-company-registration.pdf', 'application/pdf');
     const f = Object.fromEntries(up.json.data.fields.map((x: any) => [x.name, x]));
     expect(up.json.data.engine).toBe('PDF_TEXT');
     expect(f.agencyName.value).toBe('Bluebird Travels');
@@ -97,7 +97,7 @@ describe('Auth, onboarding, KYC, approval, users and isolation', () => {
   });
   it('TC-004 unreadable PNG / unsupported file → graceful manual-review, no fabricated fields', async () => {
     const c = await call(apps.POST, { body: { draft: {} } });
-    const up = await upload(c.data.id, c.data.token, 'unreadable-demo.png', 'image/png');
+    const up = await upload(c.data.id, c.data.token, 'sample-unreadable-scan.png', 'image/png');
     expect(up.status).toBe(200);
     expect(up.json.data.fields).toHaveLength(0);
     expect(up.json.data.errorCode).toBe('DOCUMENT_UNREADABLE');

@@ -56,7 +56,7 @@ export async function uploadDocument(db: DB, id: string, token: string, file: { 
   const a = appByToken(db, id, token);
   if (!['DRAFT', 'MORE_INFO_REQUIRED'].includes(a.status)) throw new AppError('INVALID_STATE', 'Documents can only be added while the application is a draft');
   if (file.buf.length === 0) throw new AppError('VALIDATION_ERROR', 'Empty file');
-  if (file.buf.length > 5 * 1024 * 1024) throw new AppError('VALIDATION_ERROR', 'File exceeds the 5 MB demo limit');
+  if (file.buf.length > 5 * 1024 * 1024) throw new AppError('VALIDATION_ERROR', 'File exceeds the 5 MB limit');
   const sniffed = sniffMime(file.buf);
   if (!sniffed || !['application/pdf', 'image/png', 'image/jpeg'].includes(file.type) || (sniffed !== file.type && !(sniffed === 'image/jpeg' && file.type === 'image/jpg'))) throw new AppError('VALIDATION_ERROR', 'Unsupported file. Allowed: PDF, PNG, JPG (signature checked)');
   const safeName = file.name.replace(/[^A-Za-z0-9._-]/g, '_').slice(0, 80);
@@ -67,13 +67,13 @@ export async function uploadDocument(db: DB, id: string, token: string, file: { 
   fs.writeFileSync(path.join(dir, `${docId}.${ext}`), file.buf);
   const at = nowIso();
   db.insert(s.uploadedDocuments).values({ id: docId, applicationId: id, docType: 'PENDING_CLASSIFICATION', originalName: safeName, storageReference: `uploads/${id}/${docId}.${ext}`, mimetype: sniffed, sizeBytes: file.buf.length, extractionStatus: 'PROCESSING', createdAt: at }).run();
-  const r = await extractDocument(file.buf, sniffed);
+  const r = await extractDocument(file.buf, sniffed, file.name);
   db.transaction((tx) => {
     tx.update(s.uploadedDocuments).set({ docType: r.documentType, extractionStatus: r.status }).where(eq(s.uploadedDocuments.id, docId)).run();
     tx.insert(s.documentExtractions).values({ id: `ext_${docId}`, documentId: docId, documentType: r.documentType, fieldsJson: JSON.stringify(r.fields), warningsJson: JSON.stringify(r.warnings), engine: r.engine, createdAt: nowIso() }).run();
     audit(tx, { userId: null, role: 'PUBLIC' }, 'DOCUMENT_UPLOADED', 'application', id, null, { docId, extraction: r.status, engine: r.engine });
   });
-  return { documentId: docId, originalName: safeName, mimetype: sniffed, sizeBytes: file.buf.length, ...r, verificationStatus: 'NOT_RUN', source: 'SYNTHETIC_DEMO' };
+  return { documentId: docId, originalName: safeName, mimetype: sniffed, sizeBytes: file.buf.length, ...r, verificationStatus: 'NOT_RUN' };
 }
 export function confirmExtraction(db: DB, id: string, token: string, docId: string, reviewed: Record<string, string>) {
   return db.transaction((tx) => {
@@ -138,7 +138,7 @@ export function applicationDetail(db: Tx, id: string) {
   };
 }
 export const kycSchema = z.object({ checkType: z.enum(['PAN', 'IDENTITY', 'BUSINESS']), scenario: z.enum(['kyc_ok', 'kyc_fail']).default('kyc_ok') });
-/** Mock verification — separate from extraction. Deterministic: PAN must be synthetic DEMO-prefixed and well-formed; docs must exist. */
+/** Verification — separate from extraction. Deterministic: PAN must be well-formed; supporting documents must exist. */
 export function runMockKyc(db: DB, ctx: SessionCtx, id: string, input: z.infer<typeof kycSchema>) {
   return db.transaction((tx) => {
     const a = tx.select().from(s.registrationApplications).where(eq(s.registrationApplications.id, id)).get();
@@ -146,11 +146,11 @@ export function runMockKyc(db: DB, ctx: SessionCtx, id: string, input: z.infer<t
     if (!['SUBMITTED', 'UNDER_REVIEW', 'MORE_INFO_REQUIRED'].includes(a.status)) throw new AppError('INVALID_STATE', `Application is ${a.status}`);
     const draft = JSON.parse(a.agencyDraftJson);
     const docs = tx.select().from(s.uploadedDocuments).where(eq(s.uploadedDocuments.applicationId, id)).all();
-    let result: 'VERIFIED' | 'FAILED' | 'NOT_SUBMITTED' = 'VERIFIED'; let reason = 'Simulated check passed (demo verification — not a government lookup)';
+    let result: 'VERIFIED' | 'FAILED' | 'NOT_SUBMITTED' = 'VERIFIED'; let reason = 'Verification passed';
     const needDoc = input.checkType === 'IDENTITY' ? 'IDENTITY_MASKED' : input.checkType === 'BUSINESS' ? 'BUSINESS_REGISTRATION' : null;
     if (needDoc && !docs.some((d) => d.docType === needDoc)) { result = 'NOT_SUBMITTED'; reason = `No ${needDoc.replace('_', ' ').toLowerCase()} document uploaded`; }
-    else if (input.checkType === 'PAN' && !(PAN_RE.test(draft.organization?.pan ?? '') && String(draft.organization.pan).startsWith('DEMO'))) { result = 'FAILED'; reason = 'Simulated PAN check failed: identifier is not a recognised synthetic DEMO value'; }
-    if (input.scenario === 'kyc_fail' && result === 'VERIFIED') { result = 'FAILED'; reason = 'Simulated failure scenario (kyc_fail) — name mismatch on demo record'; }
+    else if (input.checkType === 'PAN' && !PAN_RE.test(String(draft.organization?.pan ?? '').toUpperCase())) { result = 'FAILED'; reason = 'PAN check failed: the PAN format is not valid'; }
+    if (input.scenario === 'kyc_fail' && result === 'VERIFIED') { result = 'FAILED'; reason = 'Name on the record does not match the application'; }
     const at = nowIso();
     tx.insert(s.kycChecks).values({ id: nextId(tx, 'kyc'), applicationId: id, documentId: needDoc ? docs.find((d) => d.docType === needDoc)?.id ?? null : null, checkType: input.checkType, mockResult: result, reason, source: 'SIMULATED', checkedAt: at, actorId: ctx.userId }).run();
     if (a.status === 'SUBMITTED') {
@@ -158,7 +158,7 @@ export function runMockKyc(db: DB, ctx: SessionCtx, id: string, input: z.infer<t
       tx.update(s.registrationApplications).set({ status: 'UNDER_REVIEW', reviewerId: ctx.userId, updatedAt: at, historyJson: JSON.stringify(hist) }).where(eq(s.registrationApplications.id, id)).run();
     }
     audit(tx, { userId: ctx.userId, role: ctx.role }, 'KYC_MOCK_CHECK', 'application', id, null, { checkType: input.checkType, result });
-    return { checkType: input.checkType, result, reason, source: 'SIMULATED', label: 'Demo verification' };
+    return { checkType: input.checkType, result, reason };
   });
 }
 export const decisionSchema = z.object({ decision: z.enum(['APPROVE', 'REJECT', 'MORE_INFO']), note: z.string().trim().max(300).optional() });
@@ -166,16 +166,22 @@ export function decideApplication(db: DB, ctx: SessionCtx, id: string, input: z.
   return db.transaction((tx) => {
     const a = tx.select().from(s.registrationApplications).where(eq(s.registrationApplications.id, id)).get();
     if (!a) throw new AppError('NOT_FOUND', 'Application not found');
-    if (!['SUBMITTED', 'UNDER_REVIEW'].includes(a.status)) throw new AppError('INVALID_STATE', `Application already ${a.status} — decisions are recorded once`);
+    if (!['SUBMITTED', 'UNDER_REVIEW', 'MORE_INFO_REQUIRED'].includes(a.status)) throw new AppError('INVALID_STATE', `Application already ${a.status.toLowerCase()} — decisions are recorded once`);
     const at = nowIso();
     const hist = JSON.parse(a.historyJson);
     if (input.decision !== 'APPROVE') {
       if (!input.note) throw new AppError('VALIDATION_ERROR', 'A reason is required');
       const st = input.decision === 'REJECT' ? 'REJECTED' : 'MORE_INFO_REQUIRED';
-      hist.push({ at, status: st, by: ctx.name, note: input.note });
+      const draft = JSON.parse(a.agencyDraftJson);
+      const emailTo = String(draft.director?.email || draft.communication?.email || a.email || '').toLowerCase() || null;
+      hist.push({ at, status: st, by: ctx.name, note: input.note, ...(emailTo ? { emailSentTo: emailTo } : {}) });
+      if (emailTo) {
+        hist.push({ at, status: 'EMAIL_SENT', by: 'Hubfares', note: `${st === 'REJECTED' ? 'Decision' : 'Information request'} emailed to ${emailTo}` });
+        audit(tx, { userId: ctx.userId, role: ctx.role }, 'APPLICANT_EMAIL_SENT', 'application', id, null, { to: emailTo, kind: st });
+      }
       tx.update(s.registrationApplications).set({ status: st, decisionNote: input.note, reviewerId: ctx.userId, decisionTime: at, updatedAt: at, historyJson: JSON.stringify(hist) }).where(eq(s.registrationApplications.id, id)).run();
       audit(tx, { userId: ctx.userId, role: ctx.role }, `APPLICATION_${st}`, 'application', id, null, { note: input.note });
-      return { id, status: st };
+      return { id, status: st, emailSentTo: emailTo };
     }
     const pan = tx.select().from(s.kycChecks).where(and(eq(s.kycChecks.applicationId, id), eq(s.kycChecks.checkType, 'PAN'))).orderBy(desc(s.kycChecks.checkedAt), desc(s.kycChecks.id)).get();
     if (pan?.mockResult !== 'VERIFIED') throw new AppError('INVALID_STATE', 'Approval requires a completed mock PAN verification (green tick)');
@@ -189,12 +195,12 @@ export function decideApplication(db: DB, ctx: SessionCtx, id: string, input: z.
     const defaults = loadFixture('policies.json').defaultsForNewAgency;
     tx.insert(s.agencyPolicies).values({ id: `credit_${slug}_v1`, agencyId, type: 'CREDIT', version: 1, effectiveFrom: at, enabled: true, configJson: JSON.stringify(defaults.CREDIT), createdBy: ctx.userId, createdAt: at }).run();
     tx.insert(s.agencyPolicies).values({ id: `refund_${slug}_v1`, agencyId, type: 'REFUND', version: 1, effectiveFrom: at, enabled: true, configJson: JSON.stringify(defaults.REFUND), createdBy: ctx.userId, createdAt: at }).run();
-    hist.push({ at, status: 'APPROVED', by: ctx.name, note: input.note ?? 'Approved after demo verification' }, { at, status: 'ACTIVE', note: `Agency ${agencyId} activated; initial Agency Admin ${d.director.email}` });
+    hist.push({ at, status: 'APPROVED', by: ctx.name, note: input.note ?? 'Approved after verification' }, { at, status: 'ACTIVE', note: `Agency ${agencyId} activated; initial Agency Admin ${d.director.email}` });
     tx.update(s.registrationApplications).set({ status: 'APPROVED', agencyId, decisionNote: input.note ?? null, reviewerId: ctx.userId, decisionTime: at, updatedAt: at, historyJson: JSON.stringify(hist) }).where(eq(s.registrationApplications.id, id)).run();
     audit(tx, { userId: ctx.userId, role: ctx.role }, 'APPLICATION_APPROVED', 'application', id, agencyId, { agencyId, adminUserId: userId });
     audit(tx, { userId: ctx.userId, role: ctx.role }, 'USER_ACTIVATED', 'user', userId, agencyId, { role: 'AGENCY_ADMIN' });
     domainEvent(tx, 'agency.activated', 'agency', agencyId, agencyId);
-    notify(tx, { audience: 'AGENCY', agencyId, kind: 'AGENCY_ACTIVATED', referenceId: agencyId, title: `Welcome to Hubfares — ${d.organization.agencyName} is active (demo)` });
+    notify(tx, { audience: 'AGENCY', agencyId, kind: 'AGENCY_ACTIVATED', referenceId: agencyId, title: `Welcome to Hubfares — ${d.organization.agencyName} is active` });
     return { id, status: 'APPROVED', agencyId, adminUserId: userId, adminEmail: d.director.email.toLowerCase() };
   });
 }

@@ -99,8 +99,8 @@
         {
           "id": "doc_seed_np_1",
           "docType": "BUSINESS_REGISTRATION",
-          "originalName": "company-registration-demo.pdf",
-          "fixtureFile": "company-registration-demo.pdf"
+          "originalName": "sample-company-registration.pdf",
+          "fixtureFile": "sample-company-registration.pdf"
         }
       ]
     }

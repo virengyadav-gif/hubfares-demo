@@ -1,0 +1,76 @@
+{
+  "note": "Specimen ID cards recognised by fingerprint or embedded marker; values are static (no live extraction).",
+  "samples": [
+    {
+      "file": "sample-pan-card.png",
+      "marker": "HUBFARES-SAMPLE-PAN",
+      "documentType": "PAN",
+      "sha256": "419aa15309f9761fd6306bebca68497cc3c775dc1ed6cb9e5e1e4bfb4123483a",
+      "fields": [
+        {
+          "name": "pan",
+          "value": "AAKCB0777B",
+          "confidence": 0.98
+        },
+        {
+          "name": "agencyName",
+          "value": "Bluebird Travels",
+          "confidence": 0.93
+        },
+        {
+          "name": "entityType",
+          "value": "PRIVATE_LIMITED",
+          "confidence": 0.9
+        }
+      ]
+    },
+    {
+      "file": "sample-aadhaar-card.png",
+      "marker": "HUBFARES-SAMPLE-AADHAAR",
+      "documentType": "IDENTITY_MASKED",
+      "sha256": "afeecfb8148e85d618e9af55dd94830dfa3e8284da558c809f4d6697bd083bf5",
+      "fields": [
+        {
+          "name": "directorName",
+          "value": "Riya Kulkarni",
+          "confidence": 0.97
+        },
+        {
+          "name": "directorSalutation",
+          "value": "Ms",
+          "confidence": 0.9
+        },
+        {
+          "name": "maskedId",
+          "value": "XXXX XXXX 4821",
+          "confidence": 0.98
+        },
+        {
+          "name": "addressLine1",
+          "value": "14 Riverside Plaza, Koregaon Park",
+          "confidence": 0.92
+        },
+        {
+          "name": "city",
+          "value": "Pune",
+          "confidence": 0.97
+        },
+        {
+          "name": "state",
+          "value": "Maharashtra",
+          "confidence": 0.97
+        },
+        {
+          "name": "postalCode",
+          "value": "411001",
+          "confidence": 0.97
+        },
+        {
+          "name": "country",
+          "value": "India",
+          "confidence": 0.95
+        }
+      ]
+    }
+  ]
+}

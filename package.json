@@ -13,6 +13,7 @@
     "fixtures:generate": "tsx scripts/generate-fixtures.ts",
     "fixtures:validate": "tsx scripts/validate-fixtures.ts",
     "reports:build": "tsx scripts/build-xlsx.ts",
+    "fixtures:samples": "tsx scripts/build-sample-ids.ts",
     "seed": "tsx scripts/seed.ts",
     "demo:reset": "tsx scripts/reset-demo.ts",
     "test": "vitest run",

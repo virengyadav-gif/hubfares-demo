@@ -34,7 +34,7 @@ write('agencies.json', {
         address: { line1: '12 Riverside Business Park', line2: 'Baner Road', country: 'India', state: 'Maharashtra', city: 'Pune', postalCode: '411045' },
         acknowledged: true,
       },
-      documents: [{ id: 'doc_seed_np_1', docType: 'BUSINESS_REGISTRATION', originalName: 'company-registration-demo.pdf', fixtureFile: 'company-registration-demo.pdf' }],
+      documents: [{ id: 'doc_seed_np_1', docType: 'BUSINESS_REGISTRATION', originalName: 'sample-company-registration.pdf', fixtureFile: 'sample-company-registration.pdf' }],
     },
   ],
   providers: [
@@ -423,11 +423,11 @@ async function pdf(file: string, title: string, lines: string[]) {
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   page.drawRectangle({ x: 0, y: 792, width: 595, height: 50, color: rgb(0.15, 0.15, 0.17) });
-  page.drawText('SYNTHETIC DEMO DOCUMENT - NOT A REAL RECORD', { x: 40, y: 812, size: 11, font: bold, color: rgb(1, 0.55, 0.25) });
+  page.drawText('SPECIMEN - FOR DEMONSTRATION ONLY', { x: 40, y: 812, size: 11, font: bold, color: rgb(1, 0.55, 0.25) });
   page.drawText(title, { x: 40, y: 750, size: 16, font: bold, color: rgb(0.1, 0.1, 0.1) });
   let y = 715;
   for (const line of lines) { page.drawText(line, { x: 40, y, size: 11, font, color: rgb(0.15, 0.2, 0.3) }); y -= 22; }
-  page.drawText('Generated for the Hubfares capability POC. Contains no real identity, PAN or Aadhaar data.', { x: 40, y: 60, size: 8, font, color: rgb(0.4, 0.4, 0.4) });
+  page.drawText('Specimen document. Contains no real identity, PAN or Aadhaar data.', { x: 40, y: 60, size: 8, font, color: rgb(0.4, 0.4, 0.4) });
   fs.writeFileSync(path.join(FX, 'documents', file), await doc.save({ useObjectStreams: false }));
 }
 function png(file: string, w: number, h: number) {
@@ -443,13 +443,13 @@ function png(file: string, w: number, h: number) {
 }
 async function docs() {
   fs.mkdirSync(path.join(FX, 'documents'), { recursive: true });
-  await pdf('company-registration-demo.pdf', 'Certificate of Business Registration', [
+  await pdf('sample-company-registration.pdf', 'Certificate of Business Registration', [
     'Document Type: BUSINESS_REGISTRATION',
     'Organization Name: Bluebird Travels',
     'Entity Type: Private Limited',
     'Registration Number: U63090MH2021PTC000777',
-    'GSTIN: 27DEMOB0777B1Z1',
-    'Registered Address: 14 Demo Riverside Plaza, Koregaon Park',
+    'GSTIN: 27AAKCB0777B1Z1',
+    'Registered Address: 14 Riverside Plaza, Koregaon Park',
     'City: Pune',
     'State: Maharashtra',
     'Postal Code: 411001',
@@ -458,15 +458,14 @@ async function docs() {
     'Contact Mobile: +919000000777',
     'Website: www bluebird-travels example com',
   ]);
-  await pdf('pan-card-demo.pdf', 'Permanent Account Number - Demo Specimen', [
+  await pdf('sample-pan-card.pdf', 'Permanent Account Number - Specimen', [
     'Document Type: PAN',
-    'PAN: DEMOB0777B',
+    'PAN: AAKCB0777B',
     'Name: Bluebird Travels',
     'Proprietor / Director: Riya Kulkarni',
     'Date of Incorporation: 2021-04-01',
-    'Note: artificial PAN-like identifier beginning with DEMO',
-  ]);
-  await pdf('identity-masked-demo.pdf', 'Identity Document - Masked Demo Specimen', [
+      ]);
+  await pdf('sample-identity-masked.pdf', 'Identity Document - Masked Specimen', [
     'Document Type: IDENTITY_MASKED',
     'Name: Riya Kulkarni',
     'Masked ID: XXXX XXXX 0777',
@@ -474,18 +473,18 @@ async function docs() {
     'Address City: Pune',
     'Note: no complete identity number is present in this specimen',
   ]);
-  png('unreadable-demo.png', 320, 200);
+  png('sample-unreadable-scan.png', 320, 200);
   write('documents/extraction-expected.json', {
-    'company-registration-demo.pdf': { documentType: 'BUSINESS_REGISTRATION', engine: 'PDF_TEXT', fields: {
+    'sample-company-registration.pdf': { documentType: 'BUSINESS_REGISTRATION', engine: 'PDF_TEXT', fields: {
       agencyName: { value: 'Bluebird Travels', minConfidence: 0.9 }, entityType: { value: 'PRIVATE_LIMITED', minConfidence: 0.9 },
-      registrationNumber: { value: 'U63090MH2021PTC000777', minConfidence: 0.9 }, gstin: { value: '27DEMOB0777B1Z1', minConfidence: 0.9 },
-      addressLine1: { value: '14 Demo Riverside Plaza, Koregaon Park', minConfidence: 0.85 }, city: { value: 'Pune', minConfidence: 0.9 },
+      registrationNumber: { value: 'U63090MH2021PTC000777', minConfidence: 0.9 }, gstin: { value: '27AAKCB0777B1Z1', minConfidence: 0.9 },
+      addressLine1: { value: '14 Riverside Plaza, Koregaon Park', minConfidence: 0.85 }, city: { value: 'Pune', minConfidence: 0.9 },
       state: { value: 'Maharashtra', minConfidence: 0.9 }, postalCode: { value: '411001', minConfidence: 0.9 }, country: { value: 'India', minConfidence: 0.9 },
       contactEmail: { value: 'hello@bluebird.example.com', minConfidence: 0.9 }, contactMobile: { value: '+919000000777', minConfidence: 0.9 },
       website: { value: 'https://www.bluebird-travels.example.com', maxConfidence: 0.75, reviewRequired: true } } },
-    'pan-card-demo.pdf': { documentType: 'PAN', engine: 'PDF_TEXT', fields: { pan: { value: 'DEMOB0777B', minConfidence: 0.9 }, agencyName: { value: 'Bluebird Travels', minConfidence: 0.85 }, directorName: { value: 'Riya Kulkarni', minConfidence: 0.85 } } },
-    'identity-masked-demo.pdf': { documentType: 'IDENTITY_MASKED', engine: 'PDF_TEXT', fields: { directorName: { value: 'Riya Kulkarni', minConfidence: 0.85 }, maskedId: { value: 'XXXX XXXX 0777', minConfidence: 0.85 } } },
-    'unreadable-demo.png': { documentType: 'UNKNOWN', engine: 'UNSUPPORTED', error: 'DOCUMENT_UNREADABLE', fields: {} },
+    'sample-pan-card.pdf': { documentType: 'PAN', engine: 'PDF_TEXT', fields: { pan: { value: 'AAKCB0777B', minConfidence: 0.9 }, agencyName: { value: 'Bluebird Travels', minConfidence: 0.85 }, directorName: { value: 'Riya Kulkarni', minConfidence: 0.85 } } },
+    'sample-identity-masked.pdf': { documentType: 'IDENTITY_MASKED', engine: 'PDF_TEXT', fields: { directorName: { value: 'Riya Kulkarni', minConfidence: 0.85 }, maskedId: { value: 'XXXX XXXX 0777', minConfidence: 0.85 } } },
+    'sample-unreadable-scan.png': { documentType: 'UNKNOWN', engine: 'UNSUPPORTED', error: 'DOCUMENT_UNREADABLE', fields: {} },
   });
 }
 docs().then(() => console.log('fixtures generated'));
