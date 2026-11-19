@@ -226,21 +226,21 @@ describe('Booking lifecycle, funding and passbook', () => {
 
 describe('Payments, credit and eligibility', () => {
   beforeAll(() => { db = freshDb(); resetTokens(); });
-  it('TC-011 seeded DEMO-UTR-1001 matches once → wallet + passbook', async () => {
+  it('TC-011 seeded UTR26111001 matches once → wallet + passbook', async () => {
     const w0 = (await call(wallet.GET, { as: U.skyA })).data;
     const m = await call(payMatch.POST, { as: U.fin, params: { id: 'pay_sky_match_001' }, idem: 'tc011' });
     expect(m.data.status).toBe('CREDITED');
     const w1 = (await call(wallet.GET, { as: U.skyA })).data;
     expect(w1.walletCashMinor - w0.walletCashMinor).toBe(2500000);
     const pb = (await call(passbook.GET, { as: U.skyA })).data;
-    expect(pb.entries.filter((e: any) => e.externalRef === 'DEMO-UTR-1001')).toHaveLength(1);
+    expect(pb.entries.filter((e: any) => e.externalRef === 'UTR26111001')).toHaveLength(1);
   });
-  it('TC-012 replay of DEMO-UTR-1001 / repeated match → no second credit', async () => {
-    const r = await call(payReplay.POST, { as: U.fin, body: { externalRef: 'DEMO-UTR-1001' } });
+  it('TC-012 replay of UTR26111001 / repeated match → no second credit', async () => {
+    const r = await call(payReplay.POST, { as: U.fin, body: { externalRef: 'UTR26111001' } });
     expect(r.data.status).toBe('DUPLICATE_EVENT');
     const m = await call(payMatch.POST, { as: U.fin, params: { id: 'pay_sky_match_001' }, idem: 'tc012-other' });
     expect(m.data.status).toBe('ALREADY_PROCESSED');
-    expect(db.select().from(s.walletLedgerEntries).where(eq(s.walletLedgerEntries.externalRef, 'DEMO-UTR-1001')).all()).toHaveLength(1);
+    expect(db.select().from(s.walletLedgerEntries).where(eq(s.walletLedgerEntries.externalRef, 'UTR26111001')).all()).toHaveLength(1);
   });
   it('TC-013 unknown reference, wrong amount, USD → exceptions with zero credit', async () => {
     const before = db.select().from(s.walletLedgerEntries).all().length;

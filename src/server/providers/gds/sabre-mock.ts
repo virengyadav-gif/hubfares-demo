@@ -17,7 +17,7 @@ export const sabreMock: GdsAdapter = {
   },
   issueTicket(scenario, seqStart, paxCount) {
     if (scenario === 'ticket_fail') return { ok: false, code: 'TICKETING_SIM_FAILURE', message: 'Simulated ticketing failure (scenario ticket_fail) — hold released, no charge' };
-    return { ok: true, ticketNumbers: Array.from({ length: paxCount }, (_, i) => `DEMO-TKT-${String(seqStart + i).padStart(6, '0')}`) };
+    return { ok: true, ticketNumbers: Array.from({ length: paxCount }, (_, i) => `098-2400${String(seqStart + i).padStart(6, '0')}`) };
   },
   retrievePnr(pnr, pcc) {
     const recs = loadFixture<{ records: ImportedPnr[] }>('import-pnrs.json').records;

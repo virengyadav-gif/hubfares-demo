@@ -34,9 +34,9 @@ Operator demo password (restricted — do not put on slides): `Hubfares@Demo2026
 1. **S-A Onboarding** — open `/partner/register`, upload `fixtures/documents/company-registration-demo.pdf`, review extracted fields, submit → as Ops: run mock checks, approve.
 2. **S-B + S-G Booking** — Skyline agent: search BOM→LON, open fare rules (Flexible vs Restricted), switch INR→USD→EUR, continue, revalidate, create PNR, issue ticket → Wallet/Passbook.
 3. **S-C Credit** — Orbit agent books a higher fare; wallet first, then credit.
-4. **S-D Cancellation** — `book_seed_001` (A_FLEXIBLE, S2) vs `book_seed_011` (B_RESTRICTED, S1); show supplier-settlement vs immediate credit.
+4. **S-D Cancellation** — `HFB1001` (A_FLEXIBLE, S2) vs `HFB1011` (B_RESTRICTED, S1); show supplier-settlement vs immediate credit.
 5. **S-H Payments** — Ops › Payment Matching: match, replay (no double credit), exceptions.
-6. **S-E Import PNR** — Skyline: PCC `SKYDEMO`, PNR `SBD101`; import once, repeat is blocked.
+6. **S-E Import PNR** — Skyline: PCC `S9KY`, PNR `SBD101`; import once, repeat is blocked.
 7. **S-F Commercials** — Finance changes core fee; new quote changes, old booking does not; OTA markup has no pricing effect.
 8. **S-K Help** — Skyline: Need Help → Hindi → refund request → same CASE id in Ops.
 9. **S-J Reports** — download XLSX as Ops (100 rows) and Skyline (40 rows).

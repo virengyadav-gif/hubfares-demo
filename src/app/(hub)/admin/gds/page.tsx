@@ -3,7 +3,7 @@ import { useApi } from '@/lib/client';
 import { Card, PageHeader, Table, Td, Badge, SimTag, Notice } from '@/components/ui';
 export default function Page() {
   const ag = useApi<any[]>('/agencies').data;
-  const PCC = [['SABRE', 'HFDEMO1', 'Hubfares + permitted Skyline/Orbit/Aster', 'Mock · available'], ['SABRE', 'SKYDEMO', 'Skyline Travels only', 'Mock · available'], ['SABRE', 'ORBDEMO', 'Orbit Corporate only', 'Mock · available'], ['TRAVELPORT', 'TPDEMO1', '—', 'Planned integration'], ['AMADEUS', 'AMDEMO1', '—', 'Planned integration']];
+  const PCC = [['SABRE', 'H7FA', 'Hubfares + permitted Skyline/Orbit/Aster', 'Mock · available'], ['SABRE', 'S9KY', 'Skyline Travels only', 'Mock · available'], ['SABRE', 'O4RB', 'Orbit Corporate only', 'Mock · available'], ['TRAVELPORT', 'T1PA', '—', 'Planned integration'], ['AMADEUS', 'A1MA', '—', 'Planned integration']];
   return (
     <div>
       <PageHeader eyebrow="Admin" title="GDS / supplier / PCC setup" subtitle="Provider adapters and pseudo-city code mappings." badges={<SimTag kind="Guided demo" />} />

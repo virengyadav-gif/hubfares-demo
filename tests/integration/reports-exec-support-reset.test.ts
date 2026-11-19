@@ -143,14 +143,14 @@ describe('OTA Help chatbot → Operations (S-K)', () => {
   });
   it('TC-051 own PNR resolves; other agency / unknown PNR → identical neutral not-found', async () => {
     const own = await call(intent.POST, { as: U.sky, body: { action: 'lookup_pnr', pnr: 'SBX001' } });
-    expect(own.data.bookingId).toBe('book_seed_001');
+    expect(own.data.bookingId).toBe('HFB1001');
     expect(own.data.cancellationEstimate.estimatedAgencyRefundMinor).toBe(740300);
     const other = await call(intent.POST, { as: U.orb, body: { action: 'lookup_pnr', pnr: 'SBX001' } });
     const unknown = await call(intent.POST, { as: U.sky, body: { action: 'lookup_pnr', pnr: 'NOTREAL1' } });
     expect(other.status).toBe(404); expect(unknown.status).toBe(404);
     expect(other.error.message).toBe(unknown.error.message);
     expect(JSON.stringify(other.json)).not.toMatch(/Aarav|BOM-LHR/);
-    const st = await call(intent.POST, { as: U.orbA, body: { action: 'lookup_case', reference: 'refund_orb_012' } });
+    const st = await call(intent.POST, { as: U.orbA, body: { action: 'lookup_case', reference: 'RFD1012' } });
     expect(st.data.agencyPayoutStatus).toBe('CREDITED');
     expect(st.data.supplierSettlementStatus).toBe('PENDING');
   });
@@ -165,7 +165,7 @@ describe('OTA Help chatbot → Operations (S-K)', () => {
     const ops = (await call(caseList.GET, { as: U.ops, url: '/api/v1/support-cases?source=CHATBOT' })).data;
     const row = ops.find((c: any) => c.id === caseId);
     expect(row.agencyId).toBe('agency_skyline'); expect(row.pnr).toBe('SBX001'); expect(row.category).toBe('REFUND_REQUEST');
-    expect(db.select().from(s.bookings).where(eq(s.bookings.id, 'book_seed_001')).get()!.bookingStatus).toBe('TICKETED');
+    expect(db.select().from(s.bookings).where(eq(s.bookings.id, 'HFB1001')).get()!.bookingStatus).toBe('TICKETED');
     expect(db.select({ n: sql<number>`count(*)` }).from(s.walletLedgerEntries).get()!.n).toBe(ledger0);
     const foreign = await call(cases.POST, { as: U.orb, idem: 'tc052f', body: { category: 'REFUND_REQUEST', subcategory: 'X', pnr: 'SBX001' } });
     expect(foreign.status).toBe(404);
@@ -183,12 +183,12 @@ describe('OTA Help chatbot → Operations (S-K)', () => {
     expect((await call(caseOne.GET, { as: U.orb, params: { id: caseId } })).status).toBe(404);
   });
   it('TC-054 guided amendment (fare diff + B profile fee), Ops timeline, manual order: no ticket/ledger', async () => {
-    const q = await call(amendQ.POST, { as: U.sky, body: { bookingId: 'book_seed_002', type: 'DATE_CHANGE', optionId: 'opt_plus1' } });
+    const q = await call(amendQ.POST, { as: U.sky, body: { bookingId: 'HFB1002', type: 'DATE_CHANGE', optionId: 'opt_plus1' } });
     expect(q.data.amendmentChargeMinor).toBe(200000);
     expect(q.data.guided).toBe(true);
-    const a = await call(amend.POST, { as: U.sky, body: { bookingId: 'book_seed_002', type: 'DATE_CHANGE', optionId: 'opt_plus1' } });
+    const a = await call(amend.POST, { as: U.sky, body: { bookingId: 'HFB1002', type: 'DATE_CHANGE', optionId: 'opt_plus1' } });
     for (const st of ['APPROVED', 'REISSUED_CLOSED']) expect((await call(amendOne.PATCH, { as: U.ops, method: 'PATCH', params: { id: a.data.id }, body: {} })).data.status).toBe(st);
-    expect(db.select().from(s.tickets).where(eq(s.tickets.bookingId, 'book_seed_002')).all()).toHaveLength(1);
+    expect(db.select().from(s.tickets).where(eq(s.tickets.bookingId, 'HFB1002')).all()).toHaveLength(1);
     const ledger0 = db.select({ n: sql<number>`count(*)` }).from(s.walletLedgerEntries).get()!.n;
     const m = await call(manual.POST, { as: U.ops, body: { agencyId: 'agency_orbit', origin: 'BOM', destination: 'DEL', travelDate: '2026-12-05', airline: 'AI', passengerName: 'Offline Pax', supplierReference: 'SUP-REF-77', amountMinor: 900000 } });
     expect(m.data.status).toBe('MANUAL_RECORDED');
@@ -201,14 +201,14 @@ describe('Reset and replay (S-M)', () => {
   beforeAll(() => { db = freshDb(); resetTokens(); });
   it('TC-056 reset after booking + refund + payment + case restores canonical state; no leftovers', async () => {
     await call(payMatch.POST, { as: U.fin, params: { id: 'pay_sky_match_001' }, idem: 'tc056p' });
-    await call(cc.POST, { as: U.orbA, idem: 'tc056c', params: { id: 'book_seed_011' }, body: {} });
+    await call(cc.POST, { as: U.orbA, idem: 'tc056c', params: { id: 'HFB1011' }, body: {} });
     await call(cases.POST, { as: U.sky, idem: 'tc056h', body: { category: 'COMPLAINT', subcategory: 'OTHER', details: 'x' } });
     expect((await call(reset.POST, { as: U.super, body: { confirm: 'nope' } })).status).toBe(422);
     const r = await call(reset.POST, { as: U.super, body: { confirm: 'RESET DEMO' } });
     expect(r.status, JSON.stringify(r.error)).toBe(200);
     expect(r.data.resetCount).toBe(1);
     expect(db.select().from(s.supportCases).where(eq(s.supportCases.source, 'CHATBOT')).all().map((c) => c.id)).toEqual(['CASE-S005']);
-    expect(db.select().from(s.bookings).where(eq(s.bookings.id, 'book_seed_011')).get()!.bookingStatus).toBe('TICKETED');
+    expect(db.select().from(s.bookings).where(eq(s.bookings.id, 'HFB1011')).get()!.bookingStatus).toBe('TICKETED');
     expect((await call(wallet.GET, { as: U.skyA })).data.walletCashMinor).toBe(20100000);
     expect(validateSeededState(getDb(), '2026-11-19T12:00:00.000Z').every((c) => c.ok)).toBe(true);
   });

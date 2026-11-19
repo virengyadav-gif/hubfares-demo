@@ -91,7 +91,7 @@ test.describe.serial('Hubfares connected demo (E2E)', () => {
     await expect(page.getByTestId('ticket-number')).toHaveText('Not yet issued');
     const bookingId = (await page.getByTestId('booking-id').innerText()).trim();
     await page.getByTestId('issue-ticket').click();
-    await expect(page.getByTestId('ticket-number')).toHaveText(/DEMO-TKT-\d{6}/);
+    await expect(page.getByTestId('ticket-number')).toHaveText(/098-2400\d{6}/);
     const after = (await (await page.request.get('/api/v1/wallet')).json()).data;
     expect(before.walletCashMinor - after.walletCashMinor).toBe(3063250);
     await page.goto('/agency/passbook');
@@ -104,7 +104,7 @@ test.describe.serial('Hubfares connected demo (E2E)', () => {
 
   test('S-D: A_FLEXIBLE S2 (Skyline, supplier-settlement) vs B_RESTRICTED S1 (Orbit, immediate credit)', async ({ browser }) => {
     const sky = await loginAs(browser, 'agent@skyline.example.com');
-    await sky.goto('/agency/bookings/book_seed_001');
+    await sky.goto('/agency/bookings/HFB1001');
     await sky.getByTestId('cancel-quote').click();
     await expect(sky.getByTestId('refund-estimate')).toHaveText('₹7,403.00');
     await expect(sky.getByRole('dialog')).toContainText('S2');
@@ -113,7 +113,7 @@ test.describe.serial('Hubfares connected demo (E2E)', () => {
     await expect(sky.getByText(/Refund pending supplier settlement/)).toBeVisible();
     const orb = await loginAs(browser, 'admin@orbit.example.com');
     const w0 = (await (await orb.request.get('/api/v1/wallet')).json()).data.walletCashMinor;
-    await orb.goto('/agency/bookings/book_seed_011');
+    await orb.goto('/agency/bookings/HFB1011');
     await orb.getByTestId('cancel-quote').click();
     await expect(orb.getByRole('dialog')).toContainText('S1');
     await expect(orb.getByTestId('refund-estimate')).toHaveText('₹11,450.00');
@@ -126,10 +126,10 @@ test.describe.serial('Hubfares connected demo (E2E)', () => {
   test('S-E: import SBD101 once; repeat is blocked', async ({ browser }) => {
     const page = await loginAs(browser, 'agent@skyline.example.com');
     await page.goto('/agency/import-pnr');
-    await page.locator('input[name="pcc"]').fill('SKYDEMO');
+    await page.locator('input[name="pcc"]').fill('S9KY');
     await page.locator('input[name="pnr"]').fill('SBD101');
     await page.getByTestId('pnr-lookup').click();
-    await expect(page.getByText('DEMO-TKT-801001')).toBeVisible();
+    await expect(page.getByText('098-2400801001')).toBeVisible();
     await page.getByTestId('pnr-import').click();
     await expect(page.getByText('PNR SBD101 imported once')).toBeVisible();
     await page.getByTestId('pnr-lookup').click();
@@ -178,7 +178,7 @@ test.describe.serial('Hubfares connected demo (E2E)', () => {
     await chat.getByTestId('chat-submit').click();
     const caseId = (await chat.getByTestId('chat-case-id').innerText()).trim();
     expect(caseId).toMatch(/^CASE-\d{4}$/);
-    const b = (await (await page.request.get('/api/v1/bookings/book_seed_002')).json()).data;
+    const b = (await (await page.request.get('/api/v1/bookings/HFB1002')).json()).data;
     expect(b.bookingStatus).toBe('TICKETED');
     await chat.getByRole('button', { name: 'Main Menu' }).first().click();
     await chat.getByRole('button', { name: 'Refund Status' }).click();
@@ -196,7 +196,7 @@ test.describe.serial('Hubfares connected demo (E2E)', () => {
 
   test('Isolation: Skyline user cannot open Orbit booking via URL; finance-viewer cannot see booking nav', async ({ browser }) => {
     const page = await loginAs(browser, 'agent@skyline.example.com');
-    await page.goto('/agency/bookings/book_seed_013');
+    await page.goto('/agency/bookings/HFB1013');
     await expect(page.getByText('No matching record found for your agency.', { exact: false })).toBeVisible();
     const fin = await loginAs(browser, 'finance@aster.example.com');
     await expect(fin.getByRole('link', { name: 'Book a Flight' })).toHaveCount(0);

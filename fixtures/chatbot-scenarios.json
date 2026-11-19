@@ -480,7 +480,7 @@
     {
       "key": "chat_orb_status",
       "user": "user_orb_admin",
-      "reference": "refund_orb_012",
+      "reference": "RFD1012",
       "expected": "CREDITED, supplier PENDING"
     },
     {

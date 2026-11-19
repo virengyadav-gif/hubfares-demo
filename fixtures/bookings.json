@@ -2,7 +2,7 @@
   "note": "Generated from seed-contract.v1.json — amounts, statuses, offsets and policy snapshots are copied verbatim; routes/airlines/passengers are fixture assignments with no money effect.",
   "bookings": [
     {
-      "id": "book_seed_001",
+      "id": "HFB1001",
       "agencyId": "agency_skyline",
       "source": "PORTAL",
       "status": "TICKETED",
@@ -17,9 +17,9 @@
       "funding": "WALLET",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": "SBX001",
-      "ticketNumber": "DEMO-TKT-SEED-001",
+      "ticketNumber": "098-2410000001",
       "refundPolicyId": "refund_sky_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -41,7 +41,7 @@
       "destinationTz": "Europe/London"
     },
     {
-      "id": "book_seed_002",
+      "id": "HFB1002",
       "agencyId": "agency_skyline",
       "source": "PORTAL",
       "status": "TICKETED",
@@ -56,9 +56,9 @@
       "funding": "WALLET",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": "SBX002",
-      "ticketNumber": "DEMO-TKT-SEED-002",
+      "ticketNumber": "098-2410000002",
       "refundPolicyId": "refund_sky_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -80,7 +80,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_003",
+      "id": "HFB1003",
       "agencyId": "agency_skyline",
       "source": "PORTAL",
       "status": "CANCELLED",
@@ -95,9 +95,9 @@
       "funding": "WALLET",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": "SBX003",
-      "ticketNumber": "DEMO-TKT-SEED-003",
+      "ticketNumber": "098-2410000003",
       "refundPolicyId": "refund_sky_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -106,7 +106,7 @@
         "supplierTaxMinor": 79500,
         "historicalCoreFeeMinor": 55000
       },
-      "refundClaimId": "refund_sky_003",
+      "refundClaimId": "RFD1003",
       "origin": "BOM",
       "destination": "DEL",
       "airlineCode": "6E",
@@ -120,7 +120,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_004",
+      "id": "HFB1004",
       "agencyId": "agency_skyline",
       "source": "PORTAL",
       "status": "VOIDED",
@@ -135,9 +135,9 @@
       "funding": "WALLET",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": "SBX004",
-      "ticketNumber": "DEMO-TKT-SEED-004",
+      "ticketNumber": "098-2410000004",
       "refundPolicyId": "refund_sky_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -146,7 +146,7 @@
         "supplierTaxMinor": 90000,
         "historicalCoreFeeMinor": 100000
       },
-      "refundClaimId": "refund_sky_004",
+      "refundClaimId": "RFD1004",
       "origin": "BOM",
       "destination": "GOI",
       "airlineCode": "6E",
@@ -160,7 +160,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_005",
+      "id": "HFB1005",
       "agencyId": "agency_skyline",
       "source": "PORTAL",
       "status": "TICKETED",
@@ -175,9 +175,9 @@
       "funding": "WALLET",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": "SBX005",
-      "ticketNumber": "DEMO-TKT-SEED-005",
+      "ticketNumber": "098-2410000005",
       "refundPolicyId": "refund_sky_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -199,7 +199,7 @@
       "destinationTz": "Asia/Singapore"
     },
     {
-      "id": "book_seed_006",
+      "id": "HFB1006",
       "agencyId": "agency_skyline",
       "source": "PORTAL",
       "status": "TICKETED",
@@ -214,9 +214,9 @@
       "funding": "WALLET",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": "SBX006",
-      "ticketNumber": "DEMO-TKT-SEED-006",
+      "ticketNumber": "098-2410000006",
       "refundPolicyId": "refund_sky_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -238,7 +238,7 @@
       "destinationTz": "Asia/Dubai"
     },
     {
-      "id": "book_seed_007",
+      "id": "HFB1007",
       "agencyId": "agency_skyline",
       "source": "PORTAL",
       "status": "TICKETED",
@@ -253,9 +253,9 @@
       "funding": "WALLET",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": "SBX007",
-      "ticketNumber": "DEMO-TKT-SEED-007",
+      "ticketNumber": "098-2410000007",
       "refundPolicyId": "refund_sky_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -277,7 +277,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_008",
+      "id": "HFB1008",
       "agencyId": "agency_skyline",
       "source": "PORTAL",
       "status": "PNR_CREATED",
@@ -292,7 +292,7 @@
       "funding": "WALLET_HOLD",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": "SBX008",
       "ticketNumber": null,
       "refundPolicyId": "refund_sky_v1",
@@ -316,7 +316,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_009",
+      "id": "HFB1009",
       "agencyId": "agency_skyline",
       "source": "PORTAL",
       "status": "FAILED",
@@ -331,7 +331,7 @@
       "funding": "NONE",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": null,
       "ticketNumber": null,
       "refundPolicyId": "refund_sky_v1",
@@ -355,7 +355,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_010",
+      "id": "HFB1010",
       "agencyId": "agency_skyline",
       "source": "IMPORTED",
       "status": "IMPORTED_TICKETED",
@@ -370,9 +370,9 @@
       "funding": "WALLET",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": "SBD404",
-      "ticketNumber": "DEMO-TKT-SEED-010",
+      "ticketNumber": "098-2410000010",
       "refundPolicyId": "refund_sky_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -394,7 +394,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_011",
+      "id": "HFB1011",
       "agencyId": "agency_orbit",
       "source": "PORTAL",
       "status": "TICKETED",
@@ -409,9 +409,9 @@
       "funding": "CREDIT",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "ORBDEMO",
+      "pcc": "O4RB",
       "pnr": "SBX011",
-      "ticketNumber": "DEMO-TKT-SEED-011",
+      "ticketNumber": "098-2410000011",
       "refundPolicyId": "refund_orb_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "IMMEDIATE_IF_ELIGIBLE",
@@ -433,7 +433,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_012",
+      "id": "HFB1012",
       "agencyId": "agency_orbit",
       "source": "PORTAL",
       "status": "CANCELLED",
@@ -448,9 +448,9 @@
       "funding": "CREDIT",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "ORBDEMO",
+      "pcc": "O4RB",
       "pnr": "SBX012",
-      "ticketNumber": "DEMO-TKT-SEED-012",
+      "ticketNumber": "098-2410000012",
       "refundPolicyId": "refund_orb_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "IMMEDIATE_IF_ELIGIBLE",
@@ -459,7 +459,7 @@
         "supplierTaxMinor": 186000,
         "historicalCoreFeeMinor": 140000
       },
-      "refundClaimId": "refund_orb_012",
+      "refundClaimId": "RFD1012",
       "origin": "BOM",
       "destination": "SIN",
       "airlineCode": "SQ",
@@ -473,7 +473,7 @@
       "destinationTz": "Asia/Singapore"
     },
     {
-      "id": "book_seed_013",
+      "id": "HFB1013",
       "agencyId": "agency_orbit",
       "source": "PORTAL",
       "status": "TICKETED",
@@ -488,9 +488,9 @@
       "funding": "CREDIT",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "ORBDEMO",
+      "pcc": "O4RB",
       "pnr": "SBX013",
-      "ticketNumber": "DEMO-TKT-SEED-013",
+      "ticketNumber": "098-2410000013",
       "refundPolicyId": "refund_orb_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "IMMEDIATE_IF_ELIGIBLE",
@@ -512,7 +512,7 @@
       "destinationTz": "Europe/London"
     },
     {
-      "id": "book_seed_014",
+      "id": "HFB1014",
       "agencyId": "agency_orbit",
       "source": "PORTAL",
       "status": "TICKETED",
@@ -527,9 +527,9 @@
       "funding": "CREDIT",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "ORBDEMO",
+      "pcc": "O4RB",
       "pnr": "SBX014",
-      "ticketNumber": "DEMO-TKT-SEED-014",
+      "ticketNumber": "098-2410000014",
       "refundPolicyId": "refund_orb_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "IMMEDIATE_IF_ELIGIBLE",
@@ -551,7 +551,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_015",
+      "id": "HFB1015",
       "agencyId": "agency_orbit",
       "source": "PORTAL",
       "status": "TICKETED",
@@ -566,9 +566,9 @@
       "funding": "CREDIT",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "ORBDEMO",
+      "pcc": "O4RB",
       "pnr": "SBX015",
-      "ticketNumber": "DEMO-TKT-SEED-015",
+      "ticketNumber": "098-2410000015",
       "refundPolicyId": "refund_orb_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "IMMEDIATE_IF_ELIGIBLE",
@@ -590,7 +590,7 @@
       "destinationTz": "Europe/Berlin"
     },
     {
-      "id": "book_seed_016",
+      "id": "HFB1016",
       "agencyId": "agency_orbit",
       "source": "PORTAL",
       "status": "PNR_CREATED",
@@ -605,7 +605,7 @@
       "funding": "CREDIT_HOLD",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "ORBDEMO",
+      "pcc": "O4RB",
       "pnr": "SBX016",
       "ticketNumber": null,
       "refundPolicyId": "refund_orb_v1",
@@ -629,7 +629,7 @@
       "destinationTz": "Asia/Dubai"
     },
     {
-      "id": "book_seed_017",
+      "id": "HFB1017",
       "agencyId": "agency_orbit",
       "source": "PORTAL",
       "status": "FAILED",
@@ -644,7 +644,7 @@
       "funding": "NONE",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "ORBDEMO",
+      "pcc": "O4RB",
       "pnr": null,
       "ticketNumber": null,
       "refundPolicyId": "refund_orb_v1",
@@ -668,7 +668,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_018",
+      "id": "HFB1018",
       "agencyId": "agency_orbit",
       "source": "IMPORTED",
       "status": "IMPORTED_TICKETED",
@@ -683,9 +683,9 @@
       "funding": "CREDIT",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "ORBDEMO",
+      "pcc": "O4RB",
       "pnr": "OBD818",
-      "ticketNumber": "DEMO-TKT-SEED-018",
+      "ticketNumber": "098-2410000018",
       "refundPolicyId": "refund_orb_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "IMMEDIATE_IF_ELIGIBLE",
@@ -707,7 +707,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_019",
+      "id": "HFB1019",
       "agencyId": "agency_aster",
       "source": "PORTAL",
       "status": "CANCELLED",
@@ -722,9 +722,9 @@
       "funding": "CREDIT",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "HFDEMO1",
+      "pcc": "H7FA",
       "pnr": "SBX019",
-      "ticketNumber": "DEMO-TKT-SEED-019",
+      "ticketNumber": "098-2410000019",
       "refundPolicyId": "refund_ast_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -733,7 +733,7 @@
         "supplierTaxMinor": 60000,
         "historicalCoreFeeMinor": 50000
       },
-      "refundClaimId": "refund_ast_019",
+      "refundClaimId": "RFD1019",
       "origin": "BOM",
       "destination": "GOI",
       "airlineCode": "6E",
@@ -747,7 +747,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_020",
+      "id": "HFB1020",
       "agencyId": "agency_aster",
       "source": "PORTAL",
       "status": "TICKETED",
@@ -762,9 +762,9 @@
       "funding": "CREDIT",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "HFDEMO1",
+      "pcc": "H7FA",
       "pnr": "SBX020",
-      "ticketNumber": "DEMO-TKT-SEED-020",
+      "ticketNumber": "098-2410000020",
       "refundPolicyId": "refund_ast_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -786,7 +786,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_021",
+      "id": "HFB1021",
       "agencyId": "agency_aster",
       "source": "PORTAL",
       "status": "CANCELLED",
@@ -801,9 +801,9 @@
       "funding": "CREDIT",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "HFDEMO1",
+      "pcc": "H7FA",
       "pnr": "SBX021",
-      "ticketNumber": "DEMO-TKT-SEED-021",
+      "ticketNumber": "098-2410000021",
       "refundPolicyId": "refund_ast_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -812,7 +812,7 @@
         "supplierTaxMinor": 70000,
         "historicalCoreFeeMinor": 50000
       },
-      "refundClaimId": "refund_ast_021",
+      "refundClaimId": "RFD1021",
       "origin": "GOI",
       "destination": "BOM",
       "airlineCode": "6E",
@@ -826,7 +826,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_022",
+      "id": "HFB1022",
       "agencyId": "agency_aster",
       "source": "PORTAL",
       "status": "CANCELLED",
@@ -841,9 +841,9 @@
       "funding": "CREDIT",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "HFDEMO1",
+      "pcc": "H7FA",
       "pnr": "SBX022",
-      "ticketNumber": "DEMO-TKT-SEED-022",
+      "ticketNumber": "098-2410000022",
       "refundPolicyId": "refund_ast_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -852,7 +852,7 @@
         "supplierTaxMinor": 76000,
         "historicalCoreFeeMinor": 60000
       },
-      "refundClaimId": "refund_ast_022",
+      "refundClaimId": "RFD1022",
       "origin": "BOM",
       "destination": "DEL",
       "airlineCode": "6E",
@@ -866,7 +866,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_023",
+      "id": "HFB1023",
       "agencyId": "agency_aster",
       "source": "PORTAL",
       "status": "TICKETED",
@@ -881,9 +881,9 @@
       "funding": "CREDIT",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "HFDEMO1",
+      "pcc": "H7FA",
       "pnr": "SBX023",
-      "ticketNumber": "DEMO-TKT-SEED-023",
+      "ticketNumber": "098-2410000023",
       "refundPolicyId": "refund_ast_v1",
       "refundPolicyVersion": 1,
       "refundPayoutMode": "SUPPLIER_SETTLEMENT",
@@ -905,7 +905,7 @@
       "destinationTz": "Asia/Kolkata"
     },
     {
-      "id": "book_seed_024",
+      "id": "HFB1024",
       "agencyId": "agency_aster",
       "source": "PORTAL",
       "status": "FAILED",
@@ -920,7 +920,7 @@
       "funding": "NONE",
       "passengers": 1,
       "provider": "SABRE",
-      "pcc": "HFDEMO1",
+      "pcc": "H7FA",
       "pnr": null,
       "ticketNumber": null,
       "refundPolicyId": "refund_ast_v1",

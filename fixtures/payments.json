@@ -1,10 +1,10 @@
 {
-  "bankProvider": "DEMO_BANK",
+  "bankProvider": "BANK_VA",
   "events": [
     {
       "id": "pay_sky_match_001",
       "agencyHint": "HFVA-SKY-001",
-      "externalRef": "DEMO-UTR-1001",
+      "externalRef": "UTR26111001",
       "amountMinor": 2500000,
       "currency": "INR",
       "receivedOffset": "H-3",
@@ -13,7 +13,7 @@
     {
       "id": "pay_orb_match_001",
       "agencyHint": "HFVA-ORB-001",
-      "externalRef": "DEMO-UTR-2001",
+      "externalRef": "UTR26112001",
       "amountMinor": 4000000,
       "currency": "INR",
       "receivedOffset": "H-2",
@@ -22,7 +22,7 @@
     {
       "id": "pay_sky_no_match",
       "agencyHint": "UNKNOWN-REF-77",
-      "externalRef": "DEMO-UTR-9001",
+      "externalRef": "UTR26119001",
       "amountMinor": 1000000,
       "currency": "INR",
       "receivedOffset": "H-5",
@@ -31,7 +31,7 @@
     {
       "id": "pay_wrong_amount",
       "agencyHint": "HFVA-SKY-001",
-      "externalRef": "DEMO-UTR-9002",
+      "externalRef": "UTR26119002",
       "amountMinor": 1234500,
       "currency": "INR",
       "expectedAmountMinor": 1000000,
@@ -41,7 +41,7 @@
     {
       "id": "pay_missing_rate",
       "agencyHint": "HFVA-SKY-001",
-      "externalRef": "DEMO-UTR-9003",
+      "externalRef": "UTR26119003",
       "amountMinor": 5000,
       "currency": "USD",
       "receivedOffset": "H-6",
@@ -51,7 +51,7 @@
   "replayCommands": [
     {
       "id": "pay_duplicate_replay",
-      "replaysExternalRef": "DEMO-UTR-1001",
+      "replaysExternalRef": "UTR26111001",
       "note": "Test input only — replays the same event, never a second row."
     }
   ]

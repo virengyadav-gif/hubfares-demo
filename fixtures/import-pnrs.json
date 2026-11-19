@@ -3,7 +3,7 @@
     {
       "key": "imp_sky_ok",
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": "SBD101",
       "ownerAgencyId": "agency_skyline",
       "airlinePnr": "AI8K1Q",
@@ -21,7 +21,7 @@
       ],
       "ticketStatus": "TICKETED",
       "ticketNumbers": [
-        "DEMO-TKT-801001"
+        "098-2400801001"
       ],
       "fareRuleProfileId": "A_FLEXIBLE",
       "agencySellMinor": 850000,
@@ -31,7 +31,7 @@
     {
       "key": "imp_orb_ok",
       "provider": "SABRE",
-      "pcc": "ORBDEMO",
+      "pcc": "O4RB",
       "pnr": "SBD202",
       "ownerAgencyId": "agency_orbit",
       "airlinePnr": "AI2X9P",
@@ -49,7 +49,7 @@
       ],
       "ticketStatus": "TICKETED",
       "ticketNumbers": [
-        "DEMO-TKT-802001"
+        "098-2400802001"
       ],
       "fareRuleProfileId": "B_RESTRICTED",
       "agencySellMinor": 1100000,
@@ -59,7 +59,7 @@
     {
       "key": "imp_hub_ops",
       "provider": "SABRE",
-      "pcc": "HFDEMO1",
+      "pcc": "H7FA",
       "pnr": "SBD303",
       "ownerAgencyId": null,
       "airlinePnr": "6E7Z3M",
@@ -77,7 +77,7 @@
       ],
       "ticketStatus": "TICKETED",
       "ticketNumbers": [
-        "DEMO-TKT-803001"
+        "098-2400803001"
       ],
       "fareRuleProfileId": "A_FLEXIBLE",
       "agencySellMinor": 640000,
@@ -87,7 +87,7 @@
     {
       "key": "imp_duplicate",
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": "SBD404",
       "ownerAgencyId": "agency_skyline",
       "airlinePnr": "AI4D0W",
@@ -105,18 +105,18 @@
       ],
       "ticketStatus": "TICKETED",
       "ticketNumbers": [
-        "DEMO-TKT-SEED-010"
+        "098-2410000010"
       ],
       "fareRuleProfileId": "A_FLEXIBLE",
       "agencySellMinor": 1700000,
       "supplierCostMinor": 1400000,
       "bookedOffset": "D-15",
-      "alreadyImportedAsBooking": "book_seed_010"
+      "alreadyImportedAsBooking": "HFB1010"
     },
     {
       "key": "imp_no_ticket",
       "provider": "SABRE",
-      "pcc": "HFDEMO1",
+      "pcc": "H7FA",
       "pnr": "SBD505",
       "ownerAgencyId": "agency_aster",
       "airlinePnr": "6E5T2K",
@@ -144,7 +144,7 @@
     {
       "key": "imp_bad_pcc",
       "provider": "SABRE",
-      "pcc": "ORBDEMO",
+      "pcc": "O4RB",
       "pnr": "SBD101",
       "actorAgency": "agency_orbit",
       "expected": "PNR_NOT_FOUND"
@@ -152,7 +152,7 @@
     {
       "key": "imp_other_tenant",
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "pnr": "SBD101",
       "actorAgency": "agency_orbit",
       "expected": "PNR_NOT_FOUND"
@@ -160,7 +160,7 @@
     {
       "key": "imp_unknown",
       "provider": "SABRE",
-      "pcc": "HFDEMO1",
+      "pcc": "H7FA",
       "pnr": "NOPE99",
       "actorAgency": null,
       "expected": "PNR_NOT_FOUND"

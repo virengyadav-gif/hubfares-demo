@@ -82,28 +82,28 @@
   "gdsQueues": [
     {
       "provider": "SABRE",
-      "pcc": "HFDEMO1",
+      "pcc": "H7FA",
       "queue": "Q50 Schedule change",
       "count": 2,
       "status": "Sample notification"
     },
     {
       "provider": "SABRE",
-      "pcc": "SKYDEMO",
+      "pcc": "S9KY",
       "queue": "Q7 Ticketing time limit",
       "count": 1,
       "status": "Sample notification"
     },
     {
       "provider": "TRAVELPORT",
-      "pcc": "TPDEMO1",
+      "pcc": "T1PA",
       "queue": "—",
       "count": 0,
       "status": "Planned integration"
     },
     {
       "provider": "AMADEUS",
-      "pcc": "AMDEMO1",
+      "pcc": "A1MA",
       "queue": "—",
       "count": 0,
       "status": "Planned integration"
@@ -115,9 +115,9 @@
     "CANCELLED": "Cancelled by airline"
   },
   "seedAmendment": {
-    "id": "amd_seed_001",
+    "id": "AMD1001",
     "agencyId": "agency_skyline",
-    "bookingId": "book_seed_002",
+    "bookingId": "HFB1002",
     "type": "DATE_CHANGE",
     "status": "QUOTED",
     "createdOffset": "D-1"

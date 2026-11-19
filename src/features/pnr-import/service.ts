@@ -3,7 +3,7 @@ import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import * as s from '@/server/db/schema';
 import type { DB } from '@/server/db/client';
-import { nextId, audit, domainEvent, notify, Tx } from '@/server/db/util';
+import { nextId, nextCode, audit, domainEvent, notify, Tx } from '@/server/db/util';
 import { withIdempotency } from '@/server/idempotency';
 import type { SessionCtx } from '@/server/auth/session';
 import { isHub, requireActiveAgency } from '@/server/auth/authorize';
@@ -54,7 +54,7 @@ export function importPnr(db: DB, ctx: SessionCtx, i: z.infer<typeof lookupSchem
     const pol = effectivePolicy(tx, agencyId, 'REFUND', at);
     if (!pol) throw new AppError('INVALID_STATE', 'No effective refund policy for the agency');
     const profile = tx.select().from(s.fareRuleProfiles).where(eq(s.fareRuleProfiles.id, rec.fareRuleProfileId)).get()!;
-    const id = nextId(tx, 'book_imp');
+    const id = nextCode(tx, 'HFB', 3000);
     const dep = offsetToIso(anchor, rec.itinerary.departureOffset);
     const ticketed = rec.ticketStatus === 'TICKETED';
     tx.insert(s.bookings).values({

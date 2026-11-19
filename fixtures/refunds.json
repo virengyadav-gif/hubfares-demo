@@ -1,8 +1,8 @@
 {
   "claims": [
     {
-      "id": "refund_sky_003",
-      "bookingId": "book_seed_003",
+      "id": "RFD1003",
+      "bookingId": "HFB1003",
       "agencyId": "agency_skyline",
       "confirmedOffset": "D-1",
       "agencyRefundMinor": 740300,
@@ -15,8 +15,8 @@
       "refundPayoutMode": "SUPPLIER_SETTLEMENT"
     },
     {
-      "id": "refund_sky_004",
-      "bookingId": "book_seed_004",
+      "id": "RFD1004",
+      "bookingId": "HFB1004",
       "agencyId": "agency_skyline",
       "confirmedOffset": "D-2",
       "agencyRefundMinor": 1000000,
@@ -29,8 +29,8 @@
       "refundPayoutMode": "SUPPLIER_SETTLEMENT"
     },
     {
-      "id": "refund_orb_012",
-      "bookingId": "book_seed_012",
+      "id": "RFD1012",
+      "bookingId": "HFB1012",
       "agencyId": "agency_orbit",
       "confirmedOffset": "D-1",
       "agencyRefundMinor": 1890300,
@@ -43,8 +43,8 @@
       "refundPayoutMode": "IMMEDIATE_IF_ELIGIBLE"
     },
     {
-      "id": "refund_ast_019",
-      "bookingId": "book_seed_019",
+      "id": "RFD1019",
+      "bookingId": "HFB1019",
       "agencyId": "agency_aster",
       "confirmedOffset": "H-48",
       "agencyRefundMinor": 0,
@@ -57,8 +57,8 @@
       "refundPayoutMode": "SUPPLIER_SETTLEMENT"
     },
     {
-      "id": "refund_ast_021",
-      "bookingId": "book_seed_021",
+      "id": "RFD1021",
+      "bookingId": "HFB1021",
       "agencyId": "agency_aster",
       "confirmedOffset": "D-3",
       "agencyRefundMinor": 640300,
@@ -71,8 +71,8 @@
       "refundPayoutMode": "SUPPLIER_SETTLEMENT"
     },
     {
-      "id": "refund_ast_022",
-      "bookingId": "book_seed_022",
+      "id": "RFD1022",
+      "bookingId": "HFB1022",
       "agencyId": "agency_aster",
       "confirmedOffset": "H-1",
       "agencyRefundMinor": 315000,
@@ -88,8 +88,8 @@
   "supplierReceiptScenarios": [
     {
       "id": "settle_sky_004",
-      "refundClaimId": "refund_sky_004",
-      "externalRef": "DEMO-SUP-VOID-004",
+      "refundClaimId": "RFD1004",
+      "externalRef": "SUPRF-VOID-004",
       "amountMinor": 900000,
       "initiallyPosted": true,
       "expectedState": "MATCHED",
@@ -97,8 +97,8 @@
     },
     {
       "id": "settle_sky_003",
-      "refundClaimId": "refund_sky_003",
-      "externalRef": "DEMO-SUP-6903-001",
+      "refundClaimId": "RFD1003",
+      "externalRef": "SUPRF-6903-001",
       "amountMinor": 690300,
       "initiallyPosted": false,
       "expectedState": "MATCHED_ELIGIBLE_FOR_SEPARATE_PAYOUT",
@@ -106,8 +106,8 @@
     },
     {
       "id": "settle_orb_mismatch_012",
-      "refundClaimId": "refund_orb_012",
-      "externalRef": "DEMO-SUP-12000-001",
+      "refundClaimId": "RFD1012",
+      "externalRef": "SUPRF-12000-001",
       "amountMinor": 1200000,
       "initiallyPosted": false,
       "expectedState": "EXCEPTION_NO_NEW_WALLET_CREDIT",
@@ -115,8 +115,8 @@
     },
     {
       "id": "settle_orb_012",
-      "refundClaimId": "refund_orb_012",
-      "externalRef": "DEMO-SUP-17553-001",
+      "refundClaimId": "RFD1012",
+      "externalRef": "SUPRF-17553-001",
       "amountMinor": 1755300,
       "initiallyPosted": false,
       "expectedState": "MATCHED_NO_NEW_WALLET_CREDIT",

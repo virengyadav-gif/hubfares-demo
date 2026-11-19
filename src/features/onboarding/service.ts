@@ -36,7 +36,7 @@ function appByToken(tx: Tx, id: string, token: string) {
 export function createApplication(db: DB, draft: Record<string, unknown>) {
   return db.transaction((tx) => {
     const n = nextSeq(tx, 'application', 100);
-    const id = `app_demo_${String(n).padStart(4, '0')}`;
+    const id = `APP${String(n).padStart(4, '0')}`;
     const token = randomBytes(24).toString('hex');
     const at = nowIso();
     tx.insert(s.registrationApplications).values({ id, reference: `HF-APP-${String(n).padStart(4, '0')}`, status: 'DRAFT', agencyDraftJson: JSON.stringify(draft ?? {}), accessTokenHash: sha256(token), createdAt: at, updatedAt: at, historyJson: JSON.stringify([{ at, status: 'DRAFT' }]) }).run();

@@ -3,7 +3,7 @@ import { and, eq, desc } from 'drizzle-orm';
 import { z } from 'zod';
 import * as s from '@/server/db/schema';
 import type { DB } from '@/server/db/client';
-import { nextId, audit, domainEvent, notify, Tx } from '@/server/db/util';
+import { nextId, nextCode, audit, domainEvent, notify, Tx } from '@/server/db/util';
 import { withIdempotency } from '@/server/idempotency';
 import type { SessionCtx } from '@/server/auth/session';
 import { assertOwned, agencyScope, isHub } from '@/server/auth/authorize';
@@ -21,7 +21,7 @@ function ownedBooking(tx: Tx, ctx: SessionCtx, bookingId: string) {
   assertOwned(ctx, b.agencyId);
   return b;
 }
-/** Mock void eligibility: the simulator only permits the explicitly seeded void (book_seed_004, already voided). */
+/** Mock void eligibility: the simulator only permits the explicitly seeded void (HFB1004, already voided). */
 function voidEligibility(_b: typeof s.bookings.$inferSelect) {
   return { eligible: false, reason: 'Simulated Sabre: void window not available for this ticket (only an explicitly seeded void is permitted in the demo).' };
 }
@@ -52,7 +52,7 @@ export function confirmCancellation(db: DB, ctx: SessionCtx, bookingId: string, 
     tx.insert(s.cancellations).values({ id: cxl, bookingId, agencyId: b.agencyId, mode, quoteSnapshotJson: JSON.stringify(q), segmentSlabBreakdownJson: JSON.stringify(q.segments), estimatedRefundMinor: q.estimatedAgencyRefundMinor, status: 'CONFIRMED', idempotencyKey: idemKey, requestedAt: at, requestedBy: ctx.userId }).run();
     tx.update(s.bookings).set({ bookingStatus: 'CANCELLED', ticketStatus: 'CANCELLED', paymentStatus: q.estimatedAgencyRefundMinor > 0 ? 'REFUND_PENDING' : 'CHARGED', updatedAt: at }).where(eq(s.bookings.id, bookingId)).run();
     tx.update(s.tickets).set({ status: 'CANCELLED' }).where(eq(s.tickets.bookingId, bookingId)).run();
-    const claimId = nextId(tx, 'refund_demo');
+    const claimId = nextCode(tx, 'RFD', 2000);
     const refund = q.estimatedAgencyRefundMinor;
     const timeline: any[] = [{ at, status: 'REQUESTED' }, { at, status: 'VALIDATED', note: `Slabs ${q.segments.map((x) => `${x.route}:${x.slab}`).join(', ')}` }];
     let payoutStatus = 'PENDING', claimStatus = 'PENDING_SUPPLIER', walletEntry: string | null = null, credited = 0;
@@ -89,7 +89,7 @@ export function listClaims(db: Tx, ctx: SessionCtx, agencyId?: string) {
   const pnr = Object.fromEntries(db.select().from(s.pnrRecords).all().map((p) => [p.bookingId, p.gdsPnr]));
   const receipts = db.select().from(s.supplierSettlementEvents).all();
   const scen = availableSettlementScenarios();
-  return rows.map((c) => ({ ...c, timeline: JSON.parse(c.timelineJson), timelineJson: undefined, agencyName: ag[c.agencyId], route: bk[c.bookingId]?.routeSummary, gdsPnr: pnr[c.bookingId] ?? null, receipts: receipts.filter((r) => r.refundId === c.id), supplierScenarios: isHub(ctx) ? scen.filter((x) => x.refundClaimId === c.id || (x.generic && c.supplierStatus === 'PENDING')).map((x) => ({ ...x, amountMinor: x.generic ? c.supplierExpectedMinor : x.amountMinor, externalRef: x.generic ? `DEMO-SUP-${c.id.toUpperCase()}` : x.externalRef })) : undefined }));
+  return rows.map((c) => ({ ...c, timeline: JSON.parse(c.timelineJson), timelineJson: undefined, agencyName: ag[c.agencyId], route: bk[c.bookingId]?.routeSummary, gdsPnr: pnr[c.bookingId] ?? null, receipts: receipts.filter((r) => r.refundId === c.id), supplierScenarios: isHub(ctx) ? scen.filter((x) => x.refundClaimId === c.id || (x.generic && c.supplierStatus === 'PENDING')).map((x) => ({ ...x, amountMinor: x.generic ? c.supplierExpectedMinor : x.amountMinor, externalRef: x.generic ? `SUPRF-${c.id.toUpperCase()}` : x.externalRef })) : undefined }));
 }
 export function getClaim(db: Tx, ctx: SessionCtx, id: string) {
   const c = db.select().from(s.refundClaims).where(eq(s.refundClaims.id, id)).get();
@@ -114,7 +114,7 @@ export function postSupplierSettlement(db: DB, ctx: SessionCtx, claimId: string,
     const sc = availableSettlementScenarios().find((x) => x.id === scenarioId && (x.refundClaimId === claimId || x.generic));
     if (!sc) throw new AppError('VALIDATION_ERROR', 'Settlement scenario does not apply to this claim');
     const amount = sc.generic ? c.supplierExpectedMinor : sc.amountMinor;
-    const ref = sc.generic ? `DEMO-SUP-${c.id.toUpperCase()}` : sc.externalRef;
+    const ref = sc.generic ? `SUPRF-${c.id.toUpperCase()}` : sc.externalRef;
     const existing = tx.select().from(s.supplierSettlementEvents).where(and(eq(s.supplierSettlementEvents.supplierId, sc.supplierId), eq(s.supplierSettlementEvents.externalRef, ref))).get();
     if (existing) return { claimId, replay: true, settlementEventId: existing.id, status: existing.status, walletCreditPosted: false, message: 'Replay of an already recorded supplier event — no new settlement row' };
     if (c.supplierStatus === 'RECEIVED') throw new AppError('INVALID_STATE', 'Supplier refund already received for this claim');

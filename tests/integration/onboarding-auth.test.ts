@@ -70,7 +70,7 @@ describe('Auth, onboarding, KYC, approval, users and isolation', () => {
     expect(after.length).toBe(before + 1);
     expect(after.some((a: any) => a.id === appId && a.reference.startsWith('HF-APP-'))).toBe(true);
     expect(db.select().from(s.agencies).all().some((a) => a.displayName === 'Bluebird Travels')).toBe(false);
-    const np = db.select().from(s.registrationApplications).where(eq(s.registrationApplications.id, 'app_new_partner')).get()!;
+    const np = db.select().from(s.registrationApplications).where(eq(s.registrationApplications.id, 'APP0042')).get()!;
     expect(np.status).toBe('SUBMITTED');
   });
   it('TC-002 missing/malformed fields → field errors; no submission', async () => {
@@ -128,7 +128,7 @@ describe('Auth, onboarding, KYC, approval, users and isolation', () => {
     expect(db.select().from(s.agencies).all().filter((a) => a.displayName === 'Bluebird Travels')).toHaveLength(1);
     const admin = await call(login.POST, { body: { email: 'riya@bluebird.example.com', password: PW } });
     expect(admin.data.role).toBe('AGENCY_ADMIN');
-    const rej = await call(decision.POST, { as: U.ops, params: { id: 'app_new_partner' }, body: { decision: 'REJECT' } });
+    const rej = await call(decision.POST, { as: U.ops, params: { id: 'APP0042' }, body: { decision: 'REJECT' } });
     expect(rej.status).toBe(422); // reason required
   });
   it('TC-007 Agency Admin creates & deactivates a sub-user within own agency; reload reflects it', async () => {
@@ -151,15 +151,15 @@ describe('Auth, onboarding, KYC, approval, users and isolation', () => {
     expect(list.every((u: any) => u.agencyId === 'agency_skyline')).toBe(true);
   });
   it('TC-008 Skyline cannot read Orbit booking/refund/case — neutral 404, no leak', async () => {
-    const b = await call(bookingOne.GET, { as: U.sky, params: { id: 'book_seed_011' } });
+    const b = await call(bookingOne.GET, { as: U.sky, params: { id: 'HFB1011' } });
     expect(b.status).toBe(404);
     expect(JSON.stringify(b.json)).not.toContain('SBX011');
-    expect((await call(claimOne.GET, { as: U.sky, params: { id: 'refund_orb_012' } })).status).toBe(404);
+    expect((await call(claimOne.GET, { as: U.sky, params: { id: 'RFD1012' } })).status).toBe(404);
     expect((await call(caseOne.GET, { as: U.sky, params: { id: 'CASE-S003' } })).status).toBe(404);
     const list = (await call(bookings.GET, { as: U.sky, url: '/api/v1/bookings?agencyId=agency_orbit' })).data;
     expect(list.length).toBeGreaterThan(0);
     expect(list.every((x: any) => x.agencyId === 'agency_skyline')).toBe(true);
-    const ops = (await call(bookingOne.GET, { as: U.ops, params: { id: 'book_seed_011' } }));
+    const ops = (await call(bookingOne.GET, { as: U.ops, params: { id: 'HFB1011' } }));
     expect(ops.status).toBe(200);
   });
   it('TC-009 Aster finance viewer cannot book or manage users; CXO cannot edit credit; anonymous cannot reset', async () => {
@@ -175,7 +175,7 @@ describe('Auth, onboarding, KYC, approval, users and isolation', () => {
     const q = await call(quotes.POST, { as: U.astA, body: { tripType: 'ONE_WAY', legs: [{ offerId: 'offer_015', brandId: 'brand_015_saver' }], adults: 1 } });
     expect(q.status).toBe(403);
     expect(q.error.code).toBe('AGENCY_INACTIVE');
-    expect((await call(bookingOne.GET, { as: U.astA, params: { id: 'book_seed_020' } })).status).toBe(200);
+    expect((await call(bookingOne.GET, { as: U.astA, params: { id: 'HFB1020' } })).status).toBe(200);
     db.update(s.agencies).set({ status: 'ACTIVE' }).where(eq(s.agencies.id, 'agency_aster')).run();
   });
 });

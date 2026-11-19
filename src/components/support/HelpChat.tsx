@@ -85,7 +85,7 @@ export function HelpChat() {
       case 'ask': return (
         <Bubble>{step.what === 'pnr' ? t(M.askPnr) : step.what === 'case' ? t(M.askCase) : 'Enter airline + flight number, e.g. BA-DEMO-105'}
           <form className="mt-2 flex gap-2" onSubmit={(e) => { e.preventDefault(); if (input.trim()) lookup(step.intent, step.opt, step.what, input.trim().toUpperCase()); }}>
-            <input aria-label="Reference" autoFocus value={input} onChange={(e) => setInput(e.target.value)} placeholder={step.what === 'pnr' ? 'e.g. SBX001' : step.what === 'case' ? 'CASE-1001 or refund_orb_012' : 'BA-DEMO-105'} className="h-9 min-w-0 flex-1 rounded-lg border border-line bg-white px-3 text-sm uppercase focus:border-brand-400 focus:outline-none" />
+            <input aria-label="Reference" autoFocus value={input} onChange={(e) => setInput(e.target.value)} placeholder={step.what === 'pnr' ? 'e.g. SBX001' : step.what === 'case' ? 'CASE-1001 or RFD1012' : 'BA-DEMO-105'} className="h-9 min-w-0 flex-1 rounded-lg border border-line bg-white px-3 text-sm uppercase focus:border-brand-400 focus:outline-none" />
             <Button size="sm" loading={busy} icon={<Send className="h-3.5 w-3.5" />}>Check</Button>
           </form>
         </Bubble>

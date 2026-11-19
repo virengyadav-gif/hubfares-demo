@@ -3,7 +3,7 @@ import { and, eq, inArray, desc, like, or, gte, lte } from 'drizzle-orm';
 import { z } from 'zod';
 import * as s from '@/server/db/schema';
 import type { DB } from '@/server/db/client';
-import { nextId, nextSeq, audit, domainEvent, notify, Tx } from '@/server/db/util';
+import { nextId, nextCode, nextSeq, audit, domainEvent, notify, Tx } from '@/server/db/util';
 import { withIdempotency } from '@/server/idempotency';
 import { gdsAdapter } from '@/server/providers/gds/sabre-mock';
 import type { SessionCtx } from '@/server/auth/session';
@@ -148,13 +148,13 @@ export function createBooking(db: DB, ctx: SessionCtx, input: z.infer<typeof boo
     const rc = refundCfg(refundPol);
     const segs = tx.select().from(s.quoteSegments).where(eq(s.quoteSegments.quoteId, q.id)).orderBy(s.quoteSegments.legIndex).all();
     const profiles = Object.fromEntries(tx.select().from(s.fareRuleProfiles).all().map((p) => [p.id, p.dataJson]));
-    const id = nextId(tx, 'book_demo');
+    const id = nextCode(tx, 'HFB', 2000);
     const resId = `res_${id}`;
     const snaps = segs.map((g) => JSON.parse(g.snapshotJson));
     const lead = `${input.passengers[0].title} ${input.passengers[0].firstName} ${input.passengers[0].lastName}`;
     const route = segs.length === 2 ? `${snaps[0].offer.origin}-${snaps[0].offer.destination}-${snaps[1].offer.destination}` : `${snaps[0].offer.origin}-${snaps[0].offer.destination}`;
     tx.insert(s.bookings).values({
-      id, agencyId, quoteId: q.id, userId: ctx.userId, source: 'PORTAL', provider: 'SABRE', pcc: 'HFDEMO1', tripType: q.tripType, segmentCount: segs.length,
+      id, agencyId, quoteId: q.id, userId: ctx.userId, source: 'PORTAL', provider: 'SABRE', pcc: 'H7FA', tripType: q.tripType, segmentCount: segs.length,
       bookingStatus: 'PNR_CREATED', ticketStatus: 'PENDING', paymentStatus: 'HELD', fundingType: alloc.creditHold && alloc.walletHold ? 'MIXED' : alloc.creditHold ? 'CREDIT' : 'WALLET',
       bookedAt, firstDepartureAt: segs[0].departureAt, routeSummary: route, airlineSummary: [...new Set(snaps.map((x) => x.offer.airlineCode))].join('/'), leadPassenger: lead,
       sellAmountMinor: q.sellAmountMinor, supplierCostMinor: q.supplierCostMinor, currency: 'INR',
@@ -177,7 +177,7 @@ export function createBooking(db: DB, ctx: SessionCtx, input: z.infer<typeof boo
       domainEvent(tx, 'booking.failed', 'booking', id, agencyId, { reason: gds.code });
       return { bookingId: id, bookingStatus: 'BOOKING_FAILED', error: { code: gds.code, message: gds.message } };
     }
-    tx.insert(s.pnrRecords).values({ id: `${id}_pnr`, bookingId: id, provider: 'SABRE', pcc: 'HFDEMO1', gdsPnr: gds.pnr, airlinePnr: null, imported: false, createdAt: bookedAt }).run();
+    tx.insert(s.pnrRecords).values({ id: `${id}_pnr`, bookingId: id, provider: 'SABRE', pcc: 'H7FA', gdsPnr: gds.pnr, airlinePnr: null, imported: false, createdAt: bookedAt }).run();
     audit(tx, { userId: ctx.userId, role: ctx.role }, 'BOOKING_PNR_CREATED', 'booking', id, agencyId, { pnr: gds.pnr, holdWalletMinor: alloc.walletHold, holdCreditMinor: alloc.creditHold, refundPolicy: `${refundPol.id} v${refundPol.version}` });
     domainEvent(tx, 'booking.pnr_created', 'booking', id, agencyId, { pnr: gds.pnr });
     return { bookingId: id, bookingStatus: 'PNR_CREATED', gdsPnr: gds.pnr };

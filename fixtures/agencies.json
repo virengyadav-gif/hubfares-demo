@@ -51,7 +51,7 @@
   ],
   "applications": [
     {
-      "id": "app_new_partner",
+      "id": "APP0042",
       "reference": "HF-APP-0042",
       "status": "SUBMITTED",
       "submittedOffset": "H-26",
@@ -132,7 +132,7 @@
     {
       "id": "pcc_hfdemo1",
       "providerId": "prov_sabre",
-      "pccCode": "HFDEMO1",
+      "pccCode": "H7FA",
       "agencyId": null,
       "enabled": true,
       "description": "Hubfares and permitted Skyline/Orbit/Aster operations (invented demo PCC)"
@@ -140,7 +140,7 @@
     {
       "id": "pcc_skydemo",
       "providerId": "prov_sabre",
-      "pccCode": "SKYDEMO",
+      "pccCode": "S9KY",
       "agencyId": "agency_skyline",
       "enabled": true,
       "description": "Skyline-only import scenario (invented demo PCC)"
@@ -148,7 +148,7 @@
     {
       "id": "pcc_orbdemo",
       "providerId": "prov_sabre",
-      "pccCode": "ORBDEMO",
+      "pccCode": "O4RB",
       "agencyId": "agency_orbit",
       "enabled": true,
       "description": "Orbit-only import scenario (invented demo PCC)"
@@ -156,7 +156,7 @@
     {
       "id": "pcc_tpdemo1",
       "providerId": "prov_travelport",
-      "pccCode": "TPDEMO1",
+      "pccCode": "T1PA",
       "agencyId": null,
       "enabled": false,
       "description": "Future Travelport adapter — no live connection"
@@ -164,7 +164,7 @@
     {
       "id": "pcc_amdemo1",
       "providerId": "prov_amadeus",
-      "pccCode": "AMDEMO1",
+      "pccCode": "A1MA",
       "agencyId": null,
       "enabled": false,
       "description": "Future Amadeus adapter — no live connection"

@@ -24,6 +24,10 @@ export const pad = (n: number, w = 4) => String(n).padStart(w, '0');
 export function nextId(db: Tx, prefix: string): string {
   return `${prefix}_${pad(nextSeq(db, prefix))}`;
 }
+/** Human-readable business reference, e.g. HFB2001 (prefix + base + per-reset sequence). */
+export function nextCode(db: Tx, prefix: string, base: number): string {
+  return `${prefix}${base + nextSeq(db, `code:${prefix}:${base}`)}`;
+}
 export const uid = (prefix: string) => `${prefix}_${randomUUID().replace(/-/g, '').slice(0, 16)}`;
 export const sha256 = (s: string) => createHash('sha256').update(s).digest('hex');
 

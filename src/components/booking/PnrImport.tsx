@@ -9,7 +9,7 @@ import { Button, Card, Field, Input, Select, Notice, DL, Badge, Status, SimTag, 
 export function PnrImport({ hub, base }: { hub?: boolean; base: string }) {
   const toast = useToast();
   const agencies = useApi<any[]>(hub ? '/agencies' : null).data;
-  const [f, setF] = useState({ provider: 'SABRE', pcc: hub ? 'HFDEMO1' : '', pnr: '', targetAgencyId: '' });
+  const [f, setF] = useState({ provider: 'SABRE', pcc: hub ? 'H7FA' : '', pnr: '', targetAgencyId: '' });
   const [prev, setPrev] = useState<any>(null); const [err, setErr] = useState<ApiError | null>(null); const [busy, setBusy] = useState<string | null>(null); const [done, setDone] = useState<any>(null);
   const key = useRef(newKey());
   const body = () => ({ ...f, targetAgencyId: hub ? f.targetAgencyId || undefined : undefined });
@@ -20,7 +20,7 @@ export function PnrImport({ hub, base }: { hub?: boolean; base: string }) {
       <Card title="Retrieve PNR" actions={<SimTag kind="Simulated" />}>
         <form onSubmit={lookup} className="space-y-3">
           <Field label="GDS"><Select value={f.provider} onChange={(e) => setF({ ...f, provider: e.target.value })} name="provider"><option value="SABRE">Sabre (mock, default)</option><option value="TRAVELPORT">Travelport (planned)</option><option value="AMADEUS">Amadeus (planned)</option></Select></Field>
-          <Field label="PCC" hint={hub ? 'HFDEMO1 · SKYDEMO · ORBDEMO (invented demo PCCs)' : 'Your permitted PCC, e.g. SKYDEMO'}><Input value={f.pcc} onChange={(e) => setF({ ...f, pcc: e.target.value.toUpperCase() })} required name="pcc" /></Field>
+          <Field label="PCC" hint={hub ? 'H7FA · S9KY · O4RB (invented demo PCCs)' : 'Your permitted PCC, e.g. S9KY'}><Input value={f.pcc} onChange={(e) => setF({ ...f, pcc: e.target.value.toUpperCase() })} required name="pcc" /></Field>
           <Field label="PNR"><Input value={f.pnr} onChange={(e) => setF({ ...f, pnr: e.target.value.toUpperCase() })} required placeholder="e.g. SBD101" name="pnr" /></Field>
           {hub && <Field label="Target agency"><Select value={f.targetAgencyId} onChange={(e) => setF({ ...f, targetAgencyId: e.target.value })} required><option value="">Select agency…</option>{agencies?.map((a) => <option key={a.id} value={a.id}>{a.displayName}</option>)}</Select></Field>}
           <Button className="w-full" loading={busy === 'l'} icon={<Search className="h-4 w-4" />} data-testid="pnr-lookup">Retrieve</Button>
@@ -34,7 +34,7 @@ export function PnrImport({ hub, base }: { hub?: boolean; base: string }) {
             <DL cols={3} items={[['Route', `${prev.itinerary.origin} → ${prev.itinerary.destination}`], ['Flight', `${prev.itinerary.airlineName} ${prev.itinerary.flightNumber}`], ['Departure', fmtDate(prev.itinerary.departureAt)], ['Passengers', prev.passengers.join(', ')], ['Ticket status', <Status key="t" value={prev.ticketStatus === 'TICKETED' ? 'ISSUED' : 'NOT_ISSUED'} />], ['Ticket numbers', prev.ticketNumbers.join(', ') || '—'], ['Fare rules', prev.fareRuleProfileId], ['Agency price', inr(prev.agencySellMinor)], ['Airline PNR', prev.airlinePnr ?? '—']]} />
             <div className="mt-5 flex items-center justify-between border-t border-line pt-4">{prev.alreadyImported ? <Notice tone="warn" title="Already imported">This provider/PCC/PNR already exists as {prev.alreadyImportedBookingId}. A second import will be rejected.</Notice> : <span className="text-sm text-muted">Import creates one booking record — it does not re-ticket.</span>}<Button icon={<Import className="h-4 w-4" />} loading={busy === 'i'} onClick={commit} disabled={!!done} data-testid="pnr-import">Import once</Button></div>
           </Card>
-        ) : !err && <Card><p className="text-sm text-muted">Enter a seeded sample, e.g. <b>Sabre · SKYDEMO · SBD101</b> (Skyline) or <b>ORBDEMO · SBD202</b> (Orbit). <b>SBD404</b> is already imported; <b>NOPE99</b> is unknown.</p></Card>}
+        ) : !err && <Card><p className="text-sm text-muted">Enter a seeded sample, e.g. <b>Sabre · S9KY · SBD101</b> (Skyline) or <b>O4RB · SBD202</b> (Orbit). <b>SBD404</b> is already imported; <b>NOPE99</b> is unknown.</p></Card>}
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import { and, eq, desc, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import * as s from '@/server/db/schema';
 import type { DB } from '@/server/db/client';
-import { nextId, nextSeq, audit, domainEvent, notify, Tx } from '@/server/db/util';
+import { nextId, nextCode, nextSeq, audit, domainEvent, notify, Tx } from '@/server/db/util';
 import { withIdempotency } from '@/server/idempotency';
 import type { SessionCtx } from '@/server/auth/session';
 import { agencyScope } from '@/server/auth/authorize';
@@ -12,7 +12,7 @@ import { nowIso } from '@/shared/time';
 import { fundingPosition } from '@/features/wallet-credit/position';
 import { loadFixture } from '@/server/db/seed';
 
-const BANK = 'DEMO_BANK';
+const BANK = 'BANK_VA';
 export function agencyPaymentRefs(): Record<string, string> {
   return Object.fromEntries(loadFixture('agencies.json').agencies.map((a: any) => [a.paymentReference, a.id]));
 }
@@ -74,8 +74,8 @@ export function simulateTransfer(db: DB, ctx: SessionCtx, amountMinor: number, i
   const agencyId = ctx.agencyId!;
   const ref = paymentRefForAgency(agencyId) ?? `HFVA-${agencyId}`;
   const res = db.transaction((tx) => withIdempotency(tx, 'payment.demo_initiate', idemKey, { userId: ctx.userId, agencyId }, { amountMinor }, () => {
-    const id = nextId(tx, 'pay_demo');
-    const extRef = `DEMO-UTR-${5000 + nextSeq(tx, 'utr')}`;
+    const id = nextCode(tx, 'PAY', 2000);
+    const extRef = `UTR2611${5000 + nextSeq(tx, 'utr')}`;
     tx.insert(s.paymentEvents).values({ id, providerCode: BANK, agencyId: null, agencyHint: ref, externalPaymentRef: extRef, grossAmountMinor: amountMinor, currency: 'INR', status: 'RECEIVED', receivedAt: nowIso(), matchingJson: JSON.stringify({ initiatedBy: ctx.userId }) }).run();
     audit(tx, { userId: ctx.userId, role: ctx.role }, 'PAYMENT_INITIATED', 'payment_event', id, agencyId, { amountMinor, extRef });
     return { eventId: id, externalRef: extRef };

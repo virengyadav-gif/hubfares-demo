@@ -13,7 +13,7 @@ export default function Payments() {
   return (
     <div>
       <PageHeader eyebrow="Finance & Operations" title="Payment matching" subtitle="Received → matched → credited. Unmatched, wrong-amount and unsupported-currency events never credit a wallet." badges={<SimTag kind="Demo" />} />
-      <Notice tone="info" className="mb-4">Simulated bank events (provider DEMO_BANK). Matching checks currency, a recognised agency virtual reference and any declared intimation amount. Each UTR can credit at most once.</Notice>
+      <Notice tone="info" className="mb-4">Simulated bank events (provider BANK_VA). Matching checks currency, a recognised agency virtual reference and any declared intimation amount. Each UTR can credit at most once.</Notice>
       <Card pad={false}>
         <Table head={['Received', 'UTR', 'Agency ref', 'Amount', 'Status', 'Agency', 'Reason / evidence', '']}>
           {(data ?? []).map((p) => (
