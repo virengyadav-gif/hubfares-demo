@@ -1,11 +1,17 @@
 'use client';
 /** Browser API helpers: same-origin /api/v1, envelopes, idempotency keys. No money truth is kept client-side. */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { signalBusy } from '@/lib/busy';
 
 export class ApiError extends Error { constructor(public code: string, message: string, public status: number, public details?: any) { super(message); } }
 export const newKey = () => (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `k-${Date.now()}-${Math.round(performance.now() * 1000)}`);
 
-export async function apiFetch<T = any>(path: string, opts: { method?: string; body?: unknown; idem?: string | boolean; headers?: Record<string, string> } = {}): Promise<{ data: T; meta: any }> {
+export async function apiFetch<T = any>(path: string, opts: { method?: string; body?: unknown; idem?: string | boolean; headers?: Record<string, string>; quiet?: boolean } = {}): Promise<{ data: T; meta: any }> {
+  const write = (opts.method ?? (opts.body !== undefined ? 'POST' : 'GET')) !== 'GET' && !opts.quiet;
+  if (write) signalBusy(1);
+  try { return await doFetch<T>(path, opts); } finally { if (write) signalBusy(-1); }
+}
+async function doFetch<T>(path: string, opts: { method?: string; body?: unknown; idem?: string | boolean; headers?: Record<string, string> }): Promise<{ data: T; meta: any }> {
   const headers: Record<string, string> = { ...(opts.headers ?? {}) };
   if (opts.body !== undefined && !(opts.body instanceof FormData)) headers['content-type'] = 'application/json';
   if (opts.idem) headers['idempotency-key'] = typeof opts.idem === 'string' ? opts.idem : newKey();

@@ -3,8 +3,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { ReactNode, useState, createContext, useContext, useEffect } from 'react';
-import { Menu, LogOut, Bell, ChevronsLeft, FlaskConical, Building2 } from 'lucide-react';
+import { Menu, LogOut, Bell, ChevronsLeft, Building2 } from 'lucide-react';
 import { AGENCY_NAV, HUB_NAV, allowed, NavGroup } from './nav';
+import { NavProgress } from './NavProgress';
 import { cx, ToastProvider, Badge } from '@/components/ui';
 import { apiFetch, useApi } from '@/lib/client';
 import type { ClientSession } from '@/server/auth/page';
@@ -21,10 +22,8 @@ export function Logo({ dark = true, compact = false }: { dark?: boolean; compact
     </div>
   );
 }
-export function DemoBadge({ className }: { className?: string }) {
-  return <span title="All external providers (Sabre, bank, KYC, supplier, FX) are simulated in this environment." className={cx('inline-flex items-center gap-1 rounded-full border border-brand-500/40 bg-brand-500/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-600', className)}><FlaskConical className="h-3 w-3" />Demo Environment</span>;
-}
-const ROLE_LABEL: Record<string, string> = { SUPER_ADMIN: 'Super Admin', HUB_ADMIN_FINANCE: 'Hubfares Admin · Finance', HUB_OPS: 'Hubfares Operations', HUB_CXO: 'Hubfares CXO (read-only)', AGENCY_ADMIN: 'Agency Admin', AGENCY_AGENT: 'Agency Agent', AGENCY_FINANCE_VIEWER: 'Agency Finance Viewer' };
+
+const ROLE_LABEL: Record<string, string> = { SUPER_ADMIN: 'Super Admin', HUB_ADMIN_FINANCE: 'Hubfares Admin · Finance', HUB_OPS: 'Hubfares Operations', HUB_CXO: 'Hubfares CXO', AGENCY_ADMIN: 'Agency Admin', AGENCY_AGENT: 'Agency Agent', AGENCY_FINANCE_VIEWER: 'Agency Finance Viewer' };
 
 function Sidebar({ groups, session, collapsed, onNavigate }: { groups: NavGroup[]; session: ClientSession; collapsed: boolean; onNavigate?: () => void }) {
   const path = usePathname();
@@ -41,7 +40,7 @@ function Sidebar({ groups, session, collapsed, onNavigate }: { groups: NavGroup[
                 <Link href={i.href} onClick={onNavigate} title={i.label} className={cx('group flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] font-medium transition', active(i.href) ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/25' : 'text-white/70 hover:bg-white/[0.06] hover:text-white')}>
                   <i.icon className="h-[17px] w-[17px] shrink-0" />
                   {!collapsed && <span className="flex-1 truncate">{i.label}</span>}
-                  {!collapsed && i.tag && <span className={cx('rounded px-1 text-[9.5px] font-bold', active(i.href) ? 'bg-white/20' : i.tag === 'R' ? 'bg-violet-400/15 text-violet-300' : 'bg-white/10 text-white/50')}>{i.tag === 'R' ? 'ROADMAP' : 'GUIDED'}</span>}
+                  {!collapsed && i.tag === 'R' && <span className={cx('rounded px-1 text-[9.5px] font-bold', active(i.href) ? 'bg-white/20' : 'bg-violet-400/15 text-violet-300')}>ROADMAP</span>}
                 </Link>
               </li>
             ))}
@@ -65,12 +64,12 @@ export function AppShell({ session, portal, children, topRight }: { session: Cli
   return (
     <SessionCtx.Provider value={session}>
       <ToastProvider>
+        <NavProgress />
         <div className="flex min-h-screen">
           <aside className={cx('fixed inset-y-0 left-0 z-40 hidden flex-col bg-ink-800 transition-all lg:flex', collapsed ? 'w-[76px]' : 'w-[264px]')}>
-            <div className="flex h-16 items-center justify-between px-4"><Link href={portal === 'agency' ? '/agency' : '/operations'}><Logo compact={collapsed} /></Link>{!collapsed && <button aria-label="Collapse sidebar" onClick={() => setCollapsed(true)} className="rounded p-1 text-white/40 hover:text-white"><ChevronsLeft className="h-4 w-4" /></button>}</div>
+            <div className="flex h-16 items-center justify-between px-4"><Link href={portal === 'agency' ? '/agency/search' : session.perms.includes('VIEW_ALL') ? '/operations' : '/executive'}><Logo compact={collapsed} /></Link>{!collapsed && <button aria-label="Collapse sidebar" onClick={() => setCollapsed(true)} className="rounded p-1 text-white/40 hover:text-white"><ChevronsLeft className="h-4 w-4" /></button>}</div>
             {collapsed && <button aria-label="Expand sidebar" onClick={() => setCollapsed(false)} className="mx-auto mb-2 rounded p-1 text-white/40 hover:text-white"><Menu className="h-4 w-4" /></button>}
             <Sidebar groups={groups} session={session} collapsed={collapsed} />
-            {!collapsed && <div className="border-t border-white/10 p-4 text-[11px] leading-relaxed text-white/40">Sabre-first <b className="text-white/60">mock</b> GDS · simulated bank, KYC, supplier & FX. Not production.</div>}
           </aside>
           {mobile && (
             <div className="fixed inset-0 z-50 flex lg:hidden" onClick={() => setMobile(false)}>
@@ -88,7 +87,6 @@ export function AppShell({ session, portal, children, topRight }: { session: Cli
                 {!session.isHub && session.agencyStatus !== 'ACTIVE' && <Badge tone="red">{session.agencyStatus}</Badge>}
               </div>
               <div className="ml-auto flex items-center gap-2 sm:gap-3">
-                <DemoBadge className="hidden md:inline-flex" />
                 {topRight}
                 <Link href={portal === 'agency' ? '/agency/notifications' : '/operations'} aria-label="Notifications" className="relative rounded-full p-2 text-muted hover:bg-slate-100"><Bell className="h-[18px] w-[18px]" />{unseen > 0 && <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-500 px-1 text-[10px] font-bold text-white">{unseen}</span>}</Link>
                 <div className="hidden text-right leading-tight sm:block"><div className="text-[13px] font-semibold text-navy" data-testid="user-name">{session.name}</div><div className="text-[11px] text-muted" data-testid="user-role">{ROLE_LABEL[session.role] ?? session.role}</div></div>

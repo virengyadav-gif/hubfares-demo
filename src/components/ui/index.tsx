@@ -53,17 +53,33 @@ const STATUS_TONE: Record<string, string> = {
   TICKETED: 'green', ISSUED: 'green', CREDITED: 'green', MATCHED: 'green', VERIFIED: 'green', ACTIVE: 'green', APPROVED: 'green', RECEIVED: 'blue', RESOLVED: 'green', CLOSED: 'gray', RECONCILED_CLOSED: 'green', CLOSED_SETTLED_VOID: 'green', REISSUED_CLOSED: 'green', CHARGED: 'gray', REFUNDED: 'green',
   PNR_CREATED: 'blue', PENDING: 'amber', HELD: 'blue', OPEN: 'orange', ASSIGNED: 'blue', IN_PROGRESS: 'blue', AWAITING_EXTERNAL: 'violet', SUBMITTED: 'orange', UNDER_REVIEW: 'blue', DRAFT: 'gray', QUOTED: 'blue', REQUESTED: 'amber',
   PENDING_SUPPLIER: 'amber', PAID_SUPPLIER_PENDING: 'violet', SUPPLIER_RECEIVED_PAYOUT_ELIGIBLE: 'blue', APPROVAL_PENDING: 'amber', REFUND_PENDING: 'amber', MORE_INFO_REQUIRED: 'amber', NOT_RUN: 'gray', NOT_SUBMITTED: 'gray', NOT_APPLICABLE: 'gray', NOT_ISSUED: 'gray', MANUAL_RECORDED: 'violet', ESCALATED: 'red',
+  COMPLETED: 'green', EXCHANGED: 'gray', WALLET_CREDITED: 'green', SUPPLIER_FUNDS_RECEIVED: 'blue', VALIDATED: 'blue', PENDING_APPROVAL: 'amber', EMAIL_SENT: 'blue', CONFIRMED: 'green', TICKET_REISSUED: 'violet',
   CANCELLED: 'red', VOIDED: 'gray', BOOKING_FAILED: 'red', TICKETING_FAILED: 'red', FAILED: 'red', REJECTED: 'red', EXCEPTION: 'red', UNMATCHED: 'red', SUSPENDED: 'red', INACTIVE: 'gray', SUPPLIER_EXCEPTION: 'red', PAID_SUPPLIER_EXCEPTION: 'red', CLOSED_NONREFUNDABLE: 'gray', CLOSED_NONREFUNDABLE_S0: 'gray', RELEASED: 'gray', CONSUMED: 'gray', DECLINED: 'gray',
 };
-export const label = (s: string) => s.replace(/_/g, ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase()).replace(/\bpnr\b/i, 'PNR');
+const FRIENDLY: Record<string, string> = { PENDING_SUPPLIER: 'Awaiting airline refund', PAID_SUPPLIER_PENDING: 'Paid · airline refund pending', SUPPLIER_RECEIVED_PAYOUT_ELIGIBLE: 'Airline refund received', APPROVAL_PENDING: 'Awaiting approval', RECONCILED_CLOSED: 'Completed', SUPPLIER_FUNDS_RECEIVED: 'Airline refund received', WALLET_CREDITED: 'Credited to wallet', CLOSED_NONREFUNDABLE: 'Closed · non-refundable', PENDING_APPROVAL: 'Pending approval', MORE_INFO_REQUIRED: 'More info requested', PAID_SUPPLIER_EXCEPTION: 'Paid · airline refund mismatch', SUPPLIER_EXCEPTION: 'Airline refund mismatch' };
+export const label = (s: string) => FRIENDLY[s] ?? s.replace(/_/g, ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase()).replace(/\bpnr\b/i, 'PNR');
 export function Status({ value, className }: { value: string | null | undefined; className?: string }) {
   if (!value) return <span className="text-muted">—</span>;
   return <Badge tone={STATUS_TONE[value] ?? 'gray'} className={className}>{label(value)}</Badge>;
 }
-/** Transparency label for simulated/guided/roadmap content. */
+/** Status chip. Only "Planned integration" (roadmap previews) is rendered; internal environment labels are not shown. */
 export function SimTag({ kind = 'Simulated', className }: { kind?: 'Simulated' | 'Demo' | 'Guided demo' | 'Planned integration' | 'Sample extract' | 'Illustrative' | 'Demo rates' | 'Demo verification' | 'Simulated Sabre response' | 'Live demo data' | 'Configuration preview'; className?: string }) {
-  const tone = kind === 'Planned integration' ? 'violet' : kind === 'Guided demo' || kind === 'Configuration preview' ? 'blue' : kind === 'Live demo data' ? 'green' : 'amber';
-  return <Badge tone={tone} className={className} icon={<FlaskConical className="h-3 w-3" />}>{kind}</Badge>;
+  if (kind !== 'Planned integration') return null;
+  return <Badge tone="violet" className={className} icon={<FlaskConical className="h-3 w-3" />}>{kind}</Badge>;
+}
+/** Full-screen blocking overlay with a spinner and message (navigation, long actions such as ticket issue). */
+export function BusyOverlay({ show, title = 'Loading, please wait…', detail, steps, step }: { show: boolean; title?: ReactNode; detail?: ReactNode; steps?: string[]; step?: number }) {
+  if (!show) return null;
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-ink-900/35 backdrop-blur-[2px]" role="alertdialog" aria-busy="true" aria-live="assertive" data-testid="busy-overlay">
+      <div className="w-[min(92vw,380px)] rounded-2xl bg-white p-6 text-center shadow-[var(--shadow-pop)]">
+        <Loader2 className="mx-auto h-9 w-9 animate-spin text-brand-500" />
+        <div className="mt-3 text-[15px] font-semibold text-navy">{title}</div>
+        {detail && <div className="mt-1 text-sm text-muted">{detail}</div>}
+        {steps && <ol className="mt-4 space-y-1.5 text-left text-sm">{steps.map((t, i) => <li key={t} className={cx('flex items-center gap-2', i < (step ?? 0) ? 'text-ok-600' : i === step ? 'font-semibold text-navy' : 'text-muted')}>{i < (step ?? 0) ? <CheckCircle2 className="h-4 w-4" /> : i === step ? <Loader2 className="h-4 w-4 animate-spin text-brand-500" /> : <span className="h-4 w-4 rounded-full border border-line" />}{t}</li>)}</ol>}
+      </div>
+    </div>
+  );
 }
 export function Notice({ tone = 'info', title, children, className }: { tone?: 'info' | 'warn' | 'error' | 'success' | 'brand'; title?: ReactNode; children?: ReactNode; className?: string }) {
   const m = { info: ['bg-info-50 border-info-600/20 text-info-600', Info], warn: ['bg-warn-50 border-warn-600/25 text-warn-600', AlertTriangle], error: ['bg-bad-50 border-bad-600/25 text-bad-600', CircleAlert], success: ['bg-ok-50 border-ok-600/20 text-ok-600', CheckCircle2], brand: ['bg-brand-50 border-brand-500/30 text-brand-700', Info] } as const;
@@ -142,7 +158,7 @@ export function Drawer({ open, onClose, title, children, footer, width = 'max-w-
 export function Empty({ title, children, icon }: { title: ReactNode; children?: ReactNode; icon?: ReactNode }) {
   return <div className="flex flex-col items-center justify-center px-6 py-12 text-center"><div className="mb-3 rounded-full bg-slate-100 p-3 text-slate-400">{icon ?? <Inbox className="h-6 w-6" />}</div><div className="font-semibold text-navy">{title}</div>{children && <div className="mt-1 max-w-md text-sm text-muted">{children}</div>}</div>;
 }
-export function Loading({ label: l = 'Loading…' }: { label?: string }) {
+export function Loading({ label: l = 'Loading, please wait…' }: { label?: string }) {
   return <div className="flex items-center justify-center gap-2 py-12 text-sm text-muted"><Loader2 className="h-4 w-4 animate-spin text-brand-500" />{l}</div>;
 }
 export function ErrorBox({ error, onRetry }: { error: { message: string; code?: string } | null; onRetry?: () => void }) {
@@ -159,13 +175,15 @@ export function Table({ head, children, className, dense }: { head: ReactNode[];
     </div>
   );
 }
-export function Td({ children, className, ...p }: React.TdHTMLAttributes<HTMLTableCellElement>) { return <td {...p} className={cx('px-4 py-3 align-middle', className)}>{children}</td>; }
+/** True for a formatted negative amount such as "-₹1,234" or "−12.5%" (rendered in red everywhere). */
+export const isNegative = (n: ReactNode) => (typeof n === 'string' || typeof n === 'number') && /^\s*[-−]\s*[₹$€]?\s*\d/.test(String(n)) && Number(String(n).replace(/[^\d.]/g, '')) > 0;
+export function Td({ children, className, ...p }: React.TdHTMLAttributes<HTMLTableCellElement>) { return <td {...p} className={cx('px-4 py-3 align-middle', className, isNegative(children as ReactNode) && 'font-semibold !text-bad-600')}>{children}</td>; }
 export function Kpi({ label: l, value, sub, tone, icon, onClick, hint }: { label: ReactNode; value: ReactNode; sub?: ReactNode; tone?: 'brand' | 'ok' | 'warn' | 'bad'; icon?: ReactNode; onClick?: () => void; hint?: string }) {
   const accent = { brand: 'text-brand-600 bg-brand-50', ok: 'text-ok-600 bg-ok-50', warn: 'text-warn-600 bg-warn-50', bad: 'text-bad-600 bg-bad-50' }[tone ?? 'brand'];
   return (
     <div onClick={onClick} title={hint} className={cx('rounded-xl border border-line bg-white p-4 shadow-[var(--shadow-card)]', onClick && 'cursor-pointer transition hover:border-brand-300')}>
       <div className="flex items-start justify-between gap-2"><div className="text-[12.5px] font-semibold text-muted">{l}</div>{icon && <div className={cx('rounded-lg p-1.5', accent)}>{icon}</div>}</div>
-      <div className="mt-1.5 text-[22px] font-bold tracking-tight text-navy tabular">{value}</div>
+      <div className={cx('mt-1.5 text-[22px] font-bold tracking-tight tabular', isNegative(value) ? 'text-bad-600' : 'text-navy')}>{value}</div>
       {sub && <div className="mt-0.5 text-xs text-muted">{sub}</div>}
     </div>
   );

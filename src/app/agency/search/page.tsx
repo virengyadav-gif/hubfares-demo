@@ -4,7 +4,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeftRight, Search, Plane, Zap, IndianRupee, SlidersHorizontal, Info, ChevronDown, ChevronUp, RotateCcw, CheckCircle2 } from 'lucide-react';
 import { apiFetch, useApi, fmtTime, fmtDay, dur, ApiError } from '@/lib/client';
-import { Button, Card, Field, Input, Select, Notice, Badge, Drawer, Modal, Empty, Loading, SimTag, PageHeader, cx, useToast } from '@/components/ui';
+import { Button, Card, Field, Input, Select, Notice, Badge, Drawer, Modal, Empty, Loading, PageHeader, cx, useToast } from '@/components/ui';
+import { useSession, can } from '@/components/shell/AppShell';
+import { signalNavigate } from '@/lib/busy';
 import { Price, CurrencySwitcher, FxNotice } from '@/components/flight/currency';
 import { FareDetailsTabs, ProfileBadge, Profile } from '@/components/flight/FareRules';
 
@@ -12,10 +14,11 @@ const CITIES = [['BOM', 'Mumbai (BOM)'], ['DEL', 'Delhi (DEL)'], ['BLR', 'Bengal
 type Crit = { tripType: 'ONE_WAY' | 'ROUND_TRIP'; origin: string; destination: string; departureDate: string; returnDate: string; adults: number; children: number; infants: number; cabin: string; preferredAirline: string };
 type Sel = { offer: any; brand: any } | null;
 const BUCKETS = [['00-06', 0, 6], ['06-12', 6, 12], ['12-18', 12, 18], ['18-24', 18, 24]] as const;
+const dm = (ymd: string) => new Date(`${ymd}T00:00:00Z`).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', timeZone: 'UTC' });
 const localHour = (iso: string, tz: string) => Number(new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', hourCycle: 'h23' }).format(new Date(iso)));
 
 export default function SearchPage() {
-  const router = useRouter(); const toast = useToast();
+  const router = useRouter(); const toast = useToast(); const session = useSession(); const canBook = can(session, 'AGENCY_BOOK');
   const seeded = useApi<Record<string, string[]>>('/search/seeded-dates').data;
   const [c, setC] = useState<Crit>({ tripType: 'ONE_WAY', origin: 'BOM', destination: 'LON', departureDate: '', returnDate: '', adults: 1, children: 0, infants: 0, cabin: 'ANY', preferredAirline: '' });
   const [res, setRes] = useState<any>(null); const [loading, setLoading] = useState(false); const [err, setErr] = useState<ApiError | null>(null);
@@ -33,40 +36,39 @@ export default function SearchPage() {
     try {
       const legs = [{ offerId: out.offer.id, brandId: out.brand.id }, ...(c.tripType === 'ROUND_TRIP' && inb ? [{ offerId: inb.offer.id, brandId: inb.brand.id }] : [])];
       const r = await apiFetch<any>('/quotes', { body: { tripType: c.tripType, legs, adults: c.adults } });
-      router.push(`/agency/book/${r.data.quoteId}`);
+      signalNavigate(); router.push(`/agency/book/${r.data.quoteId}`);
     } catch (e: any) { toast({ tone: 'error', title: 'Could not create quote', body: e.message }); setQuoting(false); }
   }
   const fe = (err?.details as any)?.fieldErrors ?? {};
   const total = (out?.brand.sellMinor ?? 0) + (inb?.brand.sellMinor ?? 0);
   return (
     <div className={cx(out && 'pb-28')}>
-      <PageHeader eyebrow="Book a flight" title="Search flights" subtitle="Sabre-first mock inventory with branded fares and transparent time-slab rules." badges={<SimTag kind="Simulated Sabre response" />} actions={<CurrencySwitcher />} />
+      <PageHeader eyebrow="Book a flight" title="Search flights" subtitle="Branded fares with transparent fare rules and display currency." actions={<CurrencySwitcher />} />
       <Card className="mb-5">
         <form onSubmit={(e) => { e.preventDefault(); run(); }} className="space-y-4" data-testid="search-form">
           <div className="flex flex-wrap items-center gap-2">
             {(['ONE_WAY', 'ROUND_TRIP'] as const).map((t) => <button type="button" key={t} onClick={() => setC({ ...c, tripType: t })} className={cx('rounded-full px-4 py-1.5 text-sm font-semibold', c.tripType === t ? 'bg-ink-800 text-white' : 'bg-slate-100 text-muted hover:text-navy')}>{t === 'ONE_WAY' ? 'One-way' : 'Round-trip'}</button>)}
-            <span className="rounded-full bg-slate-50 px-3 py-1.5 text-xs text-muted" title="Multi-city exists only as an agency-markup criterion and roadmap item.">Multi-city · roadmap</span>
           </div>
           <div className="grid gap-3 md:grid-cols-[1fr_auto_1fr_1fr_1fr]">
             <Field label="From" error={fe.origin}><Select value={c.origin} onChange={(e) => setC({ ...c, origin: e.target.value })} name="origin">{CITIES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</Select></Field>
             <button type="button" aria-label="Swap" onClick={() => setC({ ...c, origin: c.destination, destination: c.origin })} className="mt-6 h-10 rounded-lg border border-line px-2 text-muted hover:text-brand-600"><ArrowLeftRight className="h-4 w-4" /></button>
             <Field label="To" error={fe.destination}><Select value={c.destination} onChange={(e) => setC({ ...c, destination: e.target.value })} name="destination">{CITIES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</Select></Field>
-            <Field label="Departure" hint={hint(c.origin, c.destination).length ? `Seeded: ${hint(c.origin, c.destination).map((d) => d.slice(5)).join(', ')}` : 'No seeded inventory on this route'}><Input type="date" required value={c.departureDate} onChange={(e) => setC({ ...c, departureDate: e.target.value })} name="departureDate" /></Field>
-            <Field label="Return" error={fe.returnDate} hint={c.tripType === 'ROUND_TRIP' && hint(c.destination, c.origin).length ? `Seeded: ${hint(c.destination, c.origin).map((d) => d.slice(5)).join(', ')}` : undefined}><Input type="date" disabled={c.tripType === 'ONE_WAY'} value={c.tripType === 'ONE_WAY' ? '' : c.returnDate} onChange={(e) => setC({ ...c, returnDate: e.target.value })} name="returnDate" /></Field>
+            <Field label="Departure" hint={hint(c.origin, c.destination).length ? `Flights on: ${hint(c.origin, c.destination).map(dm).join(', ')}` : 'No scheduled flights on this route'}><Input type="date" required value={c.departureDate} onChange={(e) => setC({ ...c, departureDate: e.target.value })} name="departureDate" /></Field>
+            <Field label="Return" error={fe.returnDate} hint={c.tripType === 'ROUND_TRIP' && hint(c.destination, c.origin).length ? `Flights on: ${hint(c.destination, c.origin).map(dm).join(', ')}` : undefined}><Input type="date" disabled={c.tripType === 'ONE_WAY'} value={c.tripType === 'ONE_WAY' ? '' : c.returnDate} onChange={(e) => setC({ ...c, returnDate: e.target.value })} name="returnDate" /></Field>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3 md:grid-cols-[repeat(3,110px)_1fr_1fr_auto] md:items-end">
+          <div className="grid items-end gap-3 sm:grid-cols-3 md:grid-cols-[repeat(3,110px)_1fr_1fr_auto]">
             <Field label="Adults" error={fe.adults}><Input type="number" min={0} max={4} value={c.adults} onChange={(e) => setC({ ...c, adults: Number(e.target.value) })} name="adults" /></Field>
-            <Field label="Children" hint="Fares: N/A in demo"><Input type="number" min={0} max={4} value={c.children} onChange={(e) => setC({ ...c, children: Number(e.target.value) })} /></Field>
-            <Field label="Infants" error={fe.infants}><Input type="number" min={0} max={4} value={c.infants} onChange={(e) => setC({ ...c, infants: Number(e.target.value) })} /></Field>
+            <Field label="Children"><Input type="number" min={0} max={4} value={c.children} onChange={(e) => setC({ ...c, children: Number(e.target.value) })} name="children" /></Field>
+            <Field label="Infants" error={fe.infants}><Input type="number" min={0} max={4} value={c.infants} onChange={(e) => setC({ ...c, infants: Number(e.target.value) })} name="infants" /></Field>
             <Field label="Cabin"><Select value={c.cabin} onChange={(e) => setC({ ...c, cabin: e.target.value })}><option value="ANY">Any cabin</option><option value="ECONOMY">Economy</option><option value="PREMIUM_ECONOMY">Premium economy</option><option value="BUSINESS">Business</option><option value="FIRST">First</option></Select></Field>
             <Field label="Preferred airline"><Select value={c.preferredAirline} onChange={(e) => setC({ ...c, preferredAirline: e.target.value })}><option value="">Any</option>{['AI', '6E', 'BA', 'QR', 'EK', 'SQ', 'LH'].map((a) => <option key={a}>{a}</option>)}</Select></Field>
             <Button size="lg" loading={loading} icon={<Search className="h-4 w-4" />} data-testid="search-submit">Search</Button>
           </div>
-          {(c.children > 0 || c.infants > 0) && <Notice tone="warn">Child and infant fares are not defined in the demo fare data — searches show adult pricing; booking supports adults only.</Notice>}
+          {(c.children > 0 || c.infants > 0) && <Notice tone="info">Child and infant fares are available on request — fares shown are adult fares, and online booking is for adult travellers.</Notice>}
         </form>
       </Card>
       {err && <Notice tone="error" title={err.message} className="mb-4">{Object.values(fe).join(' · ')}</Notice>}
-      {loading && <Loading label="Querying simulated Sabre inventory…" />}
+      {loading && <Loading label="Searching flights, please wait…" />}
       {res && !loading && (
         <>
           <div className="mb-3"><FxNotice /></div>
@@ -76,7 +78,7 @@ export default function SearchPage() {
           </div>
         </>
       )}
-      {!res && !loading && !err && <Card><Empty title="Search the Sabre mock inventory" icon={<Plane className="h-6 w-6" />}>Try <b>Mumbai → London</b> on a seeded date for branded fares with both rule profiles, or switch to round-trip for a two-leg itinerary.</Empty></Card>}
+      {!res && !loading && !err && <Card><Empty title="Search flights" icon={<Plane className="h-6 w-6" />}>Choose your route and travel date — for example <b>Mumbai → London</b> — to see branded fares, or switch to round-trip.</Empty></Card>}
       {out && (
         <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white/95 shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.2)] backdrop-blur lg:left-[264px]">
           <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-4 pt-3 pb-[76px] sm:pb-3 pl-6 pr-6 sm:pr-44">
@@ -85,7 +87,7 @@ export default function SearchPage() {
               {c.tripType === 'ROUND_TRIP' && <div><div className="text-[11px] font-bold uppercase text-muted">Inbound</div><div className="font-semibold">{inb ? <>{inb.offer.flightNumber} · {inb.brand.brandName} <ProfileBadge id={inb.brand.ruleProfileId} /></> : <span className="text-warn-600">Select a return flight</span>}</div></div>}
             </div>
             <div className="text-right"><div className="text-[11px] text-muted">Itinerary total · {c.adults} adult{c.adults > 1 ? 's' : ''}</div><Price minor={total * c.adults} size="lg" /></div>
-            <Button size="lg" onClick={book} loading={quoting} disabled={c.tripType === 'ROUND_TRIP' && !inb} data-testid="continue-booking">Continue to review</Button>
+            {canBook ? <Button size="lg" onClick={book} loading={quoting} disabled={c.tripType === 'ROUND_TRIP' && !inb} data-testid="continue-booking">Continue to review</Button> : <span className="max-w-[220px] text-xs text-muted">Your role can view fares. Ask your agency admin for booking access.</span>}
           </div>
         </div>
       )}
@@ -115,7 +117,7 @@ function ResultsColumn({ title, leg, profiles, selected, onSelect, onDate, label
       <div className="flex gap-1 overflow-x-auto rounded-xl border border-line bg-white p-1 scroll-thin">
         {leg.dateStrip.map((d: any, i: number) => <button key={d.date} onClick={() => onDate(d.date)} className={cx('min-w-[86px] flex-1 rounded-lg px-2 py-1.5 text-center', i === 3 ? 'bg-brand-50 ring-1 ring-brand-300' : 'hover:bg-slate-50')}><div className={cx('text-[11.5px] font-semibold', i === 3 ? 'text-brand-700' : 'text-muted')}>{new Date(d.date + 'T00:00:00Z').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short', timeZone: 'UTC' })}</div><div className="text-[12.5px] font-bold">{d.cheapestSellMinor ? <Price minor={d.cheapestSellMinor} size="sm" showOriginal={false} /> : <span className="text-muted">—</span>}</div></button>)}
       </div>
-      <div className="text-[11px] text-muted">Date fares are indicative from seeded demo inventory.</div>
+      <div className="text-[11px] text-muted">Fares per date are indicative lowest fares.</div>
       <div className="grid grid-cols-2 gap-2">
         {cheapest && <button onClick={() => setSort('cheapest')} className={cx('flex items-center gap-2 rounded-xl border bg-white p-3 text-left', sort === 'cheapest' ? 'border-brand-400 ring-1 ring-brand-200' : 'border-line')}><IndianRupee className="h-4 w-4 text-brand-500" /><div><div className="text-sm font-bold">Cheapest</div><div className="text-[11.5px] text-muted"><Price minor={cheapest.fromSellMinor} size="sm" showOriginal={false} /> · {dur(cheapest.durationMin)}</div></div></button>}
         {fastest && <button onClick={() => setSort('fastest')} className={cx('flex items-center gap-2 rounded-xl border bg-white p-3 text-left', sort === 'fastest' ? 'border-brand-400 ring-1 ring-brand-200' : 'border-line')}><Zap className="h-4 w-4 text-brand-500" /><div><div className="text-sm font-bold">Fastest</div><div className="text-[11.5px] text-muted"><Price minor={fastest.fromSellMinor} size="sm" showOriginal={false} /> · {dur(fastest.durationMin)}</div></div></button>}
@@ -132,7 +134,7 @@ function ResultsColumn({ title, leg, profiles, selected, onSelect, onDate, label
           </div>
         )}
       </div>
-      {!all.length && <Card><Empty title="No flights for this date and route" icon={<Plane className="h-6 w-6" />}>The simulated Sabre inventory has no offers here. Pick a highlighted date above or a seeded route. No live fares are invented.</Empty></Card>}
+      {!all.length && <Card><Empty title="No flights for this date and route" icon={<Plane className="h-6 w-6" />}>No flights are scheduled on this date. Pick another date from the strip above.</Empty></Card>}
       {all.length > 0 && !rows.length && <Card><Empty title="No flights match these filters">Reset filters to see all {all.length} results.</Empty></Card>}
       {rows.map((o) => <FlightCard key={o.id} o={o} profiles={profiles} selected={selected} onSelect={onSelect} />)}
     </div>
@@ -157,7 +159,7 @@ function FlightCard({ o, profiles, selected, onSelect }: { o: any; profiles: Pro
               <div className="flex-1 text-center"><div className="text-[11px] text-muted">{dur(o.durationMin)}</div><div className="relative my-1 h-px bg-line"><Plane className="absolute -top-1.5 right-0 h-3 w-3 text-brand-500" /></div><div className="text-[11px] text-muted">{o.stops === 0 ? 'Non-stop' : `${o.stops} stop · ${o.via}`}</div></div>
               <div className="text-right"><div className="text-lg font-bold tabular">{fmtTime(o.arrivalAt, o.destinationTz)}</div><div className="text-[11px] text-muted">{o.destination} · {fmtDay(o.arrivalAt, o.destinationTz)}</div></div>
             </div>
-            <div className="mt-2 text-[11.5px] font-semibold text-brand-700">{o.soldOut ? 'Sold out (demo inventory)' : `Seats left: ${o.seatsLeft}`}</div>
+            <div className="mt-2 text-[11.5px] font-semibold text-brand-700">{o.soldOut ? 'Sold out' : `Seats left: ${o.seatsLeft}`}</div>
           </div>
         </div>
         <div className="space-y-2">
@@ -192,7 +194,7 @@ function FlightCard({ o, profiles, selected, onSelect }: { o: any; profiles: Pro
             <tr><td className="py-2 text-muted">Meal</td>{o.brands.map((b: any) => <td key={b.id} className="py-2">{b.meal}</td>)}</tr>
             <tr><td /> {o.brands.map((b: any) => <td key={b.id} className="py-2"><Button size="sm" variant={selected?.brand.id === b.id ? 'primary' : 'secondary'} disabled={o.soldOut} onClick={() => { onSelect({ offer: o, brand: b }); setCompare(false); }} icon={selected?.brand.id === b.id ? <CheckCircle2 className="h-3.5 w-3.5" /> : undefined}>Select</Button></td>)}</tr>
           </tbody></table></div>
-        <p className="mt-3 flex items-center gap-1 text-xs text-muted"><Info className="h-3 w-3" />Sample fare rules — synthetic, not actual airline terms.</p>
+        <p className="mt-3 flex items-center gap-1 text-xs text-muted"><Info className="h-3 w-3" />Fare rules are indicative; airline conditions apply.</p>
       </Modal>
     </div>
   );

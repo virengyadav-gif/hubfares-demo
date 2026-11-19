@@ -21,6 +21,6 @@ export async function requireAgencySession(path: string) {
 export async function requireHubSession(path: string) {
   const s = await pageSession();
   if (!s) redirect(`/login?next=${encodeURIComponent(path)}`);
-  if (!s.isHub) redirect('/agency');
+  if (!s.isHub) redirect('/agency/search');
   return s;
 }

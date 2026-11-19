@@ -241,7 +241,8 @@ export function listBookings(db: Tx, ctx: SessionCtx, f: z.infer<typeof listSche
   const pnrs = ids.length ? db.select().from(s.pnrRecords).where(inArray(s.pnrRecords.bookingId, ids)).all() : [];
   const tix = ids.length ? db.select().from(s.tickets).where(inArray(s.tickets.bookingId, ids)).all() : [];
   const ag = Object.fromEntries(db.select().from(s.agencies).all().map((a) => [a.id, a.displayName]));
-  let out = rows.map((b) => ({ ...b, agencyName: ag[b.agencyId], gdsPnr: pnrs.find((p) => p.bookingId === b.id)?.gdsPnr ?? null, ticketNumbers: tix.filter((t) => t.bookingId === b.id).map((t) => t.ticketNumber), bookingSnapshotJson: undefined }));
+  const hub = isHub(ctx);
+  let out = rows.map((b) => ({ ...b, provider: hub ? b.provider : undefined, pcc: hub ? b.pcc : undefined, agencyName: ag[b.agencyId], gdsPnr: pnrs.find((p) => p.bookingId === b.id)?.gdsPnr ?? null, ticketNumbers: tix.filter((t) => t.bookingId === b.id && t.status !== 'EXCHANGED').map((t) => t.ticketNumber), passengerCount: Math.max(1, JSON.parse(b.bookingSnapshotJson).passengers?.adults ?? 1), bookingSnapshotJson: undefined }));
   if (f.q) { const q = f.q.trim().toUpperCase(); out = out.filter((b) => b.id.toUpperCase().includes(q) || (b.gdsPnr ?? '').includes(q) || b.leadPassenger.toUpperCase().includes(q) || b.ticketNumbers.some((t) => t.includes(q))); }
   return out;
 }
