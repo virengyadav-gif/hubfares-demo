@@ -79,7 +79,7 @@ export default function SearchPage() {
       {!res && !loading && !err && <Card><Empty title="Search the Sabre mock inventory" icon={<Plane className="h-6 w-6" />}>Try <b>Mumbai → London</b> on a seeded date for branded fares with both rule profiles, or switch to round-trip for a two-leg itinerary.</Empty></Card>}
       {out && (
         <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-white/95 shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.2)] backdrop-blur lg:left-[264px]">
-          <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-4 px-6 py-3">
+          <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-4 pt-3 pb-[76px] sm:pb-3 pl-6 pr-6 sm:pr-44">
             <div className="flex flex-1 flex-wrap gap-4 text-sm">
               <div><div className="text-[11px] font-bold uppercase text-muted">{c.tripType === 'ROUND_TRIP' ? 'Outbound' : 'Selected'}</div><div className="font-semibold">{out.offer.flightNumber} · {out.brand.brandName} <ProfileBadge id={out.brand.ruleProfileId} /></div></div>
               {c.tripType === 'ROUND_TRIP' && <div><div className="text-[11px] font-bold uppercase text-muted">Inbound</div><div className="font-semibold">{inb ? <>{inb.offer.flightNumber} · {inb.brand.brandName} <ProfileBadge id={inb.brand.ruleProfileId} /></> : <span className="text-warn-600">Select a return flight</span>}</div></div>}

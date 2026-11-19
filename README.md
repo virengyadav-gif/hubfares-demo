@@ -233,6 +233,8 @@ Never manually edit wallet balances to repair a demo. Never run reset against a 
 
 ## 9. Reference-package status versus implemented-product status
 
+> **Implementation update (19 Nov 2026):** the application, fixtures, XLSX, scripts and tests are now built. See `HANDOFF.md` to run it and `docs/IMPLEMENTATION_STATUS.md` for executed evidence. The paragraph below describes the original reference package.
+
 As this README is authored, the **documentation baseline is complete**. The repository currently contains the six controlling Markdown files (this README included), the approved Word PRD and nine user-supplied design-reference screenshots. **It does not yet imply that application source, DB migrations, JSON fixtures, images, real XLSX workbooks, npm scripts, automated tests or a runnable website have been built.**
 
 The new development agent must create them and maintain evidence. Update *implementation status* as work proceeds, but do not rewrite these product authorities to claim incomplete work is done.
