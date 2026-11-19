@@ -1,0 +1,226 @@
+[
+  {
+    "id": "adv_demo_airline_sector",
+    "ruleName": "BA long-haul sector incentive (draft)",
+    "priority": 100339,
+    "enabled": true,
+    "draftRevision": 3,
+    "header": {
+      "description": "BA_BOM-LON_Sector_Incentive",
+      "searchType": "ALL",
+      "airType": "INTERNATIONAL",
+      "airline": "BA"
+    },
+    "criteria": {
+      "travelPeriod": {
+        "include": "D+1 to D+180",
+        "exclude": ""
+      },
+      "bookingPeriod": {
+        "include": "D-7 to D+60",
+        "exclude": ""
+      },
+      "flightNumbers": {
+        "include": "",
+        "exclude": ""
+      },
+      "supplierIds": {
+        "include": "supplier_sabre_mock",
+        "exclude": ""
+      },
+      "sector": {
+        "include": "BOM-LHR,LHR-BOM",
+        "exclude": ""
+      },
+      "destination": {
+        "include": "GB",
+        "exclude": ""
+      },
+      "marketingCarrier": {
+        "include": "BA",
+        "exclude": ""
+      },
+      "operatingCarrier": {
+        "include": "BA",
+        "exclude": ""
+      },
+      "fareBasis": {
+        "include": "",
+        "exclude": ""
+      },
+      "bookingClass": {
+        "include": "L,Y",
+        "exclude": ""
+      },
+      "privateAccountCodes": {
+        "include": "",
+        "exclude": ""
+      },
+      "userIds": {
+        "include": "",
+        "exclude": ""
+      },
+      "paxTypes": {
+        "include": "ADULT,CHILD",
+        "exclude": ""
+      },
+      "priceRange": {
+        "include": "0-500000",
+        "exclude": ""
+      },
+      "cabin": {
+        "include": "ECONOMY",
+        "exclude": ""
+      },
+      "weekdays": {
+        "include": "MON,TUE,WED,THU,FRI,SAT,SUN",
+        "exclude": ""
+      }
+    },
+    "lines": [
+      {
+        "type": "IATA_COMMISSION",
+        "expression": "5*BF",
+        "applicableOnBooking": false,
+        "applicableOnInfant": false,
+        "applicableOnAllSegments": true
+      },
+      {
+        "type": "MARKUP",
+        "expression": "1*TF",
+        "applicableOnBooking": true,
+        "applicableOnInfant": true,
+        "applicableOnAllSegments": false
+      }
+    ],
+    "history": [
+      {
+        "revision": 1,
+        "at": "D-20",
+        "by": "user_hub_finance",
+        "note": "Draft created"
+      },
+      {
+        "revision": 2,
+        "at": "D-12",
+        "by": "user_hub_finance",
+        "note": "Added sector inclusion BOM-LHR,LHR-BOM"
+      },
+      {
+        "revision": 3,
+        "at": "D-5",
+        "by": "user_hub_finance",
+        "note": "Added 1*TF markup line (not executed)"
+      }
+    ]
+  },
+  {
+    "id": "adv_demo_fixed_markup",
+    "ruleName": "Domestic fixed service fee (draft)",
+    "priority": 100120,
+    "enabled": false,
+    "draftRevision": 2,
+    "header": {
+      "description": "DOM_Fixed_Markup_Weekend_Excl",
+      "searchType": "ALL",
+      "airType": "DOMESTIC",
+      "airline": "ALL"
+    },
+    "criteria": {
+      "travelPeriod": {
+        "include": "",
+        "exclude": ""
+      },
+      "bookingPeriod": {
+        "include": "",
+        "exclude": ""
+      },
+      "flightNumbers": {
+        "include": "",
+        "exclude": ""
+      },
+      "supplierIds": {
+        "include": "",
+        "exclude": ""
+      },
+      "sector": {
+        "include": "",
+        "exclude": "BOM-GOI,GOI-BOM"
+      },
+      "destination": {
+        "include": "IN",
+        "exclude": ""
+      },
+      "marketingCarrier": {
+        "include": "",
+        "exclude": ""
+      },
+      "operatingCarrier": {
+        "include": "",
+        "exclude": ""
+      },
+      "fareBasis": {
+        "include": "",
+        "exclude": ""
+      },
+      "bookingClass": {
+        "include": "",
+        "exclude": ""
+      },
+      "privateAccountCodes": {
+        "include": "",
+        "exclude": ""
+      },
+      "userIds": {
+        "include": "",
+        "exclude": ""
+      },
+      "paxTypes": {
+        "include": "ADULT,CHILD,INFANT",
+        "exclude": ""
+      },
+      "priceRange": {
+        "include": "",
+        "exclude": ""
+      },
+      "cabin": {
+        "include": "ECONOMY,PREMIUM_ECONOMY",
+        "exclude": ""
+      },
+      "weekdays": {
+        "include": "",
+        "exclude": "SAT,SUN"
+      }
+    },
+    "lines": [
+      {
+        "type": "MARKUP",
+        "expression": "270",
+        "applicableOnBooking": false,
+        "applicableOnInfant": true,
+        "applicableOnAllSegments": true
+      },
+      {
+        "type": "SERVICE_FEE",
+        "expression": "180",
+        "applicableOnBooking": true,
+        "applicableOnInfant": true,
+        "applicableOnAllSegments": false
+      }
+    ],
+    "history": [
+      {
+        "revision": 1,
+        "at": "D-15",
+        "by": "user_hub_finance",
+        "note": "Draft created"
+      },
+      {
+        "revision": 2,
+        "at": "D-3",
+        "by": "user_super_admin",
+        "note": "Excluded weekend travel and Goa sectors"
+      }
+    ]
+  }
+]

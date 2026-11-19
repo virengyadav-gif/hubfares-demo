@@ -1,0 +1,52 @@
+[
+  {
+    "id": "markup_sky_dom",
+    "agencyId": "agency_skyline",
+    "name": "Domestic resale markup",
+    "journey": "DOMESTIC",
+    "tripTypes": [
+      "ONE_WAY",
+      "RETURN"
+    ],
+    "airlineFilter": "ALL",
+    "cabinFilter": "ALL",
+    "markupKind": "FIXED",
+    "value": 5000,
+    "currency": "INR",
+    "targetUserIds": [],
+    "enabled": true
+  },
+  {
+    "id": "markup_sky_int",
+    "agencyId": "agency_skyline",
+    "name": "International resale markup",
+    "journey": "INTERNATIONAL",
+    "tripTypes": [
+      "ONE_WAY",
+      "RETURN"
+    ],
+    "airlineFilter": "ALL",
+    "cabinFilter": "ALL",
+    "markupKind": "FIXED",
+    "value": 10000,
+    "currency": "INR",
+    "targetUserIds": [],
+    "enabled": true
+  },
+  {
+    "id": "markup_orb_multi",
+    "agencyId": "agency_orbit",
+    "name": "Multi-city business uplift",
+    "journey": "BOTH",
+    "tripTypes": [
+      "MULTI_CITY"
+    ],
+    "airlineFilter": "ALL",
+    "cabinFilter": "BUSINESS",
+    "markupKind": "PERCENT",
+    "value": 150,
+    "currency": null,
+    "targetUserIds": [],
+    "enabled": true
+  }
+]

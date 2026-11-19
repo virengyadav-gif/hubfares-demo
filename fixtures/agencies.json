@@ -1,0 +1,193 @@
+{
+  "agencies": [
+    {
+      "id": "agency_skyline",
+      "legalName": "Skyline Travels Private Limited (Demo)",
+      "displayName": "Skyline Travels",
+      "status": "ACTIVE",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "panMasked": "DEMOS••01S",
+      "gstin": "27DEMOS0001S1Z5",
+      "contactEmail": "ops@skyline.example.com",
+      "registeredOffset": "D-120",
+      "activatedOffset": "D-118",
+      "paymentReference": "HFVA-SKY-001",
+      "funding": "PREPAID",
+      "story": "Onboarding, prepaid booking, supplier-pending refund"
+    },
+    {
+      "id": "agency_orbit",
+      "legalName": "Orbit Corporate Travel LLP (Demo)",
+      "displayName": "Orbit Corporate Travel",
+      "status": "ACTIVE",
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "panMasked": "DEMOO••01O",
+      "gstin": "29DEMOO0001O1Z2",
+      "contactEmail": "finance@orbit.example.com",
+      "registeredOffset": "D-100",
+      "activatedOffset": "D-97",
+      "paymentReference": "HFVA-ORB-001",
+      "funding": "WEEKLY_CREDIT",
+      "story": "Credit booking and prompt refund payout"
+    },
+    {
+      "id": "agency_aster",
+      "legalName": "Aster Holidays (Demo)",
+      "displayName": "Aster Holidays",
+      "status": "ACTIVE",
+      "city": "New Delhi",
+      "state": "Delhi",
+      "panMasked": "DEMOA••01A",
+      "gstin": "07DEMOA0001A1Z9",
+      "contactEmail": "accounts@aster.example.com",
+      "registeredOffset": "D-90",
+      "activatedOffset": "D-88",
+      "paymentReference": "HFVA-AST-001",
+      "funding": "DAILY_CREDIT",
+      "story": "High-cancellation / risk dashboard"
+    }
+  ],
+  "applications": [
+    {
+      "id": "app_new_partner",
+      "reference": "HF-APP-0042",
+      "status": "SUBMITTED",
+      "submittedOffset": "H-26",
+      "createdOffset": "D-2",
+      "draft": {
+        "organization": {
+          "agencyName": "New Partner Travel (Demo)",
+          "turnoverInr": 45000000,
+          "entityType": "PRIVATE_LIMITED",
+          "pan": "DEMON0001N",
+          "gstin": "27DEMON0001N1Z3",
+          "registrationNumber": "U63040MH2019PTC000042",
+          "website": "https://newpartner.example.com"
+        },
+        "director": {
+          "salutation": "Ms",
+          "firstName": "Ananya",
+          "lastName": "Deshpande",
+          "email": "ananya@newpartner.example.com",
+          "mobile": "+919000000042"
+        },
+        "finance": {
+          "salutation": "Mr",
+          "firstName": "Rohan",
+          "lastName": "Iyer",
+          "email": "finance@newpartner.example.com",
+          "mobile": "+919000000043"
+        },
+        "communication": {
+          "email": "hello@newpartner.example.com",
+          "mobile": "+919000000044",
+          "website": "https://newpartner.example.com"
+        },
+        "address": {
+          "line1": "12 Demo Business Park",
+          "line2": "Baner Road",
+          "country": "India",
+          "state": "Maharashtra",
+          "city": "Pune",
+          "postalCode": "411045"
+        },
+        "acknowledged": true
+      },
+      "documents": [
+        {
+          "id": "doc_seed_np_1",
+          "docType": "BUSINESS_REGISTRATION",
+          "originalName": "company-registration-demo.pdf",
+          "fixtureFile": "company-registration-demo.pdf"
+        }
+      ]
+    }
+  ],
+  "providers": [
+    {
+      "id": "prov_sabre",
+      "providerCode": "SABRE",
+      "providerKind": "GDS",
+      "status": "AVAILABLE",
+      "mode": "MOCK"
+    },
+    {
+      "id": "prov_travelport",
+      "providerCode": "TRAVELPORT",
+      "providerKind": "GDS",
+      "status": "PLANNED",
+      "mode": "UNAVAILABLE"
+    },
+    {
+      "id": "prov_amadeus",
+      "providerCode": "AMADEUS",
+      "providerKind": "GDS",
+      "status": "PLANNED",
+      "mode": "UNAVAILABLE"
+    }
+  ],
+  "pccMappings": [
+    {
+      "id": "pcc_hfdemo1",
+      "providerId": "prov_sabre",
+      "pccCode": "HFDEMO1",
+      "agencyId": null,
+      "enabled": true,
+      "description": "Hubfares and permitted Skyline/Orbit/Aster operations (invented demo PCC)"
+    },
+    {
+      "id": "pcc_skydemo",
+      "providerId": "prov_sabre",
+      "pccCode": "SKYDEMO",
+      "agencyId": "agency_skyline",
+      "enabled": true,
+      "description": "Skyline-only import scenario (invented demo PCC)"
+    },
+    {
+      "id": "pcc_orbdemo",
+      "providerId": "prov_sabre",
+      "pccCode": "ORBDEMO",
+      "agencyId": "agency_orbit",
+      "enabled": true,
+      "description": "Orbit-only import scenario (invented demo PCC)"
+    },
+    {
+      "id": "pcc_tpdemo1",
+      "providerId": "prov_travelport",
+      "pccCode": "TPDEMO1",
+      "agencyId": null,
+      "enabled": false,
+      "description": "Future Travelport adapter — no live connection"
+    },
+    {
+      "id": "pcc_amdemo1",
+      "providerId": "prov_amadeus",
+      "pccCode": "AMDEMO1",
+      "agencyId": null,
+      "enabled": false,
+      "description": "Future Amadeus adapter — no live connection"
+    }
+  ],
+  "suppliers": [
+    {
+      "id": "supplier_sabre_mock",
+      "name": "Sabre-routed airline settlements (mock)",
+      "demoCode": "SUP-SABRE",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "supplier_consolidator_a",
+      "name": "Consolidator A (mock)",
+      "demoCode": "SUP-CONA",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "supplier_consolidator_b",
+      "name": "Consolidator B (mock)",
+      "demoCode": "SUP-CONB",
+      "status": "ACTIVE"
+    }
+  ]
+}

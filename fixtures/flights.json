@@ -1,0 +1,1154 @@
+{
+  "note": "Synthetic offers; not real airline inventory. Departure = anchor date (origin-local) + dayOffset at localTime. Prices are supplier components in paise.",
+  "airports": {
+    "BOM": {
+      "city": "Mumbai",
+      "cityCode": "BOM",
+      "tz": "Asia/Kolkata",
+      "country": "IN"
+    },
+    "DEL": {
+      "city": "Delhi",
+      "cityCode": "DEL",
+      "tz": "Asia/Kolkata",
+      "country": "IN"
+    },
+    "BLR": {
+      "city": "Bengaluru",
+      "cityCode": "BLR",
+      "tz": "Asia/Kolkata",
+      "country": "IN"
+    },
+    "GOI": {
+      "city": "Goa",
+      "cityCode": "GOA",
+      "tz": "Asia/Kolkata",
+      "country": "IN"
+    },
+    "LHR": {
+      "city": "London",
+      "cityCode": "LON",
+      "tz": "Europe/London",
+      "country": "GB"
+    },
+    "SIN": {
+      "city": "Singapore",
+      "cityCode": "SIN",
+      "tz": "Asia/Singapore",
+      "country": "SG"
+    },
+    "DXB": {
+      "city": "Dubai",
+      "cityCode": "DXB",
+      "tz": "Asia/Dubai",
+      "country": "AE"
+    },
+    "FRA": {
+      "city": "Frankfurt",
+      "cityCode": "FRA",
+      "tz": "Europe/Berlin",
+      "country": "DE"
+    }
+  },
+  "airlines": {
+    "AI": "Air India",
+    "6E": "IndiGo",
+    "BA": "British Airways",
+    "QR": "Qatar Airways",
+    "EK": "Emirates",
+    "SQ": "Singapore Airlines",
+    "LH": "Lufthansa"
+  },
+  "offers": [
+    {
+      "id": "offer_001",
+      "providerCode": "SABRE",
+      "airlineCode": "AI",
+      "airlineName": "Air India",
+      "operatingCarrier": "AI",
+      "flightNumber": "AI-DEMO-101",
+      "origin": "BOM",
+      "destination": "DEL",
+      "searchOriginCity": "BOM",
+      "searchDestinationCity": "DEL",
+      "dayOffset": 4,
+      "localDepartureTime": "07:00",
+      "durationMin": 130,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 10,
+      "aircraft": "A320neo",
+      "international": false,
+      "brands": [
+        {
+          "id": "brand_001_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 520000,
+          "supplierTaxMinor": 95000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_001_standard",
+          "brandCode": "STANDARD",
+          "brandName": "Standard",
+          "fareClass": "M",
+          "supplierBaseMinor": 590000,
+          "supplierTaxMinor": 95000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "20 kg"
+          },
+          "meal": "Free meal"
+        },
+        {
+          "id": "brand_001_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 680000,
+          "supplierTaxMinor": 95000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_002",
+      "providerCode": "SABRE",
+      "airlineCode": "6E",
+      "airlineName": "IndiGo",
+      "operatingCarrier": "6E",
+      "flightNumber": "6E-DEMO-102",
+      "origin": "BOM",
+      "destination": "DEL",
+      "searchOriginCity": "BOM",
+      "searchDestinationCity": "DEL",
+      "dayOffset": 4,
+      "localDepartureTime": "09:30",
+      "durationMin": 135,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 8,
+      "aircraft": "A321neo",
+      "international": false,
+      "brands": [
+        {
+          "id": "brand_002_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 470000,
+          "supplierTaxMinor": 90000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_002_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 560000,
+          "supplierTaxMinor": 90000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_003",
+      "providerCode": "SABRE",
+      "airlineCode": "AI",
+      "airlineName": "Air India",
+      "operatingCarrier": "AI",
+      "flightNumber": "AI-DEMO-103",
+      "origin": "BOM",
+      "destination": "DEL",
+      "searchOriginCity": "BOM",
+      "searchDestinationCity": "DEL",
+      "dayOffset": 5,
+      "localDepartureTime": "08:00",
+      "durationMin": 125,
+      "cabin": "BUSINESS",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 6,
+      "aircraft": "A350-900",
+      "international": false,
+      "brands": [
+        {
+          "id": "brand_003_business",
+          "brandCode": "BUSINESS",
+          "brandName": "Business",
+          "fareClass": "J",
+          "supplierBaseMinor": 2100000,
+          "supplierTaxMinor": 240000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "2 × 7 kg",
+            "checkIn": "35 kg"
+          },
+          "meal": "Gourmet meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_004",
+      "providerCode": "SABRE",
+      "airlineCode": "AI",
+      "airlineName": "Air India",
+      "operatingCarrier": "AI",
+      "flightNumber": "AI-DEMO-104",
+      "origin": "DEL",
+      "destination": "BOM",
+      "searchOriginCity": "DEL",
+      "searchDestinationCity": "BOM",
+      "dayOffset": 5,
+      "localDepartureTime": "18:00",
+      "durationMin": 130,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 4,
+      "aircraft": "A320neo",
+      "international": false,
+      "brands": [
+        {
+          "id": "brand_004_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 510000,
+          "supplierTaxMinor": 95000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_004_standard",
+          "brandCode": "STANDARD",
+          "brandName": "Standard",
+          "fareClass": "M",
+          "supplierBaseMinor": 570000,
+          "supplierTaxMinor": 95000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "20 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_005",
+      "providerCode": "SABRE",
+      "airlineCode": "BA",
+      "airlineName": "British Airways",
+      "operatingCarrier": "BA",
+      "flightNumber": "BA-DEMO-105",
+      "origin": "BOM",
+      "destination": "LHR",
+      "searchOriginCity": "BOM",
+      "searchDestinationCity": "LON",
+      "dayOffset": 10,
+      "localDepartureTime": "02:00",
+      "durationMin": 600,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 11,
+      "aircraft": "B787-9",
+      "international": true,
+      "brands": [
+        {
+          "id": "brand_005_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 2550000,
+          "supplierTaxMinor": 450000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_005_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 2950000,
+          "supplierTaxMinor": 450000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_006",
+      "providerCode": "SABRE",
+      "airlineCode": "QR",
+      "airlineName": "Qatar Airways",
+      "operatingCarrier": "QR",
+      "flightNumber": "QR-DEMO-106",
+      "origin": "BOM",
+      "destination": "LHR",
+      "searchOriginCity": "BOM",
+      "searchDestinationCity": "LON",
+      "dayOffset": 10,
+      "localDepartureTime": "04:00",
+      "durationMin": 780,
+      "cabin": "ECONOMY",
+      "stops": 1,
+      "via": "DOH",
+      "seatsLeft": 9,
+      "aircraft": "B777-300ER",
+      "international": true,
+      "brands": [
+        {
+          "id": "brand_006_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 2280000,
+          "supplierTaxMinor": 430000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_006_standard",
+          "brandCode": "STANDARD",
+          "brandName": "Standard",
+          "fareClass": "M",
+          "supplierBaseMinor": 2490000,
+          "supplierTaxMinor": 430000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "20 kg"
+          },
+          "meal": "Free meal"
+        },
+        {
+          "id": "brand_006_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 2760000,
+          "supplierTaxMinor": 430000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_007",
+      "providerCode": "SABRE",
+      "airlineCode": "EK",
+      "airlineName": "Emirates",
+      "operatingCarrier": "EK",
+      "flightNumber": "EK-DEMO-107",
+      "origin": "BOM",
+      "destination": "LHR",
+      "searchOriginCity": "BOM",
+      "searchDestinationCity": "LON",
+      "dayOffset": 11,
+      "localDepartureTime": "04:30",
+      "durationMin": 800,
+      "cabin": "BUSINESS",
+      "stops": 1,
+      "via": "DXB",
+      "seatsLeft": 7,
+      "aircraft": "A380-800",
+      "international": true,
+      "brands": [
+        {
+          "id": "brand_007_business",
+          "brandCode": "BUSINESS",
+          "brandName": "Business",
+          "fareClass": "J",
+          "supplierBaseMinor": 8800000,
+          "supplierTaxMinor": 950000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "2 × 7 kg",
+            "checkIn": "35 kg"
+          },
+          "meal": "Gourmet meal"
+        },
+        {
+          "id": "brand_007_businessflex",
+          "brandCode": "BUSINESSFLEX",
+          "brandName": "Business Flex",
+          "fareClass": "C",
+          "supplierBaseMinor": 9600000,
+          "supplierTaxMinor": 950000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "2 × 7 kg",
+            "checkIn": "40 kg"
+          },
+          "meal": "Gourmet meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_008",
+      "providerCode": "SABRE",
+      "airlineCode": "BA",
+      "airlineName": "British Airways",
+      "operatingCarrier": "BA",
+      "flightNumber": "BA-DEMO-108",
+      "origin": "LHR",
+      "destination": "BOM",
+      "searchOriginCity": "LON",
+      "searchDestinationCity": "BOM",
+      "dayOffset": 19,
+      "localDepartureTime": "20:00",
+      "durationMin": 560,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 5,
+      "aircraft": "B787-9",
+      "international": true,
+      "brands": [
+        {
+          "id": "brand_008_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 2100000,
+          "supplierTaxMinor": 400000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_008_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 2450000,
+          "supplierTaxMinor": 400000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_009",
+      "providerCode": "SABRE",
+      "airlineCode": "SQ",
+      "airlineName": "Singapore Airlines",
+      "operatingCarrier": "SQ",
+      "flightNumber": "SQ-DEMO-109",
+      "origin": "BOM",
+      "destination": "SIN",
+      "searchOriginCity": "BOM",
+      "searchDestinationCity": "SIN",
+      "dayOffset": 8,
+      "localDepartureTime": "23:30",
+      "durationMin": 330,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 3,
+      "aircraft": "A350-900",
+      "international": true,
+      "brands": [
+        {
+          "id": "brand_009_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 1420000,
+          "supplierTaxMinor": 260000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_009_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 1640000,
+          "supplierTaxMinor": 260000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_010",
+      "providerCode": "SABRE",
+      "airlineCode": "SQ",
+      "airlineName": "Singapore Airlines",
+      "operatingCarrier": "SQ",
+      "flightNumber": "SQ-DEMO-110",
+      "origin": "SIN",
+      "destination": "BOM",
+      "searchOriginCity": "SIN",
+      "searchDestinationCity": "BOM",
+      "dayOffset": 13,
+      "localDepartureTime": "19:00",
+      "durationMin": 340,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 10,
+      "aircraft": "A350-900",
+      "international": true,
+      "brands": [
+        {
+          "id": "brand_010_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 1380000,
+          "supplierTaxMinor": 260000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_010_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 1590000,
+          "supplierTaxMinor": 260000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_011",
+      "providerCode": "SABRE",
+      "airlineCode": "EK",
+      "airlineName": "Emirates",
+      "operatingCarrier": "EK",
+      "flightNumber": "EK-DEMO-111",
+      "origin": "DEL",
+      "destination": "DXB",
+      "searchOriginCity": "DEL",
+      "searchDestinationCity": "DXB",
+      "dayOffset": 12,
+      "localDepartureTime": "09:00",
+      "durationMin": 230,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 8,
+      "aircraft": "B777-300ER",
+      "international": true,
+      "brands": [
+        {
+          "id": "brand_011_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 1150000,
+          "supplierTaxMinor": 210000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_011_standard",
+          "brandCode": "STANDARD",
+          "brandName": "Standard",
+          "fareClass": "M",
+          "supplierBaseMinor": 1290000,
+          "supplierTaxMinor": 210000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "20 kg"
+          },
+          "meal": "Free meal"
+        },
+        {
+          "id": "brand_011_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 1430000,
+          "supplierTaxMinor": 210000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_012",
+      "providerCode": "SABRE",
+      "airlineCode": "EK",
+      "airlineName": "Emirates",
+      "operatingCarrier": "EK",
+      "flightNumber": "EK-DEMO-112",
+      "origin": "DXB",
+      "destination": "DEL",
+      "searchOriginCity": "DXB",
+      "searchDestinationCity": "DEL",
+      "dayOffset": 18,
+      "localDepartureTime": "22:00",
+      "durationMin": 210,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 6,
+      "aircraft": "B777-300ER",
+      "international": true,
+      "brands": [
+        {
+          "id": "brand_012_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 1120000,
+          "supplierTaxMinor": 210000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_012_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 1360000,
+          "supplierTaxMinor": 210000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_013",
+      "providerCode": "SABRE",
+      "airlineCode": "6E",
+      "airlineName": "IndiGo",
+      "operatingCarrier": "6E",
+      "flightNumber": "6E-DEMO-113",
+      "origin": "BLR",
+      "destination": "DEL",
+      "searchOriginCity": "BLR",
+      "searchDestinationCity": "DEL",
+      "dayOffset": 3,
+      "localDepartureTime": "06:15",
+      "durationMin": 165,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 4,
+      "aircraft": "A320neo",
+      "international": false,
+      "brands": [
+        {
+          "id": "brand_013_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 490000,
+          "supplierTaxMinor": 90000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_013_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 580000,
+          "supplierTaxMinor": 90000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_014",
+      "providerCode": "SABRE",
+      "airlineCode": "AI",
+      "airlineName": "Air India",
+      "operatingCarrier": "AI",
+      "flightNumber": "AI-DEMO-114",
+      "origin": "DEL",
+      "destination": "BLR",
+      "searchOriginCity": "DEL",
+      "searchDestinationCity": "BLR",
+      "dayOffset": 6,
+      "localDepartureTime": "13:00",
+      "durationMin": 170,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 11,
+      "aircraft": "A321neo",
+      "international": false,
+      "brands": [
+        {
+          "id": "brand_014_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 530000,
+          "supplierTaxMinor": 95000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_014_standard",
+          "brandCode": "STANDARD",
+          "brandName": "Standard",
+          "fareClass": "M",
+          "supplierBaseMinor": 610000,
+          "supplierTaxMinor": 95000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "20 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_015",
+      "providerCode": "SABRE",
+      "airlineCode": "6E",
+      "airlineName": "IndiGo",
+      "operatingCarrier": "6E",
+      "flightNumber": "6E-DEMO-115",
+      "origin": "BOM",
+      "destination": "GOI",
+      "searchOriginCity": "BOM",
+      "searchDestinationCity": "GOA",
+      "dayOffset": 2,
+      "localDepartureTime": "10:45",
+      "durationMin": 75,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 9,
+      "aircraft": "ATR 72",
+      "international": false,
+      "brands": [
+        {
+          "id": "brand_015_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 290000,
+          "supplierTaxMinor": 65000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_015_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 350000,
+          "supplierTaxMinor": 65000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_016",
+      "providerCode": "SABRE",
+      "airlineCode": "6E",
+      "airlineName": "IndiGo",
+      "operatingCarrier": "6E",
+      "flightNumber": "6E-DEMO-116",
+      "origin": "GOI",
+      "destination": "BOM",
+      "searchOriginCity": "GOA",
+      "searchDestinationCity": "BOM",
+      "dayOffset": 5,
+      "localDepartureTime": "16:30",
+      "durationMin": 80,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 0,
+      "aircraft": "ATR 72",
+      "international": false,
+      "brands": [
+        {
+          "id": "brand_016_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 280000,
+          "supplierTaxMinor": 65000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_017",
+      "providerCode": "SABRE",
+      "airlineCode": "LH",
+      "airlineName": "Lufthansa",
+      "operatingCarrier": "LH",
+      "flightNumber": "LH-DEMO-117",
+      "origin": "BOM",
+      "destination": "FRA",
+      "searchOriginCity": "BOM",
+      "searchDestinationCity": "FRA",
+      "dayOffset": 14,
+      "localDepartureTime": "02:30",
+      "durationMin": 560,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 5,
+      "aircraft": "B747-8",
+      "international": true,
+      "brands": [
+        {
+          "id": "brand_017_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 2740000,
+          "supplierTaxMinor": 510000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_017_standard",
+          "brandCode": "STANDARD",
+          "brandName": "Standard",
+          "fareClass": "M",
+          "supplierBaseMinor": 2990000,
+          "supplierTaxMinor": 510000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "20 kg"
+          },
+          "meal": "Free meal"
+        },
+        {
+          "id": "brand_017_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 3350000,
+          "supplierTaxMinor": 510000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_018",
+      "providerCode": "SABRE",
+      "airlineCode": "LH",
+      "airlineName": "Lufthansa",
+      "operatingCarrier": "LH",
+      "flightNumber": "LH-DEMO-118",
+      "origin": "FRA",
+      "destination": "BOM",
+      "searchOriginCity": "FRA",
+      "searchDestinationCity": "BOM",
+      "dayOffset": 22,
+      "localDepartureTime": "21:00",
+      "durationMin": 520,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 3,
+      "aircraft": "B747-8",
+      "international": true,
+      "brands": [
+        {
+          "id": "brand_018_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 2680000,
+          "supplierTaxMinor": 510000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_018_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 3240000,
+          "supplierTaxMinor": 510000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_019",
+      "providerCode": "SABRE",
+      "airlineCode": "BA",
+      "airlineName": "British Airways",
+      "operatingCarrier": "BA",
+      "flightNumber": "BA-DEMO-119",
+      "origin": "DEL",
+      "destination": "LHR",
+      "searchOriginCity": "DEL",
+      "searchDestinationCity": "LON",
+      "dayOffset": 16,
+      "localDepartureTime": "11:00",
+      "durationMin": 690,
+      "cabin": "ECONOMY",
+      "stops": 1,
+      "via": "DOH",
+      "seatsLeft": 10,
+      "aircraft": "B787-8",
+      "international": true,
+      "brands": [
+        {
+          "id": "brand_019_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 2620000,
+          "supplierTaxMinor": 480000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_019_flex",
+          "brandCode": "FLEX",
+          "brandName": "Flex",
+          "fareClass": "Y",
+          "supplierBaseMinor": 3080000,
+          "supplierTaxMinor": 480000,
+          "ruleProfileId": "A_FLEXIBLE",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "25 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    },
+    {
+      "id": "offer_020",
+      "providerCode": "SABRE",
+      "airlineCode": "AI",
+      "airlineName": "Air India",
+      "operatingCarrier": "AI",
+      "flightNumber": "AI-DEMO-120",
+      "origin": "BOM",
+      "destination": "LHR",
+      "searchOriginCity": "BOM",
+      "searchDestinationCity": "LON",
+      "dayOffset": 10,
+      "localDepartureTime": "13:30",
+      "durationMin": 610,
+      "cabin": "ECONOMY",
+      "stops": 0,
+      "via": null,
+      "seatsLeft": 8,
+      "aircraft": "B777-300ER",
+      "international": true,
+      "brands": [
+        {
+          "id": "brand_020_saver",
+          "brandCode": "SAVER",
+          "brandName": "Saver",
+          "fareClass": "L",
+          "supplierBaseMinor": 2460000,
+          "supplierTaxMinor": 450000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Conditionally refundable",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "15 kg"
+          },
+          "meal": "Paid meal"
+        },
+        {
+          "id": "brand_020_standard",
+          "brandCode": "STANDARD",
+          "brandName": "Standard",
+          "fareClass": "M",
+          "supplierBaseMinor": 2600000,
+          "supplierTaxMinor": 450000,
+          "ruleProfileId": "B_RESTRICTED",
+          "refundableLabel": "Refundable with fee",
+          "baggage": {
+            "cabin": "7 kg",
+            "checkIn": "20 kg"
+          },
+          "meal": "Free meal"
+        }
+      ]
+    }
+  ]
+}

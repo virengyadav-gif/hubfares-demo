@@ -1,0 +1,122 @@
+[
+  {
+    "id": "A_FLEXIBLE",
+    "version": 1,
+    "currency": "INR",
+    "label": "Flexible (sample)",
+    "cancellationSlabs": [
+      {
+        "id": "S0",
+        "minLeadMs": 0,
+        "maxLeadMsExclusive": 7200000,
+        "nonRefundable": true,
+        "supplierPenaltyMinor": null,
+        "serviceFeeMinor": 0
+      },
+      {
+        "id": "S1",
+        "minLeadMs": 7200000,
+        "maxLeadMsExclusive": 86400000,
+        "nonRefundable": false,
+        "supplierPenaltyMinor": 199900,
+        "serviceFeeMinor": 5000
+      },
+      {
+        "id": "S2",
+        "minLeadMs": 86400000,
+        "maxLeadMsExclusive": null,
+        "nonRefundable": false,
+        "supplierPenaltyMinor": 104700,
+        "serviceFeeMinor": 5000
+      }
+    ],
+    "dateChangeSlabs": [
+      {
+        "id": "S0",
+        "permitted": false,
+        "supplierPenaltyMinor": null,
+        "fareDifferenceApplies": false
+      },
+      {
+        "id": "S1",
+        "permitted": true,
+        "supplierPenaltyMinor": 250000,
+        "fareDifferenceApplies": true
+      },
+      {
+        "id": "S2",
+        "permitted": true,
+        "supplierPenaltyMinor": 150000,
+        "fareDifferenceApplies": true
+      }
+    ],
+    "noShow": {
+      "afterDeparture": "NON_REFUNDABLE"
+    },
+    "seatFee": {
+      "mode": "AIRLINE_AND_SEAT_DEPENDENT",
+      "illustrativeOnly": true
+    },
+    "applicability": "PER_ADULT_PER_SECTOR"
+  },
+  {
+    "id": "B_RESTRICTED",
+    "version": 1,
+    "currency": "INR",
+    "label": "Restricted (sample)",
+    "cancellationSlabs": [
+      {
+        "id": "S0",
+        "minLeadMs": 0,
+        "maxLeadMsExclusive": 7200000,
+        "nonRefundable": true,
+        "supplierPenaltyMinor": null,
+        "serviceFeeMinor": 0
+      },
+      {
+        "id": "S1",
+        "minLeadMs": 7200000,
+        "maxLeadMsExclusive": 86400000,
+        "nonRefundable": false,
+        "supplierPenaltyMinor": 500000,
+        "serviceFeeMinor": 5000
+      },
+      {
+        "id": "S2",
+        "minLeadMs": 86400000,
+        "maxLeadMsExclusive": null,
+        "nonRefundable": false,
+        "supplierPenaltyMinor": 300000,
+        "serviceFeeMinor": 5000
+      }
+    ],
+    "dateChangeSlabs": [
+      {
+        "id": "S0",
+        "permitted": false,
+        "supplierPenaltyMinor": null,
+        "fareDifferenceApplies": false
+      },
+      {
+        "id": "S1",
+        "permitted": true,
+        "supplierPenaltyMinor": 350000,
+        "fareDifferenceApplies": true
+      },
+      {
+        "id": "S2",
+        "permitted": true,
+        "supplierPenaltyMinor": 200000,
+        "fareDifferenceApplies": true
+      }
+    ],
+    "noShow": {
+      "afterDeparture": "NON_REFUNDABLE"
+    },
+    "seatFee": {
+      "mode": "AIRLINE_AND_SEAT_DEPENDENT",
+      "illustrativeOnly": true
+    },
+    "applicability": "PER_ADULT_PER_SECTOR"
+  }
+]

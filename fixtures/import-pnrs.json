@@ -1,0 +1,169 @@
+{
+  "records": [
+    {
+      "key": "imp_sky_ok",
+      "provider": "SABRE",
+      "pcc": "SKYDEMO",
+      "pnr": "SBD101",
+      "ownerAgencyId": "agency_skyline",
+      "airlinePnr": "AI8K1Q",
+      "itinerary": {
+        "origin": "BOM",
+        "destination": "DEL",
+        "airlineCode": "AI",
+        "flightNumber": "AI-DEMO-801",
+        "departureOffset": "D+9",
+        "durationMin": 130,
+        "cabin": "ECONOMY"
+      },
+      "passengers": [
+        "Kavya Rao (Demo)"
+      ],
+      "ticketStatus": "TICKETED",
+      "ticketNumbers": [
+        "DEMO-TKT-801001"
+      ],
+      "fareRuleProfileId": "A_FLEXIBLE",
+      "agencySellMinor": 850000,
+      "supplierCostMinor": 795000,
+      "bookedOffset": "D-2"
+    },
+    {
+      "key": "imp_orb_ok",
+      "provider": "SABRE",
+      "pcc": "ORBDEMO",
+      "pnr": "SBD202",
+      "ownerAgencyId": "agency_orbit",
+      "airlinePnr": "AI2X9P",
+      "itinerary": {
+        "origin": "DEL",
+        "destination": "BOM",
+        "airlineCode": "AI",
+        "flightNumber": "AI-DEMO-802",
+        "departureOffset": "D+11",
+        "durationMin": 130,
+        "cabin": "ECONOMY"
+      },
+      "passengers": [
+        "Nikhil Arora (Demo)"
+      ],
+      "ticketStatus": "TICKETED",
+      "ticketNumbers": [
+        "DEMO-TKT-802001"
+      ],
+      "fareRuleProfileId": "B_RESTRICTED",
+      "agencySellMinor": 1100000,
+      "supplierCostMinor": 1020000,
+      "bookedOffset": "D-3"
+    },
+    {
+      "key": "imp_hub_ops",
+      "provider": "SABRE",
+      "pcc": "HFDEMO1",
+      "pnr": "SBD303",
+      "ownerAgencyId": null,
+      "airlinePnr": "6E7Z3M",
+      "itinerary": {
+        "origin": "BOM",
+        "destination": "GOI",
+        "airlineCode": "6E",
+        "flightNumber": "6E-DEMO-803",
+        "departureOffset": "D+6",
+        "durationMin": 75,
+        "cabin": "ECONOMY"
+      },
+      "passengers": [
+        "Leela Fernandes (Demo)"
+      ],
+      "ticketStatus": "TICKETED",
+      "ticketNumbers": [
+        "DEMO-TKT-803001"
+      ],
+      "fareRuleProfileId": "A_FLEXIBLE",
+      "agencySellMinor": 640000,
+      "supplierCostMinor": 590000,
+      "bookedOffset": "D-1"
+    },
+    {
+      "key": "imp_duplicate",
+      "provider": "SABRE",
+      "pcc": "SKYDEMO",
+      "pnr": "SBD404",
+      "ownerAgencyId": "agency_skyline",
+      "airlinePnr": "AI4D0W",
+      "itinerary": {
+        "origin": "BOM",
+        "destination": "DEL",
+        "airlineCode": "AI",
+        "flightNumber": "AI-DEMO-710",
+        "departureOffset": "D-4",
+        "durationMin": 130,
+        "cabin": "ECONOMY"
+      },
+      "passengers": [
+        "Ira Banerjee (Demo)"
+      ],
+      "ticketStatus": "TICKETED",
+      "ticketNumbers": [
+        "DEMO-TKT-SEED-010"
+      ],
+      "fareRuleProfileId": "A_FLEXIBLE",
+      "agencySellMinor": 1700000,
+      "supplierCostMinor": 1400000,
+      "bookedOffset": "D-15",
+      "alreadyImportedAsBooking": "book_seed_010"
+    },
+    {
+      "key": "imp_no_ticket",
+      "provider": "SABRE",
+      "pcc": "HFDEMO1",
+      "pnr": "SBD505",
+      "ownerAgencyId": "agency_aster",
+      "airlinePnr": "6E5T2K",
+      "itinerary": {
+        "origin": "BLR",
+        "destination": "DEL",
+        "airlineCode": "6E",
+        "flightNumber": "6E-DEMO-805",
+        "departureOffset": "D+7",
+        "durationMin": 165,
+        "cabin": "ECONOMY"
+      },
+      "passengers": [
+        "Omkar Patil (Demo)"
+      ],
+      "ticketStatus": "NOT_ISSUED",
+      "ticketNumbers": [],
+      "fareRuleProfileId": "B_RESTRICTED",
+      "agencySellMinor": 720000,
+      "supplierCostMinor": 670000,
+      "bookedOffset": "D-1"
+    }
+  ],
+  "negativeTests": [
+    {
+      "key": "imp_bad_pcc",
+      "provider": "SABRE",
+      "pcc": "ORBDEMO",
+      "pnr": "SBD101",
+      "actorAgency": "agency_orbit",
+      "expected": "PNR_NOT_FOUND"
+    },
+    {
+      "key": "imp_other_tenant",
+      "provider": "SABRE",
+      "pcc": "SKYDEMO",
+      "pnr": "SBD101",
+      "actorAgency": "agency_orbit",
+      "expected": "PNR_NOT_FOUND"
+    },
+    {
+      "key": "imp_unknown",
+      "provider": "SABRE",
+      "pcc": "HFDEMO1",
+      "pnr": "NOPE99",
+      "actorAgency": null,
+      "expected": "PNR_NOT_FOUND"
+    }
+  ]
+}

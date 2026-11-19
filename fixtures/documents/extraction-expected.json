@@ -1,0 +1,95 @@
+{
+  "company-registration-demo.pdf": {
+    "documentType": "BUSINESS_REGISTRATION",
+    "engine": "PDF_TEXT",
+    "fields": {
+      "agencyName": {
+        "value": "Bluebird Travels",
+        "minConfidence": 0.9
+      },
+      "entityType": {
+        "value": "PRIVATE_LIMITED",
+        "minConfidence": 0.9
+      },
+      "registrationNumber": {
+        "value": "U63090MH2021PTC000777",
+        "minConfidence": 0.9
+      },
+      "gstin": {
+        "value": "27DEMOB0777B1Z1",
+        "minConfidence": 0.9
+      },
+      "addressLine1": {
+        "value": "14 Demo Riverside Plaza, Koregaon Park",
+        "minConfidence": 0.85
+      },
+      "city": {
+        "value": "Pune",
+        "minConfidence": 0.9
+      },
+      "state": {
+        "value": "Maharashtra",
+        "minConfidence": 0.9
+      },
+      "postalCode": {
+        "value": "411001",
+        "minConfidence": 0.9
+      },
+      "country": {
+        "value": "India",
+        "minConfidence": 0.9
+      },
+      "contactEmail": {
+        "value": "hello@bluebird.example.com",
+        "minConfidence": 0.9
+      },
+      "contactMobile": {
+        "value": "+919000000777",
+        "minConfidence": 0.9
+      },
+      "website": {
+        "value": "https://www.bluebird-travels.example.com",
+        "maxConfidence": 0.75,
+        "reviewRequired": true
+      }
+    }
+  },
+  "pan-card-demo.pdf": {
+    "documentType": "PAN",
+    "engine": "PDF_TEXT",
+    "fields": {
+      "pan": {
+        "value": "DEMOB0777B",
+        "minConfidence": 0.9
+      },
+      "agencyName": {
+        "value": "Bluebird Travels",
+        "minConfidence": 0.85
+      },
+      "directorName": {
+        "value": "Riya Kulkarni",
+        "minConfidence": 0.85
+      }
+    }
+  },
+  "identity-masked-demo.pdf": {
+    "documentType": "IDENTITY_MASKED",
+    "engine": "PDF_TEXT",
+    "fields": {
+      "directorName": {
+        "value": "Riya Kulkarni",
+        "minConfidence": 0.85
+      },
+      "maskedId": {
+        "value": "XXXX XXXX 0777",
+        "minConfidence": 0.85
+      }
+    }
+  },
+  "unreadable-demo.png": {
+    "documentType": "UNKNOWN",
+    "engine": "UNSUPPORTED",
+    "error": "DOCUMENT_UNREADABLE",
+    "fields": {}
+  }
+}

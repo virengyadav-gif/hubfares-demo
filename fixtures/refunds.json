@@ -1,0 +1,133 @@
+{
+  "claims": [
+    {
+      "id": "refund_sky_003",
+      "bookingId": "book_seed_003",
+      "agencyId": "agency_skyline",
+      "confirmedOffset": "D-1",
+      "agencyRefundMinor": 740300,
+      "supplierExpectedMinor": 690300,
+      "supplierReceivedMinor": 0,
+      "walletCreditedMinor": 0,
+      "status": "PENDING_SUPPLIER",
+      "refundPolicyId": "refund_sky_v1",
+      "refundPolicyVersion": 1,
+      "refundPayoutMode": "SUPPLIER_SETTLEMENT"
+    },
+    {
+      "id": "refund_sky_004",
+      "bookingId": "book_seed_004",
+      "agencyId": "agency_skyline",
+      "confirmedOffset": "D-2",
+      "agencyRefundMinor": 1000000,
+      "supplierExpectedMinor": 900000,
+      "supplierReceivedMinor": 900000,
+      "walletCreditedMinor": 1000000,
+      "status": "CLOSED_SETTLED_VOID",
+      "refundPolicyId": "refund_sky_v1",
+      "refundPolicyVersion": 1,
+      "refundPayoutMode": "SUPPLIER_SETTLEMENT"
+    },
+    {
+      "id": "refund_orb_012",
+      "bookingId": "book_seed_012",
+      "agencyId": "agency_orbit",
+      "confirmedOffset": "D-1",
+      "agencyRefundMinor": 1890300,
+      "supplierExpectedMinor": 1755300,
+      "supplierReceivedMinor": 0,
+      "walletCreditedMinor": 1890300,
+      "status": "PAID_SUPPLIER_PENDING",
+      "refundPolicyId": "refund_orb_v1",
+      "refundPolicyVersion": 1,
+      "refundPayoutMode": "IMMEDIATE_IF_ELIGIBLE"
+    },
+    {
+      "id": "refund_ast_019",
+      "bookingId": "book_seed_019",
+      "agencyId": "agency_aster",
+      "confirmedOffset": "H-48",
+      "agencyRefundMinor": 0,
+      "supplierExpectedMinor": 0,
+      "supplierReceivedMinor": 0,
+      "walletCreditedMinor": 0,
+      "status": "CLOSED_NONREFUNDABLE_S0",
+      "refundPolicyId": "refund_ast_v1",
+      "refundPolicyVersion": 1,
+      "refundPayoutMode": "SUPPLIER_SETTLEMENT"
+    },
+    {
+      "id": "refund_ast_021",
+      "bookingId": "book_seed_021",
+      "agencyId": "agency_aster",
+      "confirmedOffset": "D-3",
+      "agencyRefundMinor": 640300,
+      "supplierExpectedMinor": 595300,
+      "supplierReceivedMinor": 0,
+      "walletCreditedMinor": 0,
+      "status": "PENDING_SUPPLIER",
+      "refundPolicyId": "refund_ast_v1",
+      "refundPolicyVersion": 1,
+      "refundPayoutMode": "SUPPLIER_SETTLEMENT"
+    },
+    {
+      "id": "refund_ast_022",
+      "bookingId": "book_seed_022",
+      "agencyId": "agency_aster",
+      "confirmedOffset": "H-1",
+      "agencyRefundMinor": 315000,
+      "supplierExpectedMinor": 260000,
+      "supplierReceivedMinor": 0,
+      "walletCreditedMinor": 0,
+      "status": "PENDING_SUPPLIER",
+      "refundPolicyId": "refund_ast_v1",
+      "refundPolicyVersion": 1,
+      "refundPayoutMode": "SUPPLIER_SETTLEMENT"
+    }
+  ],
+  "supplierReceiptScenarios": [
+    {
+      "id": "settle_sky_004",
+      "refundClaimId": "refund_sky_004",
+      "externalRef": "DEMO-SUP-VOID-004",
+      "amountMinor": 900000,
+      "initiallyPosted": true,
+      "expectedState": "MATCHED",
+      "supplierId": "supplier_sabre_mock"
+    },
+    {
+      "id": "settle_sky_003",
+      "refundClaimId": "refund_sky_003",
+      "externalRef": "DEMO-SUP-6903-001",
+      "amountMinor": 690300,
+      "initiallyPosted": false,
+      "expectedState": "MATCHED_ELIGIBLE_FOR_SEPARATE_PAYOUT",
+      "supplierId": "supplier_sabre_mock"
+    },
+    {
+      "id": "settle_orb_mismatch_012",
+      "refundClaimId": "refund_orb_012",
+      "externalRef": "DEMO-SUP-12000-001",
+      "amountMinor": 1200000,
+      "initiallyPosted": false,
+      "expectedState": "EXCEPTION_NO_NEW_WALLET_CREDIT",
+      "supplierId": "supplier_sabre_mock"
+    },
+    {
+      "id": "settle_orb_012",
+      "refundClaimId": "refund_orb_012",
+      "externalRef": "DEMO-SUP-17553-001",
+      "amountMinor": 1755300,
+      "initiallyPosted": false,
+      "expectedState": "MATCHED_NO_NEW_WALLET_CREDIT",
+      "supplierId": "supplier_sabre_mock",
+      "note": "Data & Mocks §9.4 supplier_event_orb_012_receive (full expected amount)"
+    }
+  ],
+  "deferred": [
+    {
+      "id": "supplier_event_sky_003_short",
+      "reason": "Underpayment amount not specified in Data & Mocks §9.4 — not invented; mismatch path demonstrated via settle_orb_mismatch_012."
+    }
+  ]
+}

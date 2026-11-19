@@ -1,0 +1,19 @@
+{
+  "baseCurrency": "INR",
+  "effectiveDate": "2026-11-19",
+  "source": "DEMO",
+  "rates": [
+    {
+      "quoteCurrency": "INR",
+      "inrPerUnit": "1"
+    },
+    {
+      "quoteCurrency": "USD",
+      "inrPerUnit": "90"
+    },
+    {
+      "quoteCurrency": "EUR",
+      "inrPerUnit": "105"
+    }
+  ]
+}

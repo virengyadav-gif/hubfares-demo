@@ -1,0 +1,58 @@
+{
+  "bankProvider": "DEMO_BANK",
+  "events": [
+    {
+      "id": "pay_sky_match_001",
+      "agencyHint": "HFVA-SKY-001",
+      "externalRef": "DEMO-UTR-1001",
+      "amountMinor": 2500000,
+      "currency": "INR",
+      "receivedOffset": "H-3",
+      "expectedStatus": "RECEIVED"
+    },
+    {
+      "id": "pay_orb_match_001",
+      "agencyHint": "HFVA-ORB-001",
+      "externalRef": "DEMO-UTR-2001",
+      "amountMinor": 4000000,
+      "currency": "INR",
+      "receivedOffset": "H-2",
+      "expectedStatus": "RECEIVED"
+    },
+    {
+      "id": "pay_sky_no_match",
+      "agencyHint": "UNKNOWN-REF-77",
+      "externalRef": "DEMO-UTR-9001",
+      "amountMinor": 1000000,
+      "currency": "INR",
+      "receivedOffset": "H-5",
+      "expectedStatus": "RECEIVED"
+    },
+    {
+      "id": "pay_wrong_amount",
+      "agencyHint": "HFVA-SKY-001",
+      "externalRef": "DEMO-UTR-9002",
+      "amountMinor": 1234500,
+      "currency": "INR",
+      "expectedAmountMinor": 1000000,
+      "receivedOffset": "H-4",
+      "expectedStatus": "RECEIVED"
+    },
+    {
+      "id": "pay_missing_rate",
+      "agencyHint": "HFVA-SKY-001",
+      "externalRef": "DEMO-UTR-9003",
+      "amountMinor": 5000,
+      "currency": "USD",
+      "receivedOffset": "H-6",
+      "expectedStatus": "RECEIVED"
+    }
+  ],
+  "replayCommands": [
+    {
+      "id": "pay_duplicate_replay",
+      "replaysExternalRef": "DEMO-UTR-1001",
+      "note": "Test input only — replays the same event, never a second row."
+    }
+  ]
+}

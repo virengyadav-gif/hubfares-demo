@@ -1,0 +1,112 @@
+{
+  "policies": [
+    {
+      "id": "credit_sky_v1",
+      "agencyId": "agency_skyline",
+      "type": "CREDIT",
+      "version": 1,
+      "effectiveOffset": "D-60",
+      "config": {
+        "cycle": "UPFRONT",
+        "termDays": 0,
+        "creditEnabled": false,
+        "creditLimitMinor": 0,
+        "blockOnOverdue": false,
+        "allowWalletWhenCreditBlocked": true
+      }
+    },
+    {
+      "id": "credit_orb_v1",
+      "agencyId": "agency_orbit",
+      "type": "CREDIT",
+      "version": 1,
+      "effectiveOffset": "D-60",
+      "config": {
+        "cycle": "WEEKLY",
+        "termDays": 7,
+        "creditEnabled": true,
+        "creditLimitMinor": 20000000,
+        "blockOnOverdue": true,
+        "allowWalletWhenCreditBlocked": true
+      }
+    },
+    {
+      "id": "credit_ast_v1",
+      "agencyId": "agency_aster",
+      "type": "CREDIT",
+      "version": 1,
+      "effectiveOffset": "D-60",
+      "effectiveUntilOffset": "D-1",
+      "config": {
+        "cycle": "DAILY",
+        "termDays": 1,
+        "creditEnabled": true,
+        "creditLimitMinor": 5000000,
+        "blockOnOverdue": false,
+        "allowWalletWhenCreditBlocked": true
+      }
+    },
+    {
+      "id": "credit_ast_v2",
+      "agencyId": "agency_aster",
+      "type": "CREDIT",
+      "version": 2,
+      "effectiveOffset": "D-1",
+      "config": {
+        "cycle": "DAILY",
+        "termDays": 1,
+        "creditEnabled": true,
+        "creditLimitMinor": 5000000,
+        "blockOnOverdue": true,
+        "allowWalletWhenCreditBlocked": true
+      }
+    },
+    {
+      "id": "refund_sky_v1",
+      "agencyId": "agency_skyline",
+      "type": "REFUND",
+      "version": 1,
+      "effectiveOffset": "D-60",
+      "config": {
+        "payoutMode": "SUPPLIER_SETTLEMENT",
+        "autoApproveLimitMinor": 10000000
+      }
+    },
+    {
+      "id": "refund_orb_v1",
+      "agencyId": "agency_orbit",
+      "type": "REFUND",
+      "version": 1,
+      "effectiveOffset": "D-60",
+      "config": {
+        "payoutMode": "IMMEDIATE_IF_ELIGIBLE",
+        "autoApproveLimitMinor": 10000000
+      }
+    },
+    {
+      "id": "refund_ast_v1",
+      "agencyId": "agency_aster",
+      "type": "REFUND",
+      "version": 1,
+      "effectiveOffset": "D-60",
+      "config": {
+        "payoutMode": "SUPPLIER_SETTLEMENT",
+        "autoApproveLimitMinor": 10000000
+      }
+    }
+  ],
+  "defaultsForNewAgency": {
+    "CREDIT": {
+      "cycle": "UPFRONT",
+      "termDays": 0,
+      "creditEnabled": false,
+      "creditLimitMinor": 0,
+      "blockOnOverdue": true,
+      "allowWalletWhenCreditBlocked": true
+    },
+    "REFUND": {
+      "payoutMode": "SUPPLIER_SETTLEMENT",
+      "autoApproveLimitMinor": 10000000
+    }
+  }
+}

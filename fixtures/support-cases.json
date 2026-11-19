@@ -1,0 +1,128 @@
+[
+  {
+    "id": "CASE-S001",
+    "agencyId": "agency_skyline",
+    "bookingId": "book_seed_009",
+    "source": "SYSTEM",
+    "category": "TICKETING_EXCEPTION",
+    "summary": "Mock booking failure on book_seed_009 — no funds charged",
+    "status": "RESOLVED",
+    "priority": "MEDIUM",
+    "assignedTo": "user_hub_ops",
+    "createdOffset": "D-1",
+    "events": [
+      [
+        "OPEN",
+        "D-1"
+      ],
+      [
+        "ASSIGNED",
+        "H-20"
+      ],
+      [
+        "RESOLVED",
+        "H-12"
+      ]
+    ]
+  },
+  {
+    "id": "CASE-S002",
+    "agencyId": "agency_skyline",
+    "bookingId": "book_seed_003",
+    "source": "SYSTEM",
+    "category": "SUPPLIER_REFUND_PENDING",
+    "summary": "refund_sky_003 awaiting supplier settlement (INR 6,903 expected)",
+    "status": "AWAITING_EXTERNAL",
+    "priority": "MEDIUM",
+    "assignedTo": "user_hub_ops",
+    "createdOffset": "H-22",
+    "events": [
+      [
+        "OPEN",
+        "H-22"
+      ],
+      [
+        "ASSIGNED",
+        "H-20"
+      ],
+      [
+        "AWAITING_EXTERNAL",
+        "H-18"
+      ]
+    ]
+  },
+  {
+    "id": "CASE-S003",
+    "agencyId": "agency_aster",
+    "bookingId": null,
+    "source": "SYSTEM",
+    "category": "CREDIT_OVERDUE",
+    "summary": "Aster Holidays daily credit overdue — new credit draws blocked by policy v2",
+    "status": "IN_PROGRESS",
+    "priority": "HIGH",
+    "assignedTo": "user_hub_finance",
+    "createdOffset": "H-23",
+    "events": [
+      [
+        "OPEN",
+        "H-23"
+      ],
+      [
+        "ASSIGNED",
+        "H-21"
+      ],
+      [
+        "IN_PROGRESS",
+        "H-10"
+      ]
+    ]
+  },
+  {
+    "id": "CASE-S004",
+    "agencyId": "agency_skyline",
+    "bookingId": null,
+    "source": "SYSTEM",
+    "category": "UNMATCHED_PAYMENT",
+    "summary": "DEMO-UTR-9001 received without a recognised agency reference",
+    "status": "OPEN",
+    "priority": "HIGH",
+    "assignedTo": null,
+    "createdOffset": "H-5",
+    "events": [
+      [
+        "OPEN",
+        "H-5"
+      ]
+    ]
+  },
+  {
+    "id": "CASE-S005",
+    "agencyId": "agency_aster",
+    "bookingId": "book_seed_022",
+    "source": "CHATBOT",
+    "category": "COMPLAINT",
+    "summary": "Refund timeline query for SBX022 (historical demo case)",
+    "status": "CLOSED",
+    "priority": "LOW",
+    "assignedTo": "user_hub_ops",
+    "createdOffset": "D-3",
+    "events": [
+      [
+        "OPEN",
+        "D-3"
+      ],
+      [
+        "ASSIGNED",
+        "D-3"
+      ],
+      [
+        "RESOLVED",
+        "D-2"
+      ],
+      [
+        "CLOSED",
+        "D-2"
+      ]
+    ]
+  }
+]

@@ -1,0 +1,123 @@
+{
+  "credentialNote": "Seeded hashed demo credentials (scrypt). Operator password is documented in README §Operator access only.",
+  "users": [
+    {
+      "id": "user_super_admin",
+      "role": "SUPER_ADMIN",
+      "agencyId": null,
+      "name": "Meera Kapoor",
+      "email": "superadmin@hubfares.example.com",
+      "mobile": "+919100000001",
+      "status": "ACTIVE",
+      "passwordHash": "scrypt$user_super_admin$4d1f3f2579e54e5848c88c9c69135a856c6b275d818202823efb4c5a4b0a5366",
+      "permissions": {}
+    },
+    {
+      "id": "user_hub_finance",
+      "role": "HUB_ADMIN_FINANCE",
+      "agencyId": null,
+      "name": "Vikram Shah",
+      "email": "finance@hubfares.example.com",
+      "mobile": "+919100000002",
+      "status": "ACTIVE",
+      "passwordHash": "scrypt$user_hub_finance$7f3b965e2d9e6508366fac3de33ed23cb615cce9d9b83d5d1ee42bcfa1c58512",
+      "permissions": {}
+    },
+    {
+      "id": "user_hub_ops",
+      "role": "HUB_OPS",
+      "agencyId": null,
+      "name": "Neha Joshi",
+      "email": "ops@hubfares.example.com",
+      "mobile": "+919100000003",
+      "status": "ACTIVE",
+      "passwordHash": "scrypt$user_hub_ops$ae59eff0c5ddd4a4acb1e51cee565c08eed52d5d7078223c49766a0c9996c42d",
+      "permissions": {}
+    },
+    {
+      "id": "user_hub_cxo",
+      "role": "HUB_CXO",
+      "agencyId": null,
+      "name": "Arjun Malhotra",
+      "email": "cxo@hubfares.example.com",
+      "mobile": "+919100000004",
+      "status": "ACTIVE",
+      "passwordHash": "scrypt$user_hub_cxo$135aa13dde0e6f692cc9f67c7a4fba157f8e0c14538aedb37365dae749e58dd3",
+      "permissions": {}
+    },
+    {
+      "id": "user_sky_admin",
+      "role": "AGENCY_ADMIN",
+      "agencyId": "agency_skyline",
+      "name": "Priya Nair",
+      "email": "admin@skyline.example.com",
+      "mobile": "+919200000001",
+      "status": "ACTIVE",
+      "passwordHash": "scrypt$user_sky_admin$060aaf0b9f2693a14737d5d5ee59218b99ecb6c2dbb1bea899b417bf9c9f38a3",
+      "permissions": {}
+    },
+    {
+      "id": "user_sky_agent",
+      "role": "AGENCY_AGENT",
+      "agencyId": "agency_skyline",
+      "name": "Rahul Verma",
+      "email": "agent@skyline.example.com",
+      "mobile": "+919200000002",
+      "status": "ACTIVE",
+      "passwordHash": "scrypt$user_sky_agent$04071a174bf10312d79db37fb2cf98fe40d55d69a44456f8db85067dda665f2b",
+      "permissions": {
+        "BOOK": true,
+        "CANCEL": true,
+        "FINANCE_VIEW": true
+      }
+    },
+    {
+      "id": "user_orb_admin",
+      "role": "AGENCY_ADMIN",
+      "agencyId": "agency_orbit",
+      "name": "Sanjay Rao",
+      "email": "admin@orbit.example.com",
+      "mobile": "+919300000001",
+      "status": "ACTIVE",
+      "passwordHash": "scrypt$user_orb_admin$b970fdbae7585d1dff3364d0ecd5ca6f443ac99d38c06809cb3ce9156da8698c",
+      "permissions": {}
+    },
+    {
+      "id": "user_orb_agent",
+      "role": "AGENCY_AGENT",
+      "agencyId": "agency_orbit",
+      "name": "Divya Menon",
+      "email": "agent@orbit.example.com",
+      "mobile": "+919300000002",
+      "status": "ACTIVE",
+      "passwordHash": "scrypt$user_orb_agent$5e73c166df837d52e2315c814d7e5a3c03549aca5c42c998f1f7bc61a0c289ec",
+      "permissions": {
+        "BOOK": true,
+        "CANCEL": true,
+        "FINANCE_VIEW": false
+      }
+    },
+    {
+      "id": "user_ast_admin",
+      "role": "AGENCY_ADMIN",
+      "agencyId": "agency_aster",
+      "name": "Karan Bedi",
+      "email": "admin@aster.example.com",
+      "mobile": "+919400000001",
+      "status": "ACTIVE",
+      "passwordHash": "scrypt$user_ast_admin$5473cb65d084b07f6f1cf49dd0bb422e3bb5cd8abbd21205a3e1bcc8dd1b8b05",
+      "permissions": {}
+    },
+    {
+      "id": "user_ast_finance",
+      "role": "AGENCY_FINANCE_VIEWER",
+      "agencyId": "agency_aster",
+      "name": "Isha Gupta",
+      "email": "finance@aster.example.com",
+      "mobile": "+919400000002",
+      "status": "ACTIVE",
+      "passwordHash": "scrypt$user_ast_finance$5c138bff22892e6d31b80b4c869cec781f90e201310bd96badd196aab97c6066",
+      "permissions": {}
+    }
+  ]
+}

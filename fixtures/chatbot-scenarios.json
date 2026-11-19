@@ -1,0 +1,521 @@
+{
+  "mode": "SCRIPTED_FINITE_STATE",
+  "languages": [
+    {
+      "id": "en",
+      "label": "English"
+    },
+    {
+      "id": "hi",
+      "label": "हिन्दी"
+    },
+    {
+      "id": "hinglish",
+      "label": "Hinglish"
+    }
+  ],
+  "messages": {
+    "welcome": {
+      "en": "Hi! I am the Hubfares Help assistant (scripted demo). Choose a language to continue.",
+      "hi": "नमस्ते! मैं Hubfares सहायता सहायक हूँ (स्क्रिप्टेड डेमो)। आगे बढ़ने के लिए भाषा चुनें।",
+      "hinglish": "Hi! Main Hubfares Help assistant hoon (scripted demo). Aage badhne ke liye language choose karein."
+    },
+    "mainMenu": {
+      "en": "How can we help you today?",
+      "hi": "आज हम आपकी कैसे मदद करें?",
+      "hinglish": "Aaj hum aapki kaise help karein?"
+    },
+    "askPnr": {
+      "en": "Please enter the PNR of your booking.",
+      "hi": "कृपया अपनी बुकिंग का PNR दर्ज करें।",
+      "hinglish": "Please apni booking ka PNR enter karein."
+    },
+    "askCase": {
+      "en": "Please enter your case or refund reference.",
+      "hi": "कृपया अपना केस या रिफंड संदर्भ दर्ज करें।",
+      "hinglish": "Please apna case ya refund reference enter karein."
+    },
+    "notFound": {
+      "en": "No matching booking found for your agency. Verify the reference or contact Hubfares Support.",
+      "hi": "आपकी एजेंसी के लिए कोई मेल खाती बुकिंग नहीं मिली। संदर्भ जांचें या Hubfares सपोर्ट से संपर्क करें।",
+      "hinglish": "Aapki agency ke liye koi matching booking nahi mili. Reference check karein ya Hubfares Support se contact karein."
+    },
+    "confirmNotice": {
+      "en": "This creates a demo support request for Hubfares Operations. It does not cancel, change or refund anything by itself.",
+      "hi": "यह Hubfares ऑपरेशंस के लिए एक डेमो सपोर्ट अनुरोध बनाता है। यह स्वयं कुछ भी रद्द, बदल या रिफंड नहीं करता।",
+      "hinglish": "Yeh Hubfares Operations ke liye ek demo support request banata hai. Yeh khud kuch cancel, change ya refund nahi karta."
+    },
+    "caseCreated": {
+      "en": "Your request has been logged. Reference:",
+      "hi": "आपका अनुरोध दर्ज हो गया है। संदर्भ:",
+      "hinglish": "Aapki request log ho gayi hai. Reference:"
+    },
+    "fallback": {
+      "en": "I can only help with the options below.",
+      "hi": "मैं केवल नीचे दिए विकल्पों में मदद कर सकता हूँ।",
+      "hinglish": "Main sirf neeche diye options mein help kar sakta hoon."
+    },
+    "callCenter": {
+      "en": "Hubfares Call Center (demo): +91 20 0000 0000, 24×7. Live transfer is a planned integration.",
+      "hi": "Hubfares कॉल सेंटर (डेमो): +91 20 0000 0000, 24×7। लाइव ट्रांसफर नियोजित इंटीग्रेशन है।",
+      "hinglish": "Hubfares Call Center (demo): +91 20 0000 0000, 24×7. Live transfer planned integration hai."
+    },
+    "details": {
+      "en": "Add a short description (optional).",
+      "hi": "संक्षिप्त विवरण जोड़ें (वैकल्पिक)।",
+      "hinglish": "Short description add karein (optional)."
+    }
+  },
+  "menu": [
+    {
+      "id": "CLAIM_REFUND",
+      "label": {
+        "en": "Claim a Refund",
+        "hi": "रिफंड का दावा",
+        "hinglish": "Refund Claim karein"
+      },
+      "category": "REFUND_REQUEST",
+      "needsPnr": true,
+      "options": [
+        {
+          "id": "CANCEL_BOOKING_REFUND",
+          "label": {
+            "en": "Cancel-booking refund",
+            "hi": "बुकिंग रद्द करने पर रिफंड",
+            "hinglish": "Booking cancel refund"
+          }
+        },
+        {
+          "id": "AIRLINE_CANCELLED",
+          "label": {
+            "en": "Airline-initiated cancellation",
+            "hi": "एयरलाइन द्वारा रद्दीकरण",
+            "hinglish": "Airline ne cancel kiya"
+          }
+        },
+        {
+          "id": "PARTIAL_REFUND",
+          "label": {
+            "en": "Partial refund",
+            "hi": "आंशिक रिफंड",
+            "hinglish": "Partial refund"
+          }
+        },
+        {
+          "id": "ESTIMATE_REFUND",
+          "label": {
+            "en": "Estimate refund",
+            "hi": "रिफंड अनुमान",
+            "hinglish": "Refund estimate dekhein"
+          },
+          "informational": true
+        },
+        {
+          "id": "SUBMIT_CLAIM",
+          "label": {
+            "en": "Submit claim",
+            "hi": "दावा जमा करें",
+            "hinglish": "Claim submit karein"
+          }
+        }
+      ]
+    },
+    {
+      "id": "REFUND_STATUS",
+      "label": {
+        "en": "Refund Status",
+        "hi": "रिफंड स्थिति",
+        "hinglish": "Refund Status"
+      },
+      "category": "REFUND_ESCALATION",
+      "options": [
+        {
+          "id": "BY_PNR",
+          "label": {
+            "en": "By PNR",
+            "hi": "PNR से",
+            "hinglish": "PNR se"
+          },
+          "needsPnr": true,
+          "informational": true
+        },
+        {
+          "id": "BY_CASE",
+          "label": {
+            "en": "By case / refund ID",
+            "hi": "केस / रिफंड आईडी से",
+            "hinglish": "Case / refund ID se"
+          },
+          "needsCase": true,
+          "informational": true
+        },
+        {
+          "id": "PENDING_SUPPLIER",
+          "label": {
+            "en": "Pending with Supplier",
+            "hi": "सप्लायर के पास लंबित",
+            "hinglish": "Supplier ke paas pending"
+          },
+          "needsPnr": true,
+          "informational": true
+        },
+        {
+          "id": "ESCALATE_DELAYED",
+          "label": {
+            "en": "Escalate delayed refund",
+            "hi": "विलंबित रिफंड एस्केलेट करें",
+            "hinglish": "Delayed refund escalate karein"
+          },
+          "needsPnr": true
+        }
+      ]
+    },
+    {
+      "id": "FLIGHT_STATUS",
+      "label": {
+        "en": "Flight Status",
+        "hi": "उड़ान स्थिति",
+        "hinglish": "Flight Status"
+      },
+      "options": [
+        {
+          "id": "STATUS_BY_PNR",
+          "label": {
+            "en": "By PNR",
+            "hi": "PNR से",
+            "hinglish": "PNR se"
+          },
+          "needsPnr": true,
+          "informational": true
+        },
+        {
+          "id": "STATUS_BY_FLIGHT",
+          "label": {
+            "en": "Airline + flight number/date",
+            "hi": "एयरलाइन + उड़ान संख्या/तारीख",
+            "hinglish": "Airline + flight number/date"
+          },
+          "needsFlight": true,
+          "informational": true
+        }
+      ]
+    },
+    {
+      "id": "CHANGE_FLIGHT",
+      "label": {
+        "en": "Change Flight",
+        "hi": "उड़ान बदलें",
+        "hinglish": "Flight Change"
+      },
+      "category": "AMENDMENT_REQUEST",
+      "needsPnr": true,
+      "options": [
+        {
+          "id": "CHANGE_DATE",
+          "label": {
+            "en": "Change departure date",
+            "hi": "प्रस्थान तिथि बदलें",
+            "hinglish": "Departure date change"
+          }
+        },
+        {
+          "id": "CHANGE_ITINERARY",
+          "label": {
+            "en": "Change itinerary",
+            "hi": "यात्रा कार्यक्रम बदलें",
+            "hinglish": "Itinerary change"
+          }
+        },
+        {
+          "id": "ESTIMATED_CHARGES",
+          "label": {
+            "en": "Estimated charges",
+            "hi": "अनुमानित शुल्क",
+            "hinglish": "Estimated charges"
+          },
+          "informational": true
+        },
+        {
+          "id": "SUBMIT_AMENDMENT",
+          "label": {
+            "en": "Submit amendment",
+            "hi": "संशोधन जमा करें",
+            "hinglish": "Amendment submit karein"
+          }
+        }
+      ]
+    },
+    {
+      "id": "MODIFY_BOOKING",
+      "label": {
+        "en": "Modify Booking",
+        "hi": "बुकिंग संशोधित करें",
+        "hinglish": "Booking Modify"
+      },
+      "category": "MODIFICATION_REQUEST",
+      "needsPnr": true,
+      "options": [
+        {
+          "id": "CHANGE_CONTACT",
+          "label": {
+            "en": "Change contact",
+            "hi": "संपर्क बदलें",
+            "hinglish": "Contact change"
+          }
+        },
+        {
+          "id": "PAX_CORRECTION",
+          "label": {
+            "en": "Passenger-detail correction",
+            "hi": "यात्री विवरण सुधार",
+            "hinglish": "Passenger detail correction"
+          }
+        },
+        {
+          "id": "ADD_BAGGAGE",
+          "label": {
+            "en": "Add baggage",
+            "hi": "बैगेज जोड़ें",
+            "hinglish": "Baggage add"
+          }
+        },
+        {
+          "id": "ADD_MEAL",
+          "label": {
+            "en": "Add meal",
+            "hi": "भोजन जोड़ें",
+            "hinglish": "Meal add"
+          }
+        },
+        {
+          "id": "SEAT_REQUEST",
+          "label": {
+            "en": "Seat request",
+            "hi": "सीट अनुरोध",
+            "hinglish": "Seat request"
+          }
+        },
+        {
+          "id": "MODIFY_OTHER",
+          "label": {
+            "en": "Other",
+            "hi": "अन्य",
+            "hinglish": "Other"
+          }
+        }
+      ]
+    },
+    {
+      "id": "COMPLAINTS",
+      "label": {
+        "en": "Complaints / Support",
+        "hi": "शिकायत / सहायता",
+        "hinglish": "Complaint / Support"
+      },
+      "category": "COMPLAINT",
+      "pnrOptional": true,
+      "options": [
+        {
+          "id": "BOOKING_ISSUE",
+          "label": {
+            "en": "Booking issue",
+            "hi": "बुकिंग समस्या",
+            "hinglish": "Booking issue"
+          }
+        },
+        {
+          "id": "PAYMENT_ISSUE",
+          "label": {
+            "en": "Payment issue",
+            "hi": "भुगतान समस्या",
+            "hinglish": "Payment issue"
+          }
+        },
+        {
+          "id": "TICKETING_ISSUE",
+          "label": {
+            "en": "Ticketing issue",
+            "hi": "टिकटिंग समस्या",
+            "hinglish": "Ticketing issue"
+          }
+        },
+        {
+          "id": "REFUND_COMPLAINT",
+          "label": {
+            "en": "Refund complaint",
+            "hi": "रिफंड शिकायत",
+            "hinglish": "Refund complaint"
+          }
+        },
+        {
+          "id": "AMENDMENT_COMPLAINT",
+          "label": {
+            "en": "Amendment",
+            "hi": "संशोधन",
+            "hinglish": "Amendment"
+          }
+        },
+        {
+          "id": "COMPLAINT_OTHER",
+          "label": {
+            "en": "Other",
+            "hi": "अन्य",
+            "hinglish": "Other"
+          }
+        }
+      ]
+    },
+    {
+      "id": "MORE",
+      "label": {
+        "en": "More Options",
+        "hi": "अधिक विकल्प",
+        "hinglish": "More Options"
+      },
+      "options": [
+        {
+          "id": "E_TICKET",
+          "label": {
+            "en": "E-ticket",
+            "hi": "ई-टिकट",
+            "hinglish": "E-ticket"
+          },
+          "needsPnr": true,
+          "informational": true
+        },
+        {
+          "id": "FARE_RULES",
+          "label": {
+            "en": "Fare Rules",
+            "hi": "किराया नियम",
+            "hinglish": "Fare Rules"
+          },
+          "needsPnr": true,
+          "informational": true
+        },
+        {
+          "id": "INVOICE",
+          "label": {
+            "en": "Invoice / receipt",
+            "hi": "चालान / रसीद",
+            "hinglish": "Invoice / receipt"
+          },
+          "needsPnr": true,
+          "informational": true
+        },
+        {
+          "id": "WALLET_HELP",
+          "label": {
+            "en": "Wallet help",
+            "hi": "वॉलेट सहायता",
+            "hinglish": "Wallet help"
+          },
+          "informational": true
+        },
+        {
+          "id": "MY_CASES",
+          "label": {
+            "en": "Existing support cases",
+            "hi": "मौजूदा सहायता केस",
+            "hinglish": "Existing support cases"
+          },
+          "informational": true
+        },
+        {
+          "id": "CONTACT_SUPPORT",
+          "label": {
+            "en": "Contact Support",
+            "hi": "सहायता से संपर्क करें",
+            "hinglish": "Support se contact"
+          },
+          "informational": true
+        }
+      ]
+    }
+  ],
+  "controls": {
+    "back": {
+      "en": "Back",
+      "hi": "वापस",
+      "hinglish": "Back"
+    },
+    "mainMenu": {
+      "en": "Main Menu",
+      "hi": "मुख्य मेनू",
+      "hinglish": "Main Menu"
+    },
+    "restart": {
+      "en": "Restart",
+      "hi": "फिर से शुरू",
+      "hinglish": "Restart"
+    },
+    "language": {
+      "en": "Change Language",
+      "hi": "भाषा बदलें",
+      "hinglish": "Language change"
+    },
+    "callCenter": {
+      "en": "Talk to Call Center",
+      "hi": "कॉल सेंटर से बात करें",
+      "hinglish": "Call Center se baat"
+    },
+    "close": {
+      "en": "Close",
+      "hi": "बंद करें",
+      "hinglish": "Close"
+    },
+    "submit": {
+      "en": "Submit request",
+      "hi": "अनुरोध जमा करें",
+      "hinglish": "Request submit karein"
+    }
+  },
+  "scenarios": [
+    {
+      "key": "chat_sky_refund",
+      "user": "user_sky_agent",
+      "pnr": "SBX001",
+      "expected": "REFUND_REQUEST case"
+    },
+    {
+      "key": "chat_orb_status",
+      "user": "user_orb_admin",
+      "reference": "refund_orb_012",
+      "expected": "CREDITED, supplier PENDING"
+    },
+    {
+      "key": "chat_sky_change",
+      "user": "user_sky_agent",
+      "pnr": "SBX002",
+      "expected": "AMENDMENT_REQUEST case"
+    },
+    {
+      "key": "chat_sky_complaint",
+      "user": "user_sky_admin",
+      "pnr": null,
+      "expected": "COMPLAINT case"
+    },
+    {
+      "key": "chat_wrong_tenant",
+      "user": "user_orb_agent",
+      "pnr": "SBX001",
+      "expected": "neutral not found"
+    },
+    {
+      "key": "chat_unknown_pnr",
+      "user": "user_sky_agent",
+      "pnr": "NOTREAL1",
+      "expected": "neutral not found"
+    },
+    {
+      "key": "chat_cancel_not_authorized",
+      "user": "user_sky_agent",
+      "pnr": "SBX001",
+      "expected": "case only; booking unchanged"
+    }
+  ],
+  "simulatedFlightStatus": {
+    "rule": "deterministic by flight number last digit: 0-6 SCHEDULED, 7-8 DELAYED, 9 CANCELLED",
+    "label": "Simulated status"
+  }
+}

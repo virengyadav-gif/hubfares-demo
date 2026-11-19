@@ -1,0 +1,53 @@
+{
+  "name": "hubfares-poc",
+  "version": "1.1.1",
+  "private": true,
+  "description": "Hubfares B2B travel distribution & operations platform — capability POC (mock mode)",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "fixtures:generate": "tsx scripts/generate-fixtures.ts",
+    "fixtures:validate": "tsx scripts/validate-fixtures.ts",
+    "reports:build": "tsx scripts/build-xlsx.ts",
+    "seed": "tsx scripts/seed.ts",
+    "demo:reset": "tsx scripts/reset-demo.ts",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "smoke": "tsx scripts/smoke.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "better-sqlite3": "12.4.1",
+    "clsx": "2.1.1",
+    "drizzle-orm": "0.45.4",
+    "exceljs": "4.4.0",
+    "lucide-react": "0.544.0",
+    "next": "15.5.29",
+    "pdf-lib": "1.17.1",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "recharts": "2.15.4",
+    "unpdf": "1.3.2",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@tailwindcss/postcss": "4.1.13",
+    "@types/better-sqlite3": "7.6.13",
+    "@types/node": "22.18.6",
+    "@types/react": "19.1.13",
+    "@types/react-dom": "19.1.9",
+    "drizzle-kit": "0.31.4",
+    "postcss": "8.5.6",
+    "tailwindcss": "4.1.13",
+    "tsx": "4.20.5",
+    "typescript": "5.9.2",
+    "vitest": "3.2.4"
+  }
+}

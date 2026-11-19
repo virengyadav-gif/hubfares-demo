@@ -1,0 +1,10 @@
+import { openDb, dbFilePath } from '../src/server/db/client';
+import { seedDatabase, anchorForSeed, FIXTURE_VERSION } from '../src/server/db/seed';
+import { assertDemoDbAllowed } from '../src/server/db/guard';
+const file = dbFilePath();
+assertDemoDbAllowed(file);
+const h = openDb(file);
+const anchor = anchorForSeed();
+seedDatabase(h.db, anchor);
+console.log(`Seeded ${FIXTURE_VERSION} into ${file} (anchor ${anchor})`);
+h.sqlite.close();
