@@ -2,13 +2,13 @@
   "agencies": [
     {
       "id": "agency_skyline",
-      "legalName": "Skyline Travels Private Limited (Demo)",
+      "legalName": "Skyline Travels Private Limited",
       "displayName": "Skyline Travels",
       "status": "ACTIVE",
       "city": "Mumbai",
       "state": "Maharashtra",
-      "panMasked": "DEMOS••01S",
-      "gstin": "27DEMOS0001S1Z5",
+      "panMasked": "AAKCS••01S",
+      "gstin": "27AAKCS0001S1Z5",
       "contactEmail": "ops@skyline.example.com",
       "registeredOffset": "D-120",
       "activatedOffset": "D-118",
@@ -18,13 +18,13 @@
     },
     {
       "id": "agency_orbit",
-      "legalName": "Orbit Corporate Travel LLP (Demo)",
+      "legalName": "Orbit Corporate Travel LLP",
       "displayName": "Orbit Corporate Travel",
       "status": "ACTIVE",
       "city": "Bengaluru",
       "state": "Karnataka",
-      "panMasked": "DEMOO••01O",
-      "gstin": "29DEMOO0001O1Z2",
+      "panMasked": "AAGFO••01O",
+      "gstin": "29AAGFO0001O1Z2",
       "contactEmail": "finance@orbit.example.com",
       "registeredOffset": "D-100",
       "activatedOffset": "D-97",
@@ -34,13 +34,13 @@
     },
     {
       "id": "agency_aster",
-      "legalName": "Aster Holidays (Demo)",
+      "legalName": "Aster Holidays",
       "displayName": "Aster Holidays",
       "status": "ACTIVE",
       "city": "New Delhi",
       "state": "Delhi",
-      "panMasked": "DEMOA••01A",
-      "gstin": "07DEMOA0001A1Z9",
+      "panMasked": "AAPFA••01A",
+      "gstin": "07AAPFA0001A1Z9",
       "contactEmail": "accounts@aster.example.com",
       "registeredOffset": "D-90",
       "activatedOffset": "D-88",
@@ -58,11 +58,11 @@
       "createdOffset": "D-2",
       "draft": {
         "organization": {
-          "agencyName": "New Partner Travel (Demo)",
+          "agencyName": "New Partner Travel",
           "turnoverInr": 45000000,
           "entityType": "PRIVATE_LIMITED",
-          "pan": "DEMON0001N",
-          "gstin": "27DEMON0001N1Z3",
+          "pan": "AAKCN0001N",
+          "gstin": "27AAKCN0001N1Z3",
           "registrationNumber": "U63040MH2019PTC000042",
           "website": "https://newpartner.example.com"
         },
@@ -86,7 +86,7 @@
           "website": "https://newpartner.example.com"
         },
         "address": {
-          "line1": "12 Demo Business Park",
+          "line1": "12 Riverside Business Park",
           "line2": "Baner Road",
           "country": "India",
           "state": "Maharashtra",
@@ -135,7 +135,7 @@
       "pccCode": "H7FA",
       "agencyId": null,
       "enabled": true,
-      "description": "Hubfares and permitted Skyline/Orbit/Aster operations (invented demo PCC)"
+      "description": "Hubfares and permitted Skyline/Orbit/Aster operations"
     },
     {
       "id": "pcc_skydemo",
@@ -143,7 +143,7 @@
       "pccCode": "S9KY",
       "agencyId": "agency_skyline",
       "enabled": true,
-      "description": "Skyline-only import scenario (invented demo PCC)"
+      "description": "Skyline-only import scenario"
     },
     {
       "id": "pcc_orbdemo",
@@ -151,7 +151,7 @@
       "pccCode": "O4RB",
       "agencyId": "agency_orbit",
       "enabled": true,
-      "description": "Orbit-only import scenario (invented demo PCC)"
+      "description": "Orbit-only import scenario"
     },
     {
       "id": "pcc_tpdemo1",
@@ -173,19 +173,19 @@
   "suppliers": [
     {
       "id": "supplier_sabre_mock",
-      "name": "Sabre-routed airline settlements (mock)",
+      "name": "Airline settlements (BSP)",
       "demoCode": "SUP-SABRE",
       "status": "ACTIVE"
     },
     {
       "id": "supplier_consolidator_a",
-      "name": "Consolidator A (mock)",
+      "name": "Consolidator A",
       "demoCode": "SUP-CONA",
       "status": "ACTIVE"
     },
     {
       "id": "supplier_consolidator_b",
-      "name": "Consolidator B (mock)",
+      "name": "Consolidator B",
       "demoCode": "SUP-CONB",
       "status": "ACTIVE"
     }

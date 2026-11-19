@@ -4,23 +4,23 @@
       "id": "cart_demo_001",
       "agencyId": "agency_skyline",
       "route": "BOM → SIN",
-      "flight": "SQ-DEMO-109",
+      "flight": "SQ 109",
       "travelers": 2,
       "holdAmountMinor": 3360000,
       "holdExpiresInMinutes": 95,
       "status": "HELD",
-      "label": "Guided demo — no supplier hold synchronised"
+      "label": ""
     },
     {
       "id": "cart_demo_002",
       "agencyId": "agency_skyline",
       "route": "DEL → DXB",
-      "flight": "EK-DEMO-111",
+      "flight": "EK 111",
       "travelers": 1,
       "holdAmountMinor": 1380000,
       "holdExpiresInMinutes": 12,
       "status": "EXPIRING",
-      "label": "Guided demo — no supplier hold synchronised"
+      "label": ""
     }
   ],
   "amendmentOptions": [
@@ -85,14 +85,14 @@
       "pcc": "H7FA",
       "queue": "Q50 Schedule change",
       "count": 2,
-      "status": "Sample notification"
+      "status": "Notification"
     },
     {
       "provider": "SABRE",
       "pcc": "S9KY",
       "queue": "Q7 Ticketing time limit",
       "count": 1,
-      "status": "Sample notification"
+      "status": "Notification"
     },
     {
       "provider": "TRAVELPORT",

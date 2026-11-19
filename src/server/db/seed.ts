@@ -207,7 +207,7 @@ export function seedDatabase(db: DB, anchorIso: string, opts: { preserveSessions
       for (const d of app.documents) {
         const file = path.join(fixturesDir(), 'documents', d.fixtureFile);
         tx.insert(s.uploadedDocuments).values({ id: d.id, applicationId: app.id, docType: d.docType, originalName: d.originalName, storageReference: `fixture:${d.fixtureFile}`, mimetype: 'application/pdf', sizeBytes: fs.statSync(file).size, extractionStatus: 'EXTRACTED', createdAt: A(app.createdOffset) }).run();
-        tx.insert(s.documentExtractions).values({ id: `ext_${d.id}`, documentId: d.id, documentType: d.docType, fieldsJson: JSON.stringify([{ name: 'agencyName', value: 'New Partner Travel (Demo)', confidence: 0.97 }, { name: 'city', value: 'Pune', confidence: 0.95 }]), warningsJson: '[]', engine: 'PDF_TEXT', reviewedFieldsJson: JSON.stringify({ agencyName: 'New Partner Travel (Demo)', city: 'Pune' }), createdAt: A(app.createdOffset) }).run();
+        tx.insert(s.documentExtractions).values({ id: `ext_${d.id}`, documentId: d.id, documentType: d.docType, fieldsJson: JSON.stringify([{ name: 'agencyName', value: 'New Partner Travel', confidence: 0.97 }, { name: 'city', value: 'Pune', confidence: 0.95 }]), warningsJson: '[]', engine: 'PDF_TEXT', reviewedFieldsJson: JSON.stringify({ agencyName: 'New Partner Travel', city: 'Pune' }), createdAt: A(app.createdOffset) }).run();
       }
     }
 

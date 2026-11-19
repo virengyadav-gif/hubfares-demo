@@ -19,19 +19,19 @@ const hash = (userId: string) => `scrypt$${userId}$${scryptSync(DEMO_PASSWORD, `
 // ---------- agencies, application, providers ----------
 write('agencies.json', {
   agencies: [
-    { id: 'agency_skyline', legalName: 'Skyline Travels Private Limited (Demo)', displayName: 'Skyline Travels', status: 'ACTIVE', city: 'Mumbai', state: 'Maharashtra', panMasked: 'DEMOS••01S', gstin: '27DEMOS0001S1Z5', contactEmail: 'ops@skyline.example.com', registeredOffset: 'D-120', activatedOffset: 'D-118', paymentReference: 'HFVA-SKY-001', funding: 'PREPAID', story: 'Onboarding, prepaid booking, supplier-pending refund' },
-    { id: 'agency_orbit', legalName: 'Orbit Corporate Travel LLP (Demo)', displayName: 'Orbit Corporate Travel', status: 'ACTIVE', city: 'Bengaluru', state: 'Karnataka', panMasked: 'DEMOO••01O', gstin: '29DEMOO0001O1Z2', contactEmail: 'finance@orbit.example.com', registeredOffset: 'D-100', activatedOffset: 'D-97', paymentReference: 'HFVA-ORB-001', funding: 'WEEKLY_CREDIT', story: 'Credit booking and prompt refund payout' },
-    { id: 'agency_aster', legalName: 'Aster Holidays (Demo)', displayName: 'Aster Holidays', status: 'ACTIVE', city: 'New Delhi', state: 'Delhi', panMasked: 'DEMOA••01A', gstin: '07DEMOA0001A1Z9', contactEmail: 'accounts@aster.example.com', registeredOffset: 'D-90', activatedOffset: 'D-88', paymentReference: 'HFVA-AST-001', funding: 'DAILY_CREDIT', story: 'High-cancellation / risk dashboard' },
+    { id: 'agency_skyline', legalName: 'Skyline Travels Private Limited', displayName: 'Skyline Travels', status: 'ACTIVE', city: 'Mumbai', state: 'Maharashtra', panMasked: 'AAKCS••01S', gstin: '27AAKCS0001S1Z5', contactEmail: 'ops@skyline.example.com', registeredOffset: 'D-120', activatedOffset: 'D-118', paymentReference: 'HFVA-SKY-001', funding: 'PREPAID', story: 'Onboarding, prepaid booking, supplier-pending refund' },
+    { id: 'agency_orbit', legalName: 'Orbit Corporate Travel LLP', displayName: 'Orbit Corporate Travel', status: 'ACTIVE', city: 'Bengaluru', state: 'Karnataka', panMasked: 'AAGFO••01O', gstin: '29AAGFO0001O1Z2', contactEmail: 'finance@orbit.example.com', registeredOffset: 'D-100', activatedOffset: 'D-97', paymentReference: 'HFVA-ORB-001', funding: 'WEEKLY_CREDIT', story: 'Credit booking and prompt refund payout' },
+    { id: 'agency_aster', legalName: 'Aster Holidays', displayName: 'Aster Holidays', status: 'ACTIVE', city: 'New Delhi', state: 'Delhi', panMasked: 'AAPFA••01A', gstin: '07AAPFA0001A1Z9', contactEmail: 'accounts@aster.example.com', registeredOffset: 'D-90', activatedOffset: 'D-88', paymentReference: 'HFVA-AST-001', funding: 'DAILY_CREDIT', story: 'High-cancellation / risk dashboard' },
   ],
   applications: [
     {
       id: 'APP0042', reference: 'HF-APP-0042', status: 'SUBMITTED', submittedOffset: 'H-26', createdOffset: 'D-2',
       draft: {
-        organization: { agencyName: 'New Partner Travel (Demo)', turnoverInr: 45000000, entityType: 'PRIVATE_LIMITED', pan: 'DEMON0001N', gstin: '27DEMON0001N1Z3', registrationNumber: 'U63040MH2019PTC000042', website: 'https://newpartner.example.com' },
+        organization: { agencyName: 'New Partner Travel', turnoverInr: 45000000, entityType: 'PRIVATE_LIMITED', pan: 'AAKCN0001N', gstin: '27AAKCN0001N1Z3', registrationNumber: 'U63040MH2019PTC000042', website: 'https://newpartner.example.com' },
         director: { salutation: 'Ms', firstName: 'Ananya', lastName: 'Deshpande', email: 'ananya@newpartner.example.com', mobile: '+919000000042' },
         finance: { salutation: 'Mr', firstName: 'Rohan', lastName: 'Iyer', email: 'finance@newpartner.example.com', mobile: '+919000000043' },
         communication: { email: 'hello@newpartner.example.com', mobile: '+919000000044', website: 'https://newpartner.example.com' },
-        address: { line1: '12 Demo Business Park', line2: 'Baner Road', country: 'India', state: 'Maharashtra', city: 'Pune', postalCode: '411045' },
+        address: { line1: '12 Riverside Business Park', line2: 'Baner Road', country: 'India', state: 'Maharashtra', city: 'Pune', postalCode: '411045' },
         acknowledged: true,
       },
       documents: [{ id: 'doc_seed_np_1', docType: 'BUSINESS_REGISTRATION', originalName: 'company-registration-demo.pdf', fixtureFile: 'company-registration-demo.pdf' }],
@@ -43,16 +43,16 @@ write('agencies.json', {
     { id: 'prov_amadeus', providerCode: 'AMADEUS', providerKind: 'GDS', status: 'PLANNED', mode: 'UNAVAILABLE' },
   ],
   pccMappings: [
-    { id: 'pcc_hfdemo1', providerId: 'prov_sabre', pccCode: 'H7FA', agencyId: null, enabled: true, description: 'Hubfares and permitted Skyline/Orbit/Aster operations (invented demo PCC)' },
-    { id: 'pcc_skydemo', providerId: 'prov_sabre', pccCode: 'S9KY', agencyId: 'agency_skyline', enabled: true, description: 'Skyline-only import scenario (invented demo PCC)' },
-    { id: 'pcc_orbdemo', providerId: 'prov_sabre', pccCode: 'O4RB', agencyId: 'agency_orbit', enabled: true, description: 'Orbit-only import scenario (invented demo PCC)' },
+    { id: 'pcc_hfdemo1', providerId: 'prov_sabre', pccCode: 'H7FA', agencyId: null, enabled: true, description: 'Hubfares and permitted Skyline/Orbit/Aster operations' },
+    { id: 'pcc_skydemo', providerId: 'prov_sabre', pccCode: 'S9KY', agencyId: 'agency_skyline', enabled: true, description: 'Skyline-only import scenario' },
+    { id: 'pcc_orbdemo', providerId: 'prov_sabre', pccCode: 'O4RB', agencyId: 'agency_orbit', enabled: true, description: 'Orbit-only import scenario' },
     { id: 'pcc_tpdemo1', providerId: 'prov_travelport', pccCode: 'T1PA', agencyId: null, enabled: false, description: 'Future Travelport adapter — no live connection' },
     { id: 'pcc_amdemo1', providerId: 'prov_amadeus', pccCode: 'A1MA', agencyId: null, enabled: false, description: 'Future Amadeus adapter — no live connection' },
   ],
   suppliers: [
-    { id: 'supplier_sabre_mock', name: 'Sabre-routed airline settlements (mock)', demoCode: 'SUP-SABRE', status: 'ACTIVE' },
-    { id: 'supplier_consolidator_a', name: 'Consolidator A (mock)', demoCode: 'SUP-CONA', status: 'ACTIVE' },
-    { id: 'supplier_consolidator_b', name: 'Consolidator B (mock)', demoCode: 'SUP-CONB', status: 'ACTIVE' },
+    { id: 'supplier_sabre_mock', name: 'Airline settlements (BSP)', demoCode: 'SUP-SABRE', status: 'ACTIVE' },
+    { id: 'supplier_consolidator_a', name: 'Consolidator A', demoCode: 'SUP-CONA', status: 'ACTIVE' },
+    { id: 'supplier_consolidator_b', name: 'Consolidator B', demoCode: 'SUP-CONB', status: 'ACTIVE' },
   ],
 });
 
@@ -104,8 +104,8 @@ const slabsChange = (s1: number, s2: number) => [
   { id: 'S2', permitted: true, supplierPenaltyMinor: s2, fareDifferenceApplies: true },
 ];
 write('fare-rules.json', [
-  { id: 'A_FLEXIBLE', version: 1, currency: 'INR', label: 'Flexible (sample)', cancellationSlabs: slabsCancel(199900, 104700), dateChangeSlabs: slabsChange(250000, 150000), noShow: { afterDeparture: 'NON_REFUNDABLE' }, seatFee: { mode: 'AIRLINE_AND_SEAT_DEPENDENT', illustrativeOnly: true }, applicability: 'PER_ADULT_PER_SECTOR' },
-  { id: 'B_RESTRICTED', version: 1, currency: 'INR', label: 'Restricted (sample)', cancellationSlabs: slabsCancel(500000, 300000), dateChangeSlabs: slabsChange(350000, 200000), noShow: { afterDeparture: 'NON_REFUNDABLE' }, seatFee: { mode: 'AIRLINE_AND_SEAT_DEPENDENT', illustrativeOnly: true }, applicability: 'PER_ADULT_PER_SECTOR' },
+  { id: 'A_FLEXIBLE', version: 1, currency: 'INR', label: 'Flexible', cancellationSlabs: slabsCancel(199900, 104700), dateChangeSlabs: slabsChange(250000, 150000), noShow: { afterDeparture: 'NON_REFUNDABLE' }, seatFee: { mode: 'AIRLINE_AND_SEAT_DEPENDENT', illustrativeOnly: true }, applicability: 'PER_ADULT_PER_SECTOR' },
+  { id: 'B_RESTRICTED', version: 1, currency: 'INR', label: 'Restricted', cancellationSlabs: slabsCancel(500000, 300000), dateChangeSlabs: slabsChange(350000, 200000), noShow: { afterDeparture: 'NON_REFUNDABLE' }, seatFee: { mode: 'AIRLINE_AND_SEAT_DEPENDENT', illustrativeOnly: true }, applicability: 'PER_ADULT_PER_SECTOR' },
 ]);
 
 // ---------- airports & flights ----------
@@ -158,7 +158,7 @@ write('flights.json', {
   airlines: AIRLINES,
   offers: OFFERS.map((o) => ({
     id: `offer_${p3(o.n)}`, providerCode: 'SABRE', airlineCode: o.al, airlineName: AIRLINES[o.al], operatingCarrier: o.al,
-    flightNumber: `${o.al}-DEMO-${100 + o.n}`, origin: o.from, destination: o.to,
+    flightNumber: `${o.al} ${100 + o.n}`, origin: o.from, destination: o.to,
     searchOriginCity: AIRPORTS[o.from].cityCode, searchDestinationCity: AIRPORTS[o.to].cityCode,
     dayOffset: o.day, localDepartureTime: o.time, durationMin: o.dur, cabin: o.cabin, stops: o.stops, via: o.via ?? null,
     seatsLeft: o.seats ?? (3 + (o.n * 7) % 9), aircraft: o.aircraft,
@@ -252,8 +252,8 @@ write('bookings.json', {
   note: 'Generated from seed-contract.v1.json — amounts, statuses, offsets and policy snapshots are copied verbatim; routes/airlines/passengers are fixture assignments with no money effect.',
   bookings: contract.historicalBookings.map((b: any, i: number) => {
     const [o, d, al, brand] = ROUTES[b.id];
-    return { ...b, origin: o, destination: d, airlineCode: al, airlineName: AIRLINES[al], flightNumber: `${al}-DEMO-${700 + i + 1}`,
-      brandCode: brand, cabin: 'ECONOMY', durationMin: DUR[`${o}-${d}`], passengerName: `${PAX[i]} (Demo)`,
+    return { ...b, origin: o, destination: d, airlineCode: al, airlineName: AIRLINES[al], flightNumber: `${al} ${700 + i + 1}`,
+      brandCode: brand, cabin: 'ECONOMY', durationMin: DUR[`${o}-${d}`], passengerName: `${PAX[i]}`,
       originTz: AIRPORTS[o].tz, destinationTz: AIRPORTS[d].tz };
   }),
 });
@@ -284,11 +284,11 @@ write('payments.json', {
 // ---------- PNR imports ----------
 write('import-pnrs.json', {
   records: [
-    { key: 'imp_sky_ok', provider: 'SABRE', pcc: 'S9KY', pnr: 'SBD101', ownerAgencyId: 'agency_skyline', airlinePnr: 'AI8K1Q', itinerary: { origin: 'BOM', destination: 'DEL', airlineCode: 'AI', flightNumber: 'AI-DEMO-801', departureOffset: 'D+9', durationMin: 130, cabin: 'ECONOMY' }, passengers: ['Kavya Rao (Demo)'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2400801001'], fareRuleProfileId: 'A_FLEXIBLE', agencySellMinor: 850000, supplierCostMinor: 795000, bookedOffset: 'D-2' },
-    { key: 'imp_orb_ok', provider: 'SABRE', pcc: 'O4RB', pnr: 'SBD202', ownerAgencyId: 'agency_orbit', airlinePnr: 'AI2X9P', itinerary: { origin: 'DEL', destination: 'BOM', airlineCode: 'AI', flightNumber: 'AI-DEMO-802', departureOffset: 'D+11', durationMin: 130, cabin: 'ECONOMY' }, passengers: ['Nikhil Arora (Demo)'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2400802001'], fareRuleProfileId: 'B_RESTRICTED', agencySellMinor: 1100000, supplierCostMinor: 1020000, bookedOffset: 'D-3' },
-    { key: 'imp_hub_ops', provider: 'SABRE', pcc: 'H7FA', pnr: 'SBD303', ownerAgencyId: null, airlinePnr: '6E7Z3M', itinerary: { origin: 'BOM', destination: 'GOI', airlineCode: '6E', flightNumber: '6E-DEMO-803', departureOffset: 'D+6', durationMin: 75, cabin: 'ECONOMY' }, passengers: ['Leela Fernandes (Demo)'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2400803001'], fareRuleProfileId: 'A_FLEXIBLE', agencySellMinor: 640000, supplierCostMinor: 590000, bookedOffset: 'D-1' },
-    { key: 'imp_duplicate', provider: 'SABRE', pcc: 'S9KY', pnr: 'SBD404', ownerAgencyId: 'agency_skyline', airlinePnr: 'AI4D0W', itinerary: { origin: 'BOM', destination: 'DEL', airlineCode: 'AI', flightNumber: 'AI-DEMO-710', departureOffset: 'D-4', durationMin: 130, cabin: 'ECONOMY' }, passengers: ['Ira Banerjee (Demo)'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2410000010'], fareRuleProfileId: 'A_FLEXIBLE', agencySellMinor: 1700000, supplierCostMinor: 1400000, bookedOffset: 'D-15', alreadyImportedAsBooking: 'HFB1010' },
-    { key: 'imp_no_ticket', provider: 'SABRE', pcc: 'H7FA', pnr: 'SBD505', ownerAgencyId: 'agency_aster', airlinePnr: '6E5T2K', itinerary: { origin: 'BLR', destination: 'DEL', airlineCode: '6E', flightNumber: '6E-DEMO-805', departureOffset: 'D+7', durationMin: 165, cabin: 'ECONOMY' }, passengers: ['Omkar Patil (Demo)'], ticketStatus: 'NOT_ISSUED', ticketNumbers: [], fareRuleProfileId: 'B_RESTRICTED', agencySellMinor: 720000, supplierCostMinor: 670000, bookedOffset: 'D-1' },
+    { key: 'imp_sky_ok', provider: 'SABRE', pcc: 'S9KY', pnr: 'SBD101', ownerAgencyId: 'agency_skyline', airlinePnr: 'AI8K1Q', itinerary: { origin: 'BOM', destination: 'DEL', airlineCode: 'AI', flightNumber: 'AI 801', departureOffset: 'D+9', durationMin: 130, cabin: 'ECONOMY' }, passengers: ['Kavya Rao'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2400801001'], fareRuleProfileId: 'A_FLEXIBLE', agencySellMinor: 850000, supplierCostMinor: 795000, bookedOffset: 'D-2' },
+    { key: 'imp_orb_ok', provider: 'SABRE', pcc: 'O4RB', pnr: 'SBD202', ownerAgencyId: 'agency_orbit', airlinePnr: 'AI2X9P', itinerary: { origin: 'DEL', destination: 'BOM', airlineCode: 'AI', flightNumber: 'AI 802', departureOffset: 'D+11', durationMin: 130, cabin: 'ECONOMY' }, passengers: ['Nikhil Arora'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2400802001'], fareRuleProfileId: 'B_RESTRICTED', agencySellMinor: 1100000, supplierCostMinor: 1020000, bookedOffset: 'D-3' },
+    { key: 'imp_hub_ops', provider: 'SABRE', pcc: 'H7FA', pnr: 'SBD303', ownerAgencyId: null, airlinePnr: '6E7Z3M', itinerary: { origin: 'BOM', destination: 'GOI', airlineCode: '6E', flightNumber: '6E 803', departureOffset: 'D+6', durationMin: 75, cabin: 'ECONOMY' }, passengers: ['Leela Fernandes'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2400803001'], fareRuleProfileId: 'A_FLEXIBLE', agencySellMinor: 640000, supplierCostMinor: 590000, bookedOffset: 'D-1' },
+    { key: 'imp_duplicate', provider: 'SABRE', pcc: 'S9KY', pnr: 'SBD404', ownerAgencyId: 'agency_skyline', airlinePnr: 'AI4D0W', itinerary: { origin: 'BOM', destination: 'DEL', airlineCode: 'AI', flightNumber: 'AI 710', departureOffset: 'D-4', durationMin: 130, cabin: 'ECONOMY' }, passengers: ['Ira Banerjee'], ticketStatus: 'TICKETED', ticketNumbers: ['098-2410000010'], fareRuleProfileId: 'A_FLEXIBLE', agencySellMinor: 1700000, supplierCostMinor: 1400000, bookedOffset: 'D-15', alreadyImportedAsBooking: 'HFB1010' },
+    { key: 'imp_no_ticket', provider: 'SABRE', pcc: 'H7FA', pnr: 'SBD505', ownerAgencyId: 'agency_aster', airlinePnr: '6E5T2K', itinerary: { origin: 'BLR', destination: 'DEL', airlineCode: '6E', flightNumber: '6E 805', departureOffset: 'D+7', durationMin: 165, cabin: 'ECONOMY' }, passengers: ['Omkar Patil'], ticketStatus: 'NOT_ISSUED', ticketNumbers: [], fareRuleProfileId: 'B_RESTRICTED', agencySellMinor: 720000, supplierCostMinor: 670000, bookedOffset: 'D-1' },
   ],
   negativeTests: [
     { key: 'imp_bad_pcc', provider: 'SABRE', pcc: 'O4RB', pnr: 'SBD101', actorAgency: 'agency_orbit', expected: 'PNR_NOT_FOUND' },
@@ -299,16 +299,16 @@ write('import-pnrs.json', {
 
 // ---------- support / guided samples ----------
 write('support-cases.json', [
-  { id: 'CASE-S001', agencyId: 'agency_skyline', bookingId: 'HFB1009', source: 'SYSTEM', category: 'TICKETING_EXCEPTION', summary: 'Mock booking failure on HFB1009 — no funds charged', status: 'RESOLVED', priority: 'MEDIUM', assignedTo: 'user_hub_ops', createdOffset: 'D-1', events: [['OPEN', 'D-1'], ['ASSIGNED', 'H-20'], ['RESOLVED', 'H-12']] },
+  { id: 'CASE-S001', agencyId: 'agency_skyline', bookingId: 'HFB1009', source: 'SYSTEM', category: 'TICKETING_EXCEPTION', summary: 'Booking failure on HFB1009 — no funds charged', status: 'RESOLVED', priority: 'MEDIUM', assignedTo: 'user_hub_ops', createdOffset: 'D-1', events: [['OPEN', 'D-1'], ['ASSIGNED', 'H-20'], ['RESOLVED', 'H-12']] },
   { id: 'CASE-S002', agencyId: 'agency_skyline', bookingId: 'HFB1003', source: 'SYSTEM', category: 'SUPPLIER_REFUND_PENDING', summary: 'RFD1003 awaiting supplier settlement (INR 6,903 expected)', status: 'AWAITING_EXTERNAL', priority: 'MEDIUM', assignedTo: 'user_hub_ops', createdOffset: 'H-22', events: [['OPEN', 'H-22'], ['ASSIGNED', 'H-20'], ['AWAITING_EXTERNAL', 'H-18']] },
   { id: 'CASE-S003', agencyId: 'agency_aster', bookingId: null, source: 'SYSTEM', category: 'CREDIT_OVERDUE', summary: 'Aster Holidays daily credit overdue — new credit draws blocked by policy v2', status: 'IN_PROGRESS', priority: 'HIGH', assignedTo: 'user_hub_finance', createdOffset: 'H-23', events: [['OPEN', 'H-23'], ['ASSIGNED', 'H-21'], ['IN_PROGRESS', 'H-10']] },
   { id: 'CASE-S004', agencyId: 'agency_skyline', bookingId: null, source: 'SYSTEM', category: 'UNMATCHED_PAYMENT', summary: 'UTR26119001 received without a recognised agency reference', status: 'OPEN', priority: 'HIGH', assignedTo: null, createdOffset: 'H-5', events: [['OPEN', 'H-5']] },
-  { id: 'CASE-S005', agencyId: 'agency_aster', bookingId: 'HFB1022', source: 'CHATBOT', category: 'COMPLAINT', summary: 'Refund timeline query for SBX022 (historical demo case)', status: 'CLOSED', priority: 'LOW', assignedTo: 'user_hub_ops', createdOffset: 'D-3', events: [['OPEN', 'D-3'], ['ASSIGNED', 'D-3'], ['RESOLVED', 'D-2'], ['CLOSED', 'D-2']] },
+  { id: 'CASE-S005', agencyId: 'agency_aster', bookingId: 'HFB1022', source: 'CHATBOT', category: 'COMPLAINT', summary: 'Refund timeline query for SBX022', status: 'CLOSED', priority: 'LOW', assignedTo: 'user_hub_ops', createdOffset: 'D-3', events: [['OPEN', 'D-3'], ['ASSIGNED', 'D-3'], ['RESOLVED', 'D-2'], ['CLOSED', 'D-2']] },
 ]);
 write('guided-samples.json', {
   heldCarts: [
-    { id: 'cart_demo_001', agencyId: 'agency_skyline', route: 'BOM → SIN', flight: 'SQ-DEMO-109', travelers: 2, holdAmountMinor: 3360000, holdExpiresInMinutes: 95, status: 'HELD', label: 'Guided demo — no supplier hold synchronised' },
-    { id: 'cart_demo_002', agencyId: 'agency_skyline', route: 'DEL → DXB', flight: 'EK-DEMO-111', travelers: 1, holdAmountMinor: 1380000, holdExpiresInMinutes: 12, status: 'EXPIRING', label: 'Guided demo — no supplier hold synchronised' },
+    { id: 'cart_demo_001', agencyId: 'agency_skyline', route: 'BOM → SIN', flight: 'SQ 109', travelers: 2, holdAmountMinor: 3360000, holdExpiresInMinutes: 95, status: 'HELD', label: '' },
+    { id: 'cart_demo_002', agencyId: 'agency_skyline', route: 'DEL → DXB', flight: 'EK 111', travelers: 1, holdAmountMinor: 1380000, holdExpiresInMinutes: 12, status: 'EXPIRING', label: '' },
   ],
   amendmentOptions: [
     { type: 'DATE_CHANGE', label: 'Change departure date', options: [{ id: 'opt_plus1', label: 'Same flight, next day', fareDifferenceMinor: 45000 }, { id: 'opt_plus3', label: 'Same flight, +3 days', fareDifferenceMinor: 0 }] },
@@ -317,8 +317,8 @@ write('guided-samples.json', {
     { type: 'ANCILLARY', label: 'Ancillary request (baggage / meal / seat)', options: [{ id: 'opt_bag', label: 'Extra 10 kg baggage', fareDifferenceMinor: 250000 }, { id: 'opt_meal', label: 'Pre-book meal', fareDifferenceMinor: 45000 }] },
   ],
   gdsQueues: [
-    { provider: 'SABRE', pcc: 'H7FA', queue: 'Q50 Schedule change', count: 2, status: 'Sample notification' },
-    { provider: 'SABRE', pcc: 'S9KY', queue: 'Q7 Ticketing time limit', count: 1, status: 'Sample notification' },
+    { provider: 'SABRE', pcc: 'H7FA', queue: 'Q50 Schedule change', count: 2, status: 'Notification' },
+    { provider: 'SABRE', pcc: 'S9KY', queue: 'Q7 Ticketing time limit', count: 1, status: 'Notification' },
     { provider: 'TRAVELPORT', pcc: 'T1PA', queue: '—', count: 0, status: 'Planned integration' },
     { provider: 'AMADEUS', pcc: 'A1MA', queue: '—', count: 0, status: 'Planned integration' },
   ],
@@ -425,7 +425,7 @@ function png(file: string, w: number, h: number) {
 }
 async function docs() {
   fs.mkdirSync(path.join(FX, 'documents'), { recursive: true });
-  await pdf('company-registration-demo.pdf', 'Certificate of Business Registration (Demo)', [
+  await pdf('company-registration-demo.pdf', 'Certificate of Business Registration', [
     'Document Type: BUSINESS_REGISTRATION',
     'Organization Name: Bluebird Travels',
     'Entity Type: Private Limited',

@@ -11,13 +11,13 @@
         "origin": "BOM",
         "destination": "DEL",
         "airlineCode": "AI",
-        "flightNumber": "AI-DEMO-801",
+        "flightNumber": "AI 801",
         "departureOffset": "D+9",
         "durationMin": 130,
         "cabin": "ECONOMY"
       },
       "passengers": [
-        "Kavya Rao (Demo)"
+        "Kavya Rao"
       ],
       "ticketStatus": "TICKETED",
       "ticketNumbers": [
@@ -39,13 +39,13 @@
         "origin": "DEL",
         "destination": "BOM",
         "airlineCode": "AI",
-        "flightNumber": "AI-DEMO-802",
+        "flightNumber": "AI 802",
         "departureOffset": "D+11",
         "durationMin": 130,
         "cabin": "ECONOMY"
       },
       "passengers": [
-        "Nikhil Arora (Demo)"
+        "Nikhil Arora"
       ],
       "ticketStatus": "TICKETED",
       "ticketNumbers": [
@@ -67,13 +67,13 @@
         "origin": "BOM",
         "destination": "GOI",
         "airlineCode": "6E",
-        "flightNumber": "6E-DEMO-803",
+        "flightNumber": "6E 803",
         "departureOffset": "D+6",
         "durationMin": 75,
         "cabin": "ECONOMY"
       },
       "passengers": [
-        "Leela Fernandes (Demo)"
+        "Leela Fernandes"
       ],
       "ticketStatus": "TICKETED",
       "ticketNumbers": [
@@ -95,13 +95,13 @@
         "origin": "BOM",
         "destination": "DEL",
         "airlineCode": "AI",
-        "flightNumber": "AI-DEMO-710",
+        "flightNumber": "AI 710",
         "departureOffset": "D-4",
         "durationMin": 130,
         "cabin": "ECONOMY"
       },
       "passengers": [
-        "Ira Banerjee (Demo)"
+        "Ira Banerjee"
       ],
       "ticketStatus": "TICKETED",
       "ticketNumbers": [
@@ -124,13 +124,13 @@
         "origin": "BLR",
         "destination": "DEL",
         "airlineCode": "6E",
-        "flightNumber": "6E-DEMO-805",
+        "flightNumber": "6E 805",
         "departureOffset": "D+7",
         "durationMin": 165,
         "cabin": "ECONOMY"
       },
       "passengers": [
-        "Omkar Patil (Demo)"
+        "Omkar Patil"
       ],
       "ticketStatus": "NOT_ISSUED",
       "ticketNumbers": [],

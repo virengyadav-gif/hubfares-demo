@@ -3,7 +3,7 @@
     "id": "A_FLEXIBLE",
     "version": 1,
     "currency": "INR",
-    "label": "Flexible (sample)",
+    "label": "Flexible",
     "cancellationSlabs": [
       {
         "id": "S0",
@@ -63,7 +63,7 @@
     "id": "B_RESTRICTED",
     "version": 1,
     "currency": "INR",
-    "label": "Restricted (sample)",
+    "label": "Restricted",
     "cancellationSlabs": [
       {
         "id": "S0",

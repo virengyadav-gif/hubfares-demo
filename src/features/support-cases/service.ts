@@ -51,7 +51,7 @@ export function helpIntent(db: DB, ctx: SessionCtx, i: z.infer<typeof intentSche
   }
   if (i.action === 'flight_status') {
     const fn = (i.flightNumber ?? '').toUpperCase();
-    const offer = db.select().from(s.flightOffers).all().find((o) => o.flightNumber === fn || o.flightNumber.replace(/-DEMO-/, '') === fn.replace(/[- ]/g, ''));
+    const offer = db.select().from(s.flightOffers).all().find((o) => o.flightNumber === fn || o.flightNumber.replace(/[\s-]/g, '') === fn.replace(/[- ]/g, ''));
     if (!offer) throw new AppError('NOT_FOUND', 'No seeded flight matches that airline/flight number. This demo shows simulated status for seeded flights only.');
     return { flightNumber: offer.flightNumber, route: `${offer.origin}-${offer.destination}`, departureAt: offer.departureAt, originTz: offer.originTz, status: simulatedFlightStatus(offer.flightNumber), label: 'Simulated status' };
   }
