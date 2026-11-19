@@ -36,7 +36,7 @@ async function xlsxRows(as: string, type: string, url?: string) {
   expect(r.status).toBe(200);
   expect(r.headers.get('content-type')).toContain('spreadsheetml');
   const buf = Buffer.from(await r.arrayBuffer());
-  const wb = new ExcelJS.Workbook(); await wb.xlsx.load(buf);
+  const wb = new ExcelJS.Workbook(); await wb.xlsx.load(buf as any);
   const ws = wb.getWorksheet('Transactions')!;
   const header = (ws.getRow(2).values as any[]).slice(1);
   const rows: Record<string, any>[] = [];

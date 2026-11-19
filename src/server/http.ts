@@ -45,7 +45,7 @@ function render(r: unknown, requestId: string) {
   }
   return json(200, { data: r, meta: { demo: true, source: 'INTERNAL', requestId } });
 }
-async function common<BS extends ZodTypeAny, QS extends ZodTypeAny>(req: Request, rc: { params?: Promise<Record<string, string>> } | undefined, opts: Opts<BS, QS>, requireAuth = false) {
+async function common<BS extends ZodTypeAny, QS extends ZodTypeAny>(req: Request, rc: { params: Promise<any> } | undefined, opts: Opts<BS, QS>, requireAuth = false) {
   const requestId = `req_${randomBytes(5).toString('hex')}`;
   if (!sameOrigin(req)) throw new AppError('FORBIDDEN', 'Cross-origin request rejected');
   const db = getDb();
@@ -63,7 +63,7 @@ async function common<BS extends ZodTypeAny, QS extends ZodTypeAny>(req: Request
   return { requestId, db, ctx, body, query, params, idemKey };
 }
 export function api<BS extends ZodTypeAny = z.ZodAny, QS extends ZodTypeAny = z.ZodAny>(opts: Opts<BS, QS>, fn: (c: Ctx<z.infer<BS>, z.infer<QS>>) => unknown | Promise<unknown>) {
-  return async (req: Request, rc?: { params?: Promise<Record<string, string>> }) => {
+  return async (req: Request, rc: { params: Promise<any> }) => {
     let requestId = 'req_unknown';
     try {
       const c = await common(req, rc, opts, true);
@@ -73,7 +73,7 @@ export function api<BS extends ZodTypeAny = z.ZodAny, QS extends ZodTypeAny = z.
   };
 }
 export function publicApi<BS extends ZodTypeAny = z.ZodAny, QS extends ZodTypeAny = z.ZodAny>(opts: Opts<BS, QS>, fn: (c: PubCtx<z.infer<BS>, z.infer<QS>>) => unknown | Promise<unknown>) {
-  return async (req: Request, rc?: { params?: Promise<Record<string, string>> }) => {
+  return async (req: Request, rc: { params: Promise<any> }) => {
     let requestId = 'req_unknown';
     try {
       const c = await common(req, rc, opts);
