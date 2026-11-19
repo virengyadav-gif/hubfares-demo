@@ -255,24 +255,53 @@ export function bookingDetail(db: Tx, ctx: SessionCtx, id: string) {
   const ag = db.select().from(s.agencies).where(eq(s.agencies.id, b.agencyId)).get();
   const wallet = db.select().from(s.walletLedgerEntries).where(eq(s.walletLedgerEntries.bookingId, id)).orderBy(s.walletLedgerEntries.createdAt).all();
   const credit = db.select().from(s.creditLedgerEntries).where(eq(s.creditLedgerEntries.bookingId, id)).orderBy(s.creditLedgerEntries.createdAt).all();
+  const hub = isHub(ctx);
+  const pnrRow = db.select().from(s.pnrRecords).where(eq(s.pnrRecords.bookingId, id)).get() ?? null;
+  const paxRows = db.select().from(s.passengers).where(eq(s.passengers.bookingId, id)).orderBy(s.passengers.id).all();
+  const allTix = db.select().from(s.tickets).where(eq(s.tickets.bookingId, id)).all();
+  const children = db.select().from(s.bookings).where(eq(s.bookings.parentBookingId, id)).orderBy(s.bookings.id).all();
+  const childPnrs = children.length ? db.select().from(s.pnrRecords).where(inArray(s.pnrRecords.bookingId, children.map((c) => c.id))).all() : [];
+  const userNames = Object.fromEntries(db.select().from(s.users).all().map((u) => [u.id, u.name]));
+  const amendments = db.select().from(s.amendmentCases).where(eq(s.amendmentCases.bookingId, id)).all();
+  const auditRows = db.select().from(s.auditEvents).where(and(eq(s.auditEvents.entityType, 'booking'), eq(s.auditEvents.entityId, id))).orderBy(s.auditEvents.occurredAt, s.auditEvents.id).all();
+  const history = [
+    { action: 'BOOKED', occurredAt: b.bookedAt, actorName: b.userId ? userNames[b.userId] ?? null : null, detail: `${b.source === 'IMPORTED' ? 'Imported' : 'Booking created'} · ${b.routeSummary}` },
+    ...auditRows.filter((a) => a.action !== 'BOOKING_PNR_CREATED' || true).map((a) => { const m = JSON.parse(a.metadataJson || '{}'); return { action: a.action, occurredAt: a.occurredAt, actorName: a.actorId ? userNames[a.actorId] ?? null : null, actorRole: a.actorRole, detail: historyDetail(a.action, m) }; }),
+  ].sort((x, y) => x.occurredAt.localeCompare(y.occurredAt));
   return {
     bookingId: b.id, agencyId: b.agencyId, agencyName: ag?.displayName, source: b.source, bookingStatus: b.bookingStatus, ticketStatus: b.ticketStatus, paymentStatus: b.paymentStatus, fundingType: b.fundingType,
-    gdsProvider: b.provider === 'SABRE' ? 'SABRE_MOCK' : b.provider, pcc: b.pcc, tripType: b.tripType, bookedAt: b.bookedAt, firstDepartureAt: b.firstDepartureAt, routeSummary: b.routeSummary, failureReason: b.failureReason,
+    gdsProvider: hub ? b.provider : undefined, pcc: hub ? b.pcc : undefined, parentBookingId: b.parentBookingId, tripType: b.tripType, bookedAt: b.bookedAt, firstDepartureAt: b.firstDepartureAt, routeSummary: b.routeSummary, failureReason: b.failureReason,
     amount: { amountMinor: b.sellAmountMinor, currency: 'INR' }, supplierCost: isHub(ctx) ? { amountMinor: b.supplierCostMinor, currency: 'INR' } : undefined,
     refundPolicySnapshot: { policyId: b.refundPolicyId, version: b.refundPolicyVersion, payoutMode: b.refundPayoutMode },
     snapshot: JSON.parse(b.bookingSnapshotJson),
-    pnr: db.select().from(s.pnrRecords).where(eq(s.pnrRecords.bookingId, id)).get() ?? null,
-    tickets: tix.map((t) => ({ ticketNumber: t.ticketNumber, status: t.status, issuedAt: t.issuedAt, imported: t.imported })),
-    passengers: db.select().from(s.passengers).where(eq(s.passengers.bookingId, id)).all(),
+    pnr: pnrRow ? (hub ? pnrRow : { gdsPnr: pnrRow.gdsPnr, airlinePnr: pnrRow.airlinePnr, imported: pnrRow.imported, createdAt: pnrRow.createdAt }) : null,
+    tickets: tix.map((t) => ({ ticketNumber: t.ticketNumber, status: t.status, issuedAt: t.issuedAt, imported: t.imported, passengerId: t.passengerId, passengerName: paxRows.find((p) => p.id === t.passengerId)?.displayName ?? null })),
+    passengers: paxRows.map((p) => ({ ...p, ticketNumber: allTix.filter((t) => t.passengerId === p.id && t.status !== 'EXCHANGED').map((t) => t.ticketNumber)[0] ?? null, ticketStatus: allTix.filter((t) => t.passengerId === p.id && t.status !== 'EXCHANGED').map((t) => t.status)[0] ?? null })),
+    splitChildren: children.map((c) => ({ bookingId: c.id, status: c.bookingStatus, gdsPnr: childPnrs.find((p) => p.bookingId === c.id)?.gdsPnr ?? null, leadPassenger: c.leadPassenger, passengers: JSON.parse(c.bookingSnapshotJson).splitFrom?.passengers ?? [c.leadPassenger], amountMinor: c.sellAmountMinor })),
+    history,
     segments: segs.map((g) => ({ ...g, fareRuleSnapshot: JSON.parse(g.fareRuleSnapshotJson), priceComponents: JSON.parse(g.priceComponentsJson), fareRuleSnapshotJson: undefined, priceComponentsJson: undefined, segmentSupplierCostMinor: isHub(ctx) ? g.segmentSupplierCostMinor : undefined })),
     reservation: db.select().from(s.fundingReservations).where(eq(s.fundingReservations.bookingId, id)).get() ?? null,
     walletEntries: wallet, creditEntries: credit,
     cancellation: db.select().from(s.cancellations).where(eq(s.cancellations.bookingId, id)).get() ?? null,
     refundClaim: claim ? { ...claim, timeline: JSON.parse(claim.timelineJson), receipts, supplierExpectedMinor: claim.supplierExpectedMinor } : null,
-    amendments: db.select().from(s.amendmentCases).where(eq(s.amendmentCases.bookingId, id)).all(),
+    amendments: amendments.map((a) => ({ ...a, quote: JSON.parse(a.quoteJson), quoteJson: undefined })),
     supportCases: db.select().from(s.supportCases).where(eq(s.supportCases.bookingId, id)).all(),
     audit: isHub(ctx) || true ? db.select().from(s.auditEvents).where(and(eq(s.auditEvents.entityType, 'booking'), eq(s.auditEvents.entityId, id))).orderBy(s.auditEvents.occurredAt).all().map((a) => ({ action: a.action, actorRole: a.actorRole, occurredAt: a.occurredAt })) : [],
-    demo: true,
   };
+}
+const HISTORY_LABEL: Record<string, string> = {
+  BOOKING_PNR_CREATED: 'PNR created', TICKET_ISSUED: 'Ticket issued', TICKETING_FAILED: 'Ticketing failed', BOOKING_FAILED: 'Booking failed', BOOKING_CANCELLED: 'Cancelled',
+  PNR_SPLIT: 'PNR split', PNR_SPLIT_CREATED: 'Split from original PNR', TICKET_REISSUED: 'Ticket reissued (date change)', PNR_IMPORTED: 'PNR imported', AMENDMENT_QUOTED: 'Date change quoted', MANUAL_ORDER_RECORDED: 'Offline booking recorded',
+};
+export function historyDetail(action: string, m: any): string {
+  const base = HISTORY_LABEL[action] ?? action.replace(/_/g, ' ').toLowerCase();
+  if (action === 'BOOKING_PNR_CREATED' && m.pnr) return `${base} · ${m.pnr}`;
+  if (action === 'TICKET_ISSUED' && m.tickets) return `${base} · ${m.tickets.join(', ')}`;
+  if (action === 'PNR_SPLIT') return `${base} · ${(m.passengers ?? []).join(', ')} moved to ${m.childPnr} (${m.childBookingId})`;
+  if (action === 'PNR_SPLIT_CREATED') return `${base} ${m.parentPnr ?? ''} (${m.parentBookingId}) · ${(m.passengers ?? []).join(', ')}`;
+  if (action === 'BOOKING_CANCELLED') return `${base} · refund ₹${((m.refundMinor ?? 0) / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+  if (action === 'TICKET_REISSUED') return `${base} · ${m.fromDate} → ${m.toDate} · new ticket(s) ${(m.newTickets ?? []).join(', ')}`;
+  if (action === 'PNR_IMPORTED') return `${base} · ${m.pnr}`;
+  return base;
 }
 export { or };

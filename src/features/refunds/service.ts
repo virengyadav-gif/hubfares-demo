@@ -3,7 +3,7 @@ import { and, eq, desc } from 'drizzle-orm';
 import { z } from 'zod';
 import * as s from '@/server/db/schema';
 import type { DB } from '@/server/db/client';
-import { nextId, nextCode, audit, domainEvent, notify, Tx } from '@/server/db/util';
+import { nextId, nextCode, nextSeq, audit, domainEvent, notify, Tx } from '@/server/db/util';
 import { withIdempotency } from '@/server/idempotency';
 import type { SessionCtx } from '@/server/auth/session';
 import { assertOwned, agencyScope, isHub } from '@/server/auth/authorize';
@@ -13,7 +13,7 @@ import { computeCancellation, CancelQuote } from './calc';
 import type { FareRuleProfile } from '@/features/fares/rules';
 import { loadFixture } from '@/server/db/seed';
 
-export const cancelSchema = z.object({ mode: z.enum(['CANCEL', 'VOID']).default('CANCEL') });
+export const cancelSchema = z.object({ mode: z.enum(['CANCEL', 'VOID']).default('CANCEL'), passengerIds: z.array(z.string()).max(9).optional() });
 
 function ownedBooking(tx: Tx, ctx: SessionCtx, bookingId: string) {
   const b = tx.select().from(s.bookings).where(eq(s.bookings.id, bookingId)).get();
@@ -23,24 +23,62 @@ function ownedBooking(tx: Tx, ctx: SessionCtx, bookingId: string) {
 }
 /** Mock void eligibility: the simulator only permits the explicitly seeded void (HFB1004, already voided). */
 function voidEligibility(_b: typeof s.bookings.$inferSelect) {
-  return { eligible: false, reason: 'Simulated Sabre: void window not available for this ticket (only an explicitly seeded void is permitted in the demo).' };
+  return { eligible: false, reason: 'Void window has closed for this ticket — use cancellation.' };
 }
-export function cancellationQuote(tx: Tx, ctx: SessionCtx, bookingId: string, mode: 'CANCEL' | 'VOID'): CancelQuote & { bookingId: string; mode: string; payoutPolicy: string; bookedRefundPolicyId: string; bookedRefundPolicyVersion: number; voidEligibility: { eligible: boolean; reason: string }; eligible: boolean; ineligibleReason: string | null; estimatedOnly: true; source: 'SIMULATED'; evaluatedAt: string } {
+export type PartialInfo = { selectedPassengers: { id: string; name: string; ticketNumber: string | null }[]; remainingPassengers: { id: string; name: string }[]; totalPassengers: number; perPassenger: { refundMinor: number; penaltyMinor: number; serviceFeeMinor: number; paidMinor: number } };
+/** Resolve a passenger selection: undefined / all passengers ⇒ full cancellation; a strict subset ⇒ PNR split + partial cancel. */
+function selectionFor(tx: Tx, ctx: SessionCtx, bookingId: string, passengerIds?: string[]) {
+  ownedBooking(tx, ctx, bookingId);
+  const pax = tx.select().from(s.passengers).where(eq(s.passengers.bookingId, bookingId)).orderBy(s.passengers.id).all();
+  if (!passengerIds || passengerIds.length === 0) return { partial: false, selectedIds: pax.map((p) => p.id), pax };
+  const uniq = [...new Set(passengerIds)];
+  if (uniq.some((id) => !pax.find((p) => p.id === id))) throw new AppError('VALIDATION_ERROR', 'Select passengers from this booking only');
+  return { partial: uniq.length < pax.length, selectedIds: uniq, pax };
+}
+export function cancellationQuote(tx: Tx, ctx: SessionCtx, bookingId: string, mode: 'CANCEL' | 'VOID', passengerIds?: string[]): CancelQuote & { bookingId: string; mode: string; payoutPolicy: string; bookedRefundPolicyId: string; bookedRefundPolicyVersion: number; voidEligibility: { eligible: boolean; reason: string }; eligible: boolean; ineligibleReason: string | null; estimatedOnly: true; source: 'SIMULATED'; evaluatedAt: string; partial?: PartialInfo } {
   const b = ownedBooking(tx, ctx, bookingId);
   const segs = tx.select().from(s.bookingSegments).where(eq(s.bookingSegments.bookingId, bookingId)).orderBy(s.bookingSegments.legIndex).all();
-  const adults = JSON.parse(b.bookingSnapshotJson).passengers?.adults ?? 1;
-  const q = computeCancellation(segs.map((g) => ({ legIndex: g.legIndex, origin: g.origin, destination: g.destination, departureAt: g.departureAt, segmentSellMinor: g.segmentSellMinor, segmentSupplierCostMinor: g.segmentSupplierCostMinor, profile: JSON.parse(g.fareRuleSnapshotJson) as FareRuleProfile, adults })), nowMs());
+  const sel = selectionFor(tx, ctx, bookingId, passengerIds);
+  const n = Math.max(1, sel.pax.length);
+  const k = sel.partial ? sel.selectedIds.length : n;
+  const q = computeCancellation(segs.map((g) => ({ legIndex: g.legIndex, origin: g.origin, destination: g.destination, departureAt: g.departureAt, segmentSellMinor: shareOf(g.segmentSellMinor, k, n), segmentSupplierCostMinor: shareOf(g.segmentSupplierCostMinor, k, n), profile: JSON.parse(g.fareRuleSnapshotJson) as FareRuleProfile, adults: k })), nowMs());
+  let partial: PartialInfo | undefined;
+  if (sel.partial) {
+    const tix = tx.select().from(s.tickets).where(eq(s.tickets.bookingId, bookingId)).all();
+    partial = {
+      selectedPassengers: sel.pax.filter((p) => sel.selectedIds.includes(p.id)).map((p) => ({ id: p.id, name: p.displayName, ticketNumber: tix.find((t) => t.passengerId === p.id)?.ticketNumber ?? null })),
+      remainingPassengers: sel.pax.filter((p) => !sel.selectedIds.includes(p.id)).map((p) => ({ id: p.id, name: p.displayName })),
+      totalPassengers: n,
+      perPassenger: { refundMinor: Math.round(q.estimatedAgencyRefundMinor / k), penaltyMinor: Math.round(q.supplierPenaltyMinor / k), serviceFeeMinor: Math.round(q.serviceFeeMinor / k), paidMinor: Math.round(q.agencyAmountPaidMinor / k) },
+    };
+  }
   const v = voidEligibility(b);
   let reason: string | null = null;
   if (b.bookingStatus === 'CANCELLED' || b.bookingStatus === 'VOIDED') reason = `Booking is already ${b.bookingStatus.toLowerCase()}`;
   else if (b.bookingStatus !== 'TICKETED') reason = 'Only ticketed bookings can be cancelled (no ticket has been issued)';
   else if (q.allDeparted) reason = 'All segments have departed — no-show rules apply; cancellation is not available';
   else if (mode === 'VOID' && !v.eligible) reason = v.reason;
-  return { ...q, bookingId, mode, payoutPolicy: b.refundPayoutMode, bookedRefundPolicyId: b.refundPolicyId, bookedRefundPolicyVersion: b.refundPolicyVersion, voidEligibility: v, eligible: !reason, ineligibleReason: reason, estimatedOnly: true, source: 'SIMULATED', evaluatedAt: nowIso() };
+  else if (sel.partial && mode === 'VOID') reason = 'Partial void is not supported — use cancellation';
+  else if (sel.partial && tx.select().from(s.tickets).where(eq(s.tickets.bookingId, bookingId)).all().filter((t) => sel.selectedIds.includes(t.passengerId ?? '') && t.status === 'ISSUED').length !== sel.selectedIds.length) reason = 'Every selected passenger must hold an issued ticket';
+  return { ...q, partial, bookingId, mode, payoutPolicy: b.refundPayoutMode, bookedRefundPolicyId: b.refundPolicyId, bookedRefundPolicyVersion: b.refundPolicyVersion, voidEligibility: v, eligible: !reason, ineligibleReason: reason, estimatedOnly: true, source: 'SIMULATED', evaluatedAt: nowIso() };
 }
 
-export function confirmCancellation(db: DB, ctx: SessionCtx, bookingId: string, mode: 'CANCEL' | 'VOID', idemKey: string) {
-  return db.transaction((tx) => withIdempotency(tx, 'booking.cancel_confirm', `${bookingId}:${idemKey}`, { userId: ctx.userId, agencyId: ctx.agencyId }, { bookingId, mode }, () => {
+export function confirmCancellation(db: DB, ctx: SessionCtx, bookingId: string, mode: 'CANCEL' | 'VOID', idemKey: string, passengerIds?: string[]) {
+  return db.transaction((tx) => withIdempotency(tx, 'booking.cancel_confirm', `${bookingId}:${idemKey}`, { userId: ctx.userId, agencyId: ctx.agencyId }, { bookingId, mode, passengerIds: passengerIds ?? null }, () => {
+    const sel = selectionFor(tx, ctx, bookingId, passengerIds);
+    if (sel.partial) {
+      if (mode !== 'CANCEL') throw new AppError('VALIDATION_ERROR', 'Partial cancellation supports cancel only');
+      const pq = cancellationQuote(tx, ctx, bookingId, 'CANCEL', sel.selectedIds);
+      if (!pq.eligible) throw new AppError('INVALID_STATE', pq.ineligibleReason!);
+      const split = splitBooking(tx, ctx, bookingId, sel.selectedIds);
+      const r = cancelInTx(tx, ctx, split.childBookingId, 'CANCEL', idemKey);
+      return { ...r, partial: true, parentBookingId: bookingId, childBookingId: split.childBookingId, childPnr: split.childPnr, parentPnr: split.parentPnr, cancelledPassengers: split.movedPassengers, remainingPassengers: split.remainingPassengers };
+    }
+    return cancelInTx(tx, ctx, bookingId, mode, idemKey);
+  }));
+}
+function cancelInTx(tx: Tx, ctx: SessionCtx, bookingId: string, mode: 'CANCEL' | 'VOID', idemKey: string) {
+  {
     const q = cancellationQuote(tx, ctx, bookingId, mode);
     if (!q.eligible) throw new AppError('INVALID_STATE', q.ineligibleReason!);
     const b = ownedBooking(tx, ctx, bookingId);
@@ -77,8 +115,59 @@ export function confirmCancellation(db: DB, ctx: SessionCtx, bookingId: string, 
     domainEvent(tx, 'booking.cancelled', 'booking', bookingId, b.agencyId, { claimId, refundMinor: refund });
     notify(tx, { audience: 'AGENCY', agencyId: b.agencyId, kind: 'CANCELLED', referenceId: claimId, title: `Cancellation confirmed for ${b.routeSummary}; refund ${payoutStatus === 'CREDITED' ? 'credited to wallet' : 'pending'}` });
     notify(tx, { audience: 'HUB', agencyId: b.agencyId, kind: 'REFUND_CLAIM', referenceId: claimId, title: `New refund claim ${claimId} (${b.refundPayoutMode})` });
-    return { bookingId, cancellationId: cxl, claimId, refundMinor: refund, agencyPayoutStatus: payoutStatus, claimStatus, walletCreditedMinor: credited };
-  }));
+    return { bookingId, cancellationId: cxl, claimId, refundMinor: refund, agencyPayoutStatus: payoutStatus, claimStatus, walletCreditedMinor: credited, supplierStatus: q.supplierExpectedMinor > 0 ? 'PENDING' : 'NOT_APPLICABLE', supplierExpectedMinor: q.supplierExpectedMinor, penaltyMinor: q.supplierPenaltyMinor, serviceFeeMinor: q.serviceFeeMinor, partial: false as boolean };
+  }
+}
+
+/** Proportional share of an amount for k of n passengers (exact for per-passenger priced bookings). */
+export function shareOf(amount: number, k: number, n: number) { return k === n ? amount : Math.round((amount * k) / n); }
+
+/**
+ * PNR split (GDS "divide"): selected passengers + their tickets move to a new child booking with its own PNR;
+ * the remaining passengers stay on the original booking/PNR. Amounts are apportioned per passenger.
+ * No ledger movement — funds were charged once on the original booking.
+ */
+export function splitBooking(tx: Tx, ctx: SessionCtx, bookingId: string, passengerIds: string[]) {
+  const b = ownedBooking(tx, ctx, bookingId);
+  if (b.bookingStatus !== 'TICKETED') throw new AppError('INVALID_STATE', 'Only ticketed bookings can be split');
+  const pax = tx.select().from(s.passengers).where(eq(s.passengers.bookingId, bookingId)).orderBy(s.passengers.id).all();
+  const n = pax.length, k = passengerIds.length;
+  if (n < 2 || k < 1 || k >= n) throw new AppError('VALIDATION_ERROR', 'Select at least one passenger and leave at least one on the booking');
+  const at = nowIso();
+  const children = tx.select().from(s.bookings).where(eq(s.bookings.parentBookingId, bookingId)).all().length;
+  const childId = `${bookingId}-S${children + 1}`;
+  const parentPnr = tx.select().from(s.pnrRecords).where(eq(s.pnrRecords.bookingId, bookingId)).get();
+  const childPnr = `SBS${String(nextSeq(tx, 'pnr_split')).padStart(3, '0')}`;
+  const segs = tx.select().from(s.bookingSegments).where(eq(s.bookingSegments.bookingId, bookingId)).orderBy(s.bookingSegments.legIndex).all();
+  const moved = pax.filter((p) => passengerIds.includes(p.id));
+  const remaining = pax.filter((p) => !passengerIds.includes(p.id));
+  let childSell = 0, childCost = 0;
+  const childSegs = segs.map((g) => {
+    const sell = shareOf(g.segmentSellMinor, k, n), cost = shareOf(g.segmentSupplierCostMinor, k, n);
+    childSell += sell; childCost += cost;
+    const pc = JSON.parse(g.priceComponentsJson);
+    return { g, sell, cost, pc };
+  });
+  const snap = JSON.parse(b.bookingSnapshotJson);
+  tx.insert(s.bookings).values({
+    ...b, id: childId, parentBookingId: bookingId, sellAmountMinor: childSell, supplierCostMinor: childCost, leadPassenger: moved[0].displayName, updatedAt: at,
+    bookingSnapshotJson: JSON.stringify({ ...snap, passengers: { adults: k, children: 0, infants: 0 }, splitFrom: { bookingId, pnr: parentPnr?.gdsPnr ?? null, at, passengers: moved.map((p) => p.displayName) } }),
+  }).run();
+  for (const { g, sell, cost, pc } of childSegs) {
+    tx.insert(s.bookingSegments).values({ ...g, id: `${childId}_seg${g.legIndex}`, bookingId: childId, segmentSellMinor: sell, segmentSupplierCostMinor: cost, priceComponentsJson: JSON.stringify({ ...pc, adults: k }) }).run();
+    tx.update(s.bookingSegments).set({ segmentSellMinor: g.segmentSellMinor - sell, segmentSupplierCostMinor: g.segmentSupplierCostMinor - cost, priceComponentsJson: JSON.stringify({ ...pc, adults: n - k }) }).where(eq(s.bookingSegments.id, g.id)).run();
+  }
+  for (const p of moved) {
+    tx.update(s.passengers).set({ bookingId: childId }).where(eq(s.passengers.id, p.id)).run();
+    tx.update(s.tickets).set({ bookingId: childId }).where(and(eq(s.tickets.bookingId, bookingId), eq(s.tickets.passengerId, p.id))).run();
+  }
+  if (parentPnr) tx.insert(s.pnrRecords).values({ id: `${childId}_pnr`, bookingId: childId, provider: parentPnr.provider, pcc: parentPnr.pcc, gdsPnr: childPnr, airlinePnr: parentPnr.airlinePnr, imported: parentPnr.imported, createdAt: at }).run();
+  tx.update(s.bookings).set({ sellAmountMinor: b.sellAmountMinor - childSell, supplierCostMinor: b.supplierCostMinor - childCost, leadPassenger: remaining[0].displayName, updatedAt: at,
+    bookingSnapshotJson: JSON.stringify({ ...snap, passengers: { adults: n - k, children: 0, infants: 0 }, splits: [...(snap.splits ?? []), { childBookingId: childId, childPnr, at, passengers: moved.map((p) => p.displayName) }] }) }).where(eq(s.bookings.id, bookingId)).run();
+  audit(tx, { userId: ctx.userId, role: ctx.role }, 'PNR_SPLIT', 'booking', bookingId, b.agencyId, { childBookingId: childId, childPnr, passengers: moved.map((p) => p.displayName) });
+  audit(tx, { userId: ctx.userId, role: ctx.role }, 'PNR_SPLIT_CREATED', 'booking', childId, b.agencyId, { parentBookingId: bookingId, parentPnr: parentPnr?.gdsPnr, passengers: moved.map((p) => p.displayName) });
+  domainEvent(tx, 'booking.split', 'booking', bookingId, b.agencyId, { childBookingId: childId });
+  return { childBookingId: childId, childPnr, parentPnr: parentPnr?.gdsPnr ?? null, movedPassengers: moved.map((p) => p.displayName), remainingPassengers: remaining.map((p) => p.displayName) };
 }
 
 export function listClaims(db: Tx, ctx: SessionCtx, agencyId?: string) {
