@@ -127,7 +127,7 @@ export function applicationDetail(db: Tx, id: string) {
   if (!a) throw new AppError('NOT_FOUND', 'Application not found');
   const docs = db.select().from(s.uploadedDocuments).where(eq(s.uploadedDocuments.applicationId, id)).all();
   const exts = docs.length ? db.select().from(s.documentExtractions).where(inArray(s.documentExtractions.documentId, docs.map((d) => d.id))).all() : [];
-  const checks = db.select().from(s.kycChecks).where(eq(s.kycChecks.applicationId, id)).orderBy(desc(s.kycChecks.checkedAt)).all();
+  const checks = db.select().from(s.kycChecks).where(eq(s.kycChecks.applicationId, id)).orderBy(desc(s.kycChecks.checkedAt), desc(s.kycChecks.id)).all();
   const latest = (t: string) => checks.find((c) => c.checkType === t) ?? null;
   const draft = JSON.parse(a.agencyDraftJson);
   const maskedPan = draft.organization?.pan ? `${draft.organization.pan.slice(0, 4)}••${draft.organization.pan.slice(-3)}` : null;
@@ -177,7 +177,7 @@ export function decideApplication(db: DB, ctx: SessionCtx, id: string, input: z.
       audit(tx, { userId: ctx.userId, role: ctx.role }, `APPLICATION_${st}`, 'application', id, null, { note: input.note });
       return { id, status: st };
     }
-    const pan = tx.select().from(s.kycChecks).where(and(eq(s.kycChecks.applicationId, id), eq(s.kycChecks.checkType, 'PAN'))).orderBy(desc(s.kycChecks.checkedAt)).get();
+    const pan = tx.select().from(s.kycChecks).where(and(eq(s.kycChecks.applicationId, id), eq(s.kycChecks.checkType, 'PAN'))).orderBy(desc(s.kycChecks.checkedAt), desc(s.kycChecks.id)).get();
     if (pan?.mockResult !== 'VERIFIED') throw new AppError('INVALID_STATE', 'Approval requires a completed mock PAN verification (green tick)');
     const d = draftSchema.parse(JSON.parse(a.agencyDraftJson));
     const slug = d.organization.agencyName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 24);

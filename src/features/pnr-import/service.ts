@@ -33,7 +33,7 @@ function authorisedLookup(db: Tx, ctx: SessionCtx, i: z.infer<typeof lookupSchem
     agencyId = ctx.agencyId!;
   }
   const rec = adapter.retrievePnr(i.pnr, i.pcc);
-  if (!rec || (rec.ownerAgencyId && rec.ownerAgencyId !== agencyId)) throw new AppError('PNR_NOT_FOUND', NOT_FOUND);
+  if (!rec || (rec.ownerAgencyId && rec.ownerAgencyId !== agencyId) || (!isHub(ctx) && rec.ownerAgencyId !== agencyId)) throw new AppError('PNR_NOT_FOUND', NOT_FOUND);
   return { rec, agencyId };
 }
 export function lookupPnr(db: Tx, ctx: SessionCtx, i: z.infer<typeof lookupSchema>) {

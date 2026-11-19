@@ -41,7 +41,7 @@ export function cancellations(db: Tx, f: KpiFilter) {
 export function creditRisk(db: Tx) {
   const at = nowIso();
   const ag = db.select().from(s.agencies).all();
-  const rows = ag.map((a) => ({ agencyId: a.id, agencyName: a.displayName, ...fundingPosition(db, a.id, at) }));
+  const rows = ag.map((a) => ({ ...fundingPosition(db, a.id, at), agencyName: a.displayName }));
   const payments = db.select().from(s.paymentEvents).orderBy(desc(s.paymentEvents.receivedAt)).all();
   const k = kpisFor(db, {});
   const walletTrend = db.select().from(s.walletLedgerEntries).orderBy(s.walletLedgerEntries.createdAt).all().reduce((m, e) => { const d = e.createdAt.slice(0, 10); (m[d] ??= { date: d, creditsMinor: 0, debitsMinor: 0 }); if (e.direction === 'CREDIT') m[d].creditsMinor += e.amountMinor; else m[d].debitsMinor += e.amountMinor; return m; }, {} as Record<string, any>);
