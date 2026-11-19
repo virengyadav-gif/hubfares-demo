@@ -6,7 +6,8 @@ export type ChangeSlab = { id: SlabId; permitted: boolean; supplierPenaltyMinor:
 export type FareRuleProfile = {
   id: ProfileId; version: number; currency: 'INR'; label: string;
   cancellationSlabs: CancelSlab[]; dateChangeSlabs: ChangeSlab[];
-  noShow: { afterDeparture: 'NON_REFUNDABLE' }; seatFee: { mode: string; illustrativeOnly: boolean }; applicability: string;
+  noShow: { afterDeparture: 'NON_REFUNDABLE' }; seatFee: { mode: string; standardFromMinor?: number; preferredFromMinor?: number; extraLegroomFromMinor?: number; note?: string; illustrativeOnly?: boolean };
+  ancillaries?: { excessBaggagePerKgMinor: number; mealFromMinor: number; nameChange: string; infantFareNote: string }; applicability: string;
 };
 export const PROFILE_IDS: ProfileId[] = ['A_FLEXIBLE', 'B_RESTRICTED'];
 export const TWO_H = 7_200_000;

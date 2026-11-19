@@ -40,7 +40,7 @@ export function upsertCoreRule(db: DB, ctx: SessionCtx, id: string | null, input
 }
 
 // ---- OTA downstream markup — UI ONLY. This module is never imported by pricing. ----
-export const markupSchema = z.object({ name: z.string().trim().min(2).max(60), journey: z.enum(['DOMESTIC', 'INTERNATIONAL', 'BOTH']), tripTypes: z.array(z.enum(['ONE_WAY', 'RETURN', 'MULTI_CITY'])).min(1), airlineFilter: z.string().trim().toUpperCase().default('ALL'), cabinFilter: z.enum(['ALL', 'ECONOMY', 'PREMIUM_ECONOMY', 'BUSINESS', 'FIRST']), markupKind: z.enum(['FIXED', 'PERCENT']), value: z.number().int().positive().max(10000000), targetUserIds: z.array(z.string()).default([]), enabled: z.boolean() });
+export const markupSchema = z.object({ name: z.string().trim().min(2).max(60), journey: z.enum(['DOMESTIC', 'INTERNATIONAL', 'BOTH']), tripTypes: z.array(z.enum(['ONE_WAY', 'RETURN', 'MULTI_CITY'])).min(1), airlineFilter: z.string().trim().toUpperCase().default('ALL'), cabinFilter: z.enum(['ALL', 'ECONOMY', 'PREMIUM_ECONOMY', 'BUSINESS', 'FIRST']), markupKind: z.enum(['FIXED', 'PERCENT']), value: z.number().int().positive().max(10000000), targetUserIds: z.array(z.string()).max(0, 'Markup applies to every user of your agency').default([]), enabled: z.boolean() });
 export function listMarkup(db: Tx, ctx: SessionCtx) {
   const scope = agencyScope(ctx);
   return db.select().from(s.agencyMarkupUiRules).where(scope ? eq(s.agencyMarkupUiRules.agencyId, scope) : undefined).all().map((m) => ({ ...m, tripTypes: JSON.parse(m.tripTypesJson), targetUserIds: JSON.parse(m.targetUserIdsJson), tripTypesJson: undefined, targetUserIdsJson: undefined, uiOnly: true }));
@@ -49,16 +49,14 @@ export function upsertMarkup(db: DB, ctx: SessionCtx, id: string | null, input: 
   const agencyId = ctx.agencyId!;
   return db.transaction((tx) => {
     const at = nowIso();
-    const users = new Set(tx.select().from(s.users).where(eq(s.users.agencyId, agencyId)).all().map((u) => u.id));
-    if (input.targetUserIds.some((u) => !users.has(u))) throw new AppError('VALIDATION_ERROR', 'Target users must belong to your agency');
-    const values = { name: input.name, journey: input.journey, tripTypesJson: JSON.stringify(input.tripTypes), airlineFilter: input.airlineFilter || 'ALL', cabinFilter: input.cabinFilter, markupKind: input.markupKind, value: input.value, currency: input.markupKind === 'FIXED' ? 'INR' : null, targetUserIdsJson: JSON.stringify(input.targetUserIds), enabled: input.enabled, updatedAt: at };
+    const values = { name: input.name, journey: input.journey, tripTypesJson: JSON.stringify(input.tripTypes), airlineFilter: input.airlineFilter || 'ALL', cabinFilter: input.cabinFilter, markupKind: input.markupKind, value: input.value, currency: input.markupKind === 'FIXED' ? 'INR' : null, targetUserIdsJson: '[]', enabled: input.enabled, updatedAt: at };
     if (id) {
       const m = tx.select().from(s.agencyMarkupUiRules).where(eq(s.agencyMarkupUiRules.id, id)).get();
       if (!m || m.agencyId !== agencyId) throw new AppError('TENANT_RESOURCE_NOT_FOUND', 'Markup rule not found');
       tx.update(s.agencyMarkupUiRules).set(values).where(eq(s.agencyMarkupUiRules.id, id)).run();
     } else { id = nextId(tx, 'markup_ui'); tx.insert(s.agencyMarkupUiRules).values({ id, agencyId, ...values }).run(); }
     audit(tx, { userId: ctx.userId, role: ctx.role }, 'MARKUP_UI_SAVED', 'markup_ui_rule', id, agencyId, { uiOnly: true });
-    return { id, uiOnly: true, notice: 'Configuration preview — fare integration planned. No effect on fares, bookings, wallet or analytics.' };
+    return { id, uiOnly: true, notice: 'Markup saved for all users of your agency. Hubfares net fares and your wallet are not affected.' };
   });
 }
 

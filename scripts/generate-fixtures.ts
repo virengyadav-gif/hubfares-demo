@@ -104,8 +104,8 @@ const slabsChange = (s1: number, s2: number) => [
   { id: 'S2', permitted: true, supplierPenaltyMinor: s2, fareDifferenceApplies: true },
 ];
 write('fare-rules.json', [
-  { id: 'A_FLEXIBLE', version: 1, currency: 'INR', label: 'Flexible', cancellationSlabs: slabsCancel(199900, 104700), dateChangeSlabs: slabsChange(250000, 150000), noShow: { afterDeparture: 'NON_REFUNDABLE' }, seatFee: { mode: 'AIRLINE_AND_SEAT_DEPENDENT', illustrativeOnly: true }, applicability: 'PER_ADULT_PER_SECTOR' },
-  { id: 'B_RESTRICTED', version: 1, currency: 'INR', label: 'Restricted', cancellationSlabs: slabsCancel(500000, 300000), dateChangeSlabs: slabsChange(350000, 200000), noShow: { afterDeparture: 'NON_REFUNDABLE' }, seatFee: { mode: 'AIRLINE_AND_SEAT_DEPENDENT', illustrativeOnly: true }, applicability: 'PER_ADULT_PER_SECTOR' },
+  { id: 'A_FLEXIBLE', version: 1, currency: 'INR', label: 'Flexible', cancellationSlabs: slabsCancel(199900, 104700), dateChangeSlabs: slabsChange(250000, 150000), noShow: { afterDeparture: 'NON_REFUNDABLE' }, seatFee: { mode: 'INDICATIVE', standardFromMinor: 0, preferredFromMinor: 40000, extraLegroomFromMinor: 90000, note: 'Standard seats free on Flexible fares; final price depends on airline, aircraft and seat.' }, ancillaries: { excessBaggagePerKgMinor: 50000, mealFromMinor: 0, nameChange: 'Not permitted', infantFareNote: 'Infant and child fares on request' }, applicability: 'PER_ADULT_PER_SECTOR' },
+  { id: 'B_RESTRICTED', version: 1, currency: 'INR', label: 'Restricted', cancellationSlabs: slabsCancel(500000, 300000), dateChangeSlabs: slabsChange(350000, 200000), noShow: { afterDeparture: 'NON_REFUNDABLE' }, seatFee: { mode: 'INDICATIVE', standardFromMinor: 25000, preferredFromMinor: 60000, extraLegroomFromMinor: 120000, note: 'Seat selection is chargeable on Restricted fares; final price depends on airline, aircraft and seat.' }, ancillaries: { excessBaggagePerKgMinor: 55000, mealFromMinor: 30000, nameChange: 'Not permitted', infantFareNote: 'Infant and child fares on request' }, applicability: 'PER_ADULT_PER_SECTOR' },
 ]);
 
 // ---------- airports & flights ----------
