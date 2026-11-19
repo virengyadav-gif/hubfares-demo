@@ -1,3 +1,4 @@
+import { agencyStatusSchema, requestAgencyStatus } from '@/features/approvals/service';
 import { eq } from 'drizzle-orm';
 import { api } from '@/server/http';
 import * as s from '@/server/db/schema';
@@ -13,3 +14,5 @@ export const GET = api({}, ({ db, ctx, params }) => {
   assertOwned(ctx, a.id);
   return { ...a, position: fundingPosition(db, a.id, nowIso()), policies: listPolicies(db, ctx, a.id), users: listUsers(db, ctx, a.id) };
 });
+/** Booking block / unblock (agency status) — a critical change routed through maker-checker approval. */
+export const PATCH = api({ perm: 'POLICY_EDIT', body: agencyStatusSchema }, ({ db, ctx, params, body }) => requestAgencyStatus(db, ctx, params.id, body));

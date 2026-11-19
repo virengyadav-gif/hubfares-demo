@@ -8,6 +8,7 @@ import type { SessionCtx } from '@/server/auth/session';
 import { agencyScope } from '@/server/auth/authorize';
 import { AppError } from '@/shared/errors';
 import { nowIso } from '@/shared/time';
+import { requestApproval } from '@/features/approvals/service';
 import { fundingPosition } from '@/features/wallet-credit/position';
 
 // ---- core commercial rules (affect NEW quotes only) ----
@@ -91,7 +92,8 @@ export function listPolicies(db: Tx, ctx: SessionCtx, agencyId?: string) {
   const rows = db.select().from(s.agencyPolicies).where(scope ? eq(s.agencyPolicies.agencyId, scope) : undefined).orderBy(s.agencyPolicies.agencyId, s.agencyPolicies.type, desc(s.agencyPolicies.version)).all();
   return rows.map((r) => ({ ...r, config: JSON.parse(r.configJson), configJson: undefined }));
 }
-export function publishPolicy(db: DB, ctx: SessionCtx, agencyId: string, type: 'CREDIT' | 'REFUND', config: unknown) {
+/** Validates a policy config (shared by maker request and checker execution). */
+export function validatePolicyConfig(type: 'CREDIT' | 'REFUND', config: unknown) {
   const cfg = type === 'CREDIT' ? creditPolicySchema.parse(config) : refundPolicySchema.parse(config);
   if (type === 'CREDIT') {
     const c = cfg as z.infer<typeof creditPolicySchema>;
@@ -99,18 +101,26 @@ export function publishPolicy(db: DB, ctx: SessionCtx, agencyId: string, type: '
     if (c.cycle !== 'CUSTOM' && expected[c.cycle] !== c.termDays) throw new AppError('VALIDATION_ERROR', `${c.cycle} cycle uses ${expected[c.cycle]} term day(s)`);
     if (c.cycle === 'UPFRONT' && c.creditEnabled) throw new AppError('VALIDATION_ERROR', 'Upfront/prepaid agencies cannot have a credit facility enabled');
   }
-  return db.transaction((tx) => {
-    if (!tx.select().from(s.agencies).where(eq(s.agencies.id, agencyId)).get()) throw new AppError('NOT_FOUND', 'Agency not found');
-    const prev = tx.select().from(s.agencyPolicies).where(and(eq(s.agencyPolicies.agencyId, agencyId), eq(s.agencyPolicies.type, type))).orderBy(desc(s.agencyPolicies.version)).get();
-    const v = (prev?.version ?? 0) + 1;
-    const at = nowIso();
-    const short = agencyId.replace('agency_', '').slice(0, 3) === 'sky' ? 'sky' : agencyId.replace('agency_', '').slice(0, 3);
-    const known: Record<string, string> = { agency_skyline: 'sky', agency_orbit: 'orb', agency_aster: 'ast' };
-    const id = `${type.toLowerCase()}_${known[agencyId] ?? agencyId.replace('agency_', '')}_v${v}`;
-    if (prev && !prev.effectiveUntil) tx.update(s.agencyPolicies).set({ effectiveUntil: at }).where(eq(s.agencyPolicies.id, prev.id)).run();
-    tx.insert(s.agencyPolicies).values({ id, agencyId, type, version: v, effectiveFrom: at, effectiveUntil: null, enabled: true, configJson: JSON.stringify(cfg), createdBy: ctx.userId, createdAt: at }).run();
-    audit(tx, { userId: ctx.userId, role: ctx.role }, `${type}_POLICY_PUBLISHED`, 'agency_policy', id, agencyId, { version: v, previous: prev ? `${prev.id} v${prev.version}` : null, config: cfg });
-    void short;
-    return { id, version: v, effectiveFrom: at, position: type === 'CREDIT' ? fundingPosition(tx, agencyId, at) : undefined, note: type === 'REFUND' ? 'New refund policy applies to bookings created from now on; existing bookings keep their booking-time snapshot.' : 'New credit terms apply to new booking eligibility; historical draws are unchanged.' };
-  });
+  return cfg;
+}
+/**
+ * Hub policy change. REFUND policies publish immediately. CREDIT policy changes are critical (maker-checker):
+ * they are queued for the approving authority and take effect only after approval.
+ */
+export function publishPolicy(db: DB, ctx: SessionCtx, agencyId: string, type: 'CREDIT' | 'REFUND', config: unknown) {
+  const cfg = validatePolicyConfig(type, config);
+  if (type === 'CREDIT') return requestApproval(db, ctx, { kind: 'CREDIT_POLICY_CHANGE', agencyId, payload: { type, config: cfg } });
+  return db.transaction((tx) => publishPolicyTx(tx, { userId: ctx.userId, role: ctx.role }, agencyId, type, cfg));
+}
+export function publishPolicyTx(tx: Tx, actor: { userId: string | null; role: string | null }, agencyId: string, type: 'CREDIT' | 'REFUND', cfg: unknown, extra: Record<string, unknown> = {}) {
+  if (!tx.select().from(s.agencies).where(eq(s.agencies.id, agencyId)).get()) throw new AppError('NOT_FOUND', 'Agency not found');
+  const prev = tx.select().from(s.agencyPolicies).where(and(eq(s.agencyPolicies.agencyId, agencyId), eq(s.agencyPolicies.type, type))).orderBy(desc(s.agencyPolicies.version)).get();
+  const v = (prev?.version ?? 0) + 1;
+  const at = nowIso();
+  const known: Record<string, string> = { agency_skyline: 'sky', agency_orbit: 'orb', agency_aster: 'ast' };
+  const id = `${type.toLowerCase()}_${known[agencyId] ?? agencyId.replace('agency_', '')}_v${v}`;
+  if (prev && !prev.effectiveUntil) tx.update(s.agencyPolicies).set({ effectiveUntil: at }).where(eq(s.agencyPolicies.id, prev.id)).run();
+  tx.insert(s.agencyPolicies).values({ id, agencyId, type, version: v, effectiveFrom: at, effectiveUntil: null, enabled: true, configJson: JSON.stringify(cfg), createdBy: actor.userId, createdAt: at }).run();
+  audit(tx, actor, `${type}_POLICY_PUBLISHED`, 'agency_policy', id, agencyId, { version: v, previous: prev ? `${prev.id} v${prev.version}` : null, config: cfg, ...extra });
+  return { id, version: v, effectiveFrom: at, status: 'PUBLISHED' as const, position: type === 'CREDIT' ? fundingPosition(tx, agencyId, at) : undefined, note: type === 'REFUND' ? 'New refund policy applies to bookings created from now on; existing bookings keep their booking-time snapshot.' : 'New credit terms apply to new booking eligibility; historical draws are unchanged.' };
 }

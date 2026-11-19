@@ -15,6 +15,7 @@ import * as payDemo from '@/app/api/v1/payment-events/demo/route';
 import * as payMatch from '@/app/api/v1/payment-events/[id]/match/route';
 import * as payReplay from '@/app/api/v1/payment-events/replay/route';
 import * as payList from '@/app/api/v1/payment-events/route';
+import * as approvalDecision from '@/app/api/v1/approvals/[id]/decision/route';
 import * as policies from '@/app/api/v1/agency-policies/route';
 import * as coreRules from '@/app/api/v1/core-commercial-rules/[id]/route';
 import * as markup from '@/app/api/v1/agency-markup-rules/route';
@@ -265,6 +266,11 @@ describe('Payments, credit and eligibility', () => {
     expect(before.availableCreditMinor).toBe(7450000);
     const r = await call(policies.PATCH, { as: U.fin, method: 'PATCH', body: { agencyId: 'agency_orbit', type: 'CREDIT', config: { cycle: 'WEEKLY', termDays: 7, creditEnabled: true, creditLimitMinor: 15000000, blockOnOverdue: true, allowWalletWhenCreditBlocked: true } } });
     expect(r.status).toBe(200);
+    expect(r.data.status).toBe('PENDING_APPROVAL'); // maker-checker: nothing changes until the CXO approves
+    expect((await call(wallet.GET, { as: U.orbA })).data.availableCreditMinor).toBe(7450000);
+    expect((await call(approvalDecision.POST, { as: U.fin, params: { id: r.data.approvalId }, body: { decision: 'APPROVE' } })).status).toBe(403);
+    const ok = await call(approvalDecision.POST, { as: U.cxo, params: { id: r.data.approvalId }, body: { decision: 'APPROVE' } });
+    expect(ok.data.status).toBe('APPROVED');
     const after = (await call(wallet.GET, { as: U.orbA })).data;
     expect(after.creditOutstandingMinor).toBe(before.creditOutstandingMinor);
     expect(after.availableCreditMinor).toBe(2450000);
