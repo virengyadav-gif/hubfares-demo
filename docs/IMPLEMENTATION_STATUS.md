@@ -1,6 +1,28 @@
 # Hubfares POC — Implementation Status
 
-Record date: 19 Nov 2026 · Fixture version `hubfares-v1.1-seed-002` · Status: **demo-ready POC, not production-ready.**
+Record date: 20 Nov 2026 · Fixture version `hubfares-v1.2-seed-003` · Release 2 (see `docs/CHANGES_R2.md`) · Status: **demo-ready POC, not production-ready.**
+
+## Release 2 verification (executed 20 Nov 2026)
+
+| Check | Result |
+|---|---|
+| `npm run typecheck` | Pass |
+| `npm test` (unit + integration, 11 files) | 94/94 pass |
+| `npm run fixtures:validate` | 53/53 pass |
+| `npm run build` | Pass |
+| `E2E_USE_BUILD=1 npm run test:e2e` (run 3× consecutively) | 13/13 pass each run |
+| `npm run demo:reset` | 28/28 oracle checks pass |
+| `npm run smoke` | Pass |
+| Page crawl, 7 roles, every menu page | 0 errors; no Demo/Simulated/Guided/mock/Sabre text on OTA pages (Sabre/PCC shown to Hubfares staff only, by design) |
+| Production timings | page navigation 80–200 ms; API responses 4–20 ms |
+
+New automated coverage: `partial-cancel.test.ts` (7), `amendments.test.ts` (5), `bulk-import.test.ts` (4), `approvals.test.ts` (4), `onboarding-v2.test.ts` (3), `credit-policies.test.ts` (4), report filters, granularity; E2E specs for partial cancel, date change, bulk import, maker-checker, reconciliation, request-info and specimen autofill.
+
+Changed expectations (by request): 5 reports instead of 6; seed totals rebalanced (oracle above in CHANGES_R2); TC-054 now covers real date change + reissue; OTA no longer sees provider/meta "SIMULATED"; finance viewer lands on search.
+
+---
+
+## Release 1 record (19 Nov 2026)
 
 This file records what was built and what was *executed* as evidence. It does not change the six controlling specs.
 
@@ -74,10 +96,11 @@ All 64 TCs have automated evidence. Files: `tests/unit/calc.test.ts`, `tests/int
 ## 6. Known limitations and reconciled conflicts
 
 - All external systems are simulated: Sabre, bank/UTR, KYC, supplier, FX. No real money, tickets or identity checks.
-- Image (PNG/JPG) uploads are not OCR'd; they route to manual review. PDF text extraction only.
+- Image uploads: only the specimen PAN/Aadhaar cards are recognised (static values); other images route to manual review. PDFs use text extraction.
 - Child/infant fares not offered (adults only).
 - Void is only present in seeded history; live cancellations never offer void.
 - `supplier_event_sky_003_short` from the contract is not implemented (no amount specified).
-- Automation toggles on Admin › Automation are illustrative and not persisted.
+- Applicant emails (request info) are recorded and shown as sent; no real email is delivered.
+- Chatbot unchanged in release 2 by request.
 - Upload-notice wording follows the Product Spec / PRD where docs disagreed.
 - Single SQLite file, single process; no horizontal scaling, backups or production security review.

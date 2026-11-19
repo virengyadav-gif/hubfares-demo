@@ -1,64 +1,68 @@
-# Hubfares POC — Handoff
+# Hubfares POC — Handoff (release 2, 20 Nov 2026)
 
-Demo-ready B2B travel POC on simulated providers. **Not production-ready.** Evidence: `docs/IMPLEMENTATION_STATUS.md`.
+B2B travel platform POC on simulated suppliers (no real tickets, payments or identity checks). Evidence: `docs/IMPLEMENTATION_STATUS.md`. Change list: `docs/CHANGES_R2.md`.
 
-## Start (macOS, Node 20+; tested on Node 22)
+## Start — use production mode for demos (fast)
 
 ```bash
 cd hubfares-poc
 cp .env.example .env          # first time only
 npm install
-npm run demo:reset            # seeds data/hubfares-demo.sqlite and checks the oracle (must print "Reset OK")
-npm run dev                   # http://localhost:3000
+npm run demo                  # reset data + production build + start → http://localhost:3000
 ```
 
-For a smoother demo (no on-demand compile pauses): `npm run build && npm start`.
-Check a running server: `npm run smoke`.
+`npm run dev` is for development only: every page compiles on first visit (2–6 s), which is what made clicks feel slow. Production mode serves pages and API calls in milliseconds.
 
-## Accounts
+Already built? `npm run demo:reset && npm start`. Check a running server: `npm run smoke`.
 
-Operator demo password (restricted — do not put on slides): `Hubfares@Demo2026`
+## Accounts (password for all: `Hubfares@Demo2026`)
 
 | Email | Role | Use for |
 |---|---|---|
-| superadmin@hubfares.example.com | Super Admin | Reset, all admin |
-| finance@hubfares.example.com | Hub Admin Finance | Credit, refund policies, commercials, payments |
-| ops@hubfares.example.com | Hub Operations | Onboarding approval, bookings, refunds, cases |
-| cxo@hubfares.example.com | CXO | Executive dashboards |
-| admin@skyline.example.com / agent@skyline.example.com | Skyline (prepaid, supplier-settlement refunds) | Book, refund, import, Help |
+| superadmin@hubfares.example.com | Super Admin | Credit changes (sent for approval), all admin |
+| finance@hubfares.example.com | Hub Finance | Credit, refunds, commercials, payments |
+| ops@hubfares.example.com | Hub Operations | Onboarding, bookings, refunds, cases, import |
+| cxo@hubfares.example.com | CXO | Executive dashboards, **Approvals** |
+| admin@skyline.example.com / agent@skyline.example.com | Skyline (prepaid) | Book, partial cancel, date change, import |
 | admin@orbit.example.com / agent@orbit.example.com | Orbit (weekly credit, immediate refunds) | Credit booking |
-| admin@aster.example.com / finance@aster.example.com | Aster (overdue credit blocked) | Finance-viewer limits |
+| admin@aster.example.com / finance@aster.example.com | Aster (daily credit, overdue-blocked) | Finance viewer, credit block |
 
-## Presentation sequence (~25 min)
+All OTA users land on **Book a Flight** after sign-in.
 
-1. **S-A Onboarding** — open `/partner/register`, upload `fixtures/documents/company-registration-demo.pdf`, review extracted fields, submit → as Ops: run mock checks, approve.
-2. **S-B + S-G Booking** — Skyline agent: search BOM→LON, open fare rules (Flexible vs Restricted), switch INR→USD→EUR, continue, revalidate, create PNR, issue ticket → Wallet/Passbook.
-3. **S-C Credit** — Orbit agent books a higher fare; wallet first, then credit.
-4. **S-D Cancellation** — `HFB1001` (A_FLEXIBLE, S2) vs `HFB1011` (B_RESTRICTED, S1); show supplier-settlement vs immediate credit.
-5. **S-H Payments** — Ops › Payment Matching: match, replay (no double credit), exceptions.
-6. **S-E Import PNR** — Skyline: PCC `S9KY`, PNR `SBD101`; import once, repeat is blocked.
-7. **S-F Commercials** — Finance changes core fee; new quote changes, old booking does not; OTA markup has no pricing effect.
-8. **S-K Help** — Skyline: Need Help → Hindi → refund request → same CASE id in Ops.
-9. **S-J Reports** — download XLSX as Ops (100 rows) and Skyline (40 rows).
-10. **S-L Executive** — CXO overview, OTA ranking, risk.
-11. **S-I / Roadmap** — guided amendment & manual order; Roadmap previews labelled "Planned integration".
-12. **S-M Reset** — Admin › Demo › type `RESET DEMO`.
+## Sample documents for onboarding
 
-## Reset
+In `fixtures/documents/` (also in `samples/` at the zip root):
+- `sample-pan-card.png` → fills PAN, agency name, entity type
+- `sample-aadhaar-card.png` → fills director name, salutation, address, city, state, PIN (masked number shown)
+- `sample-company-registration.pdf` → fills registration no., GSTIN, contacts
 
-- UI: Super Admin → Admin › Demo → type `RESET DEMO`.
-- CLI: `npm run demo:reset` (refuses non-demo DB names and `DEMO_MODE≠mock`; exits non-zero if any oracle check fails — don't present until it prints "Reset OK").
-- Recovery if the DB is corrupted: stop the server, delete `data/hubfares-demo.sqlite*`, run `npm run demo:reset`.
+Values are static (no live extraction) and stay marked *Extracted* until Hubfares verifies them.
+
+## Presentation sequence (~30 min)
+
+1. **Onboarding** — `/partner/register`, upload the PAN + Aadhaar samples → fields fill automatically. Submit. As Ops: *Request info* (shows "emailed to …"), then verify PAN + identity and approve — all actions stay available.
+2. **Search & book** — Skyline agent lands on Book a Flight; BOM → London, fare rules (incl. seat/baggage charges), INR/USD/EUR, revalidate, PNR, **Issue ticket** (progress overlay, double-click safe) → remaining wallet balance shown.
+3. **Partial cancellation** — Booking Carts → **HFB1026** (3 passengers) → Cancel → keep only *Ms Pooja Khanna* ticked → PNR is split to a new PNR, one passenger cancelled, two stay ticketed. Per-passenger penalty breakup; agency and airline refund statuses shown separately. (HFB1025 = 2 pax Skyline, HFB1027 = 2 pax Orbit immediate refund.)
+4. **Date change** — Manage Amendments → pick a booking → choose new date → charges (airline fee + fare difference + service fee) → confirm → tickets reissued; History tab shows the reissue.
+5. **Import PNR** — leave all fields empty → list of all PNRs; or PCC `S9KY` only; select several → *Import selected*. Duplicates are blocked.
+6. **Payments** — Ops › Payment Matching: Received / Awaiting Match / Matched / Unmatched with reasons.
+7. **Maker-checker** — Super Admin › Credit & Payment → change Orbit limit → *Submit for approval*. CXO › Approvals → Approve → applied.
+8. **Executive** — date range (prefilled Last 30 days) + Daily/Weekly/Monthly; negatives in red; refund aging from claim date.
+9. **Reports** — five reports, period + status filters, download XLSX.
+10. **Reset** — `npm run demo:reset` (Demo Control is hidden from the menu; page still at `/admin/demo`).
+
+## Reset & recovery
+
+- CLI: `npm run demo:reset` (refuses non-demo DBs; must print "Reset OK").
+- Corrupted DB: stop the server, delete `data/hubfares-demo.sqlite*`, run `npm run demo:reset`.
 
 ## Tests
 
 ```bash
 npm run typecheck && npm test && npm run fixtures:validate
-npm run build && E2E_USE_BUILD=1 npm run test:e2e   # uses its own DB on port 3100
+npm run build && E2E_USE_BUILD=1 npm run test:e2e     # own DB on port 3100
 ```
 
-## Disclosure wording for clients
+## Disclosure for clients
 
-"This is a proof-of-concept running on simulated GDS, bank, KYC, supplier and FX data. No real bookings, payments, tickets or identity checks are performed. Integrations shown as 'Planned integration' are not built."
-
-Known limitations: see `docs/IMPLEMENTATION_STATUS.md` §6.
+"Proof-of-concept on simulated airline, bank, KYC and supplier connections. No real bookings, payments, tickets or identity checks are performed."
