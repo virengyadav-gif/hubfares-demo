@@ -36,7 +36,7 @@ export type Actor = { userId: string | null; role: string | null; agencyId?: str
 export function audit(db: Tx, actor: Actor, action: string, entityType: string, entityId: string, agencyId: string | null, metadata: Record<string, unknown> = {}) {
   db.insert(auditEvents).values({
     id: nextId(db, 'aud'), actorId: actor.userId, actorRole: actor.role, agencyId, action, entityType, entityId,
-    metadataJson: JSON.stringify({ ...metadata, source: 'DEMO' }), occurredAt: nowIso(),
+    metadataJson: JSON.stringify({ ...metadata }), occurredAt: nowIso(),
   }).run();
 }
 export function domainEvent(db: Tx, type: string, entityType: string, entityId: string, agencyId: string | null, payload: Record<string, unknown> = {}) {

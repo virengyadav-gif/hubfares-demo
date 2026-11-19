@@ -28,12 +28,12 @@ export function periodLabel(p: Period): string {
 }
 export function PeriodPicker({ value, onChange, granularity, onGranularity, className }: { value: Period; onChange: (p: Period) => void; granularity?: Granularity; onGranularity?: (g: Granularity) => void; className?: string }) {
   return (
-    <div className={cx('flex flex-wrap items-center gap-2', className)} data-testid="period-picker">
+    <div className={cx('flex flex-wrap items-center gap-2 sm:flex-nowrap', className)} data-testid="period-picker">
       <Calendar className="h-4 w-4 text-muted" />
-      <Select aria-label="Period" value={value.preset} onChange={(e) => { const preset = e.target.value; onChange(preset === 'custom' ? { ...value, preset } : { preset, ...presetRange(preset) }); }} className="w-[150px]">{PRESETS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</Select>
-      <Input type="date" aria-label="From" value={value.from} onChange={(e) => onChange({ preset: 'custom', from: e.target.value, to: value.to })} className="w-[150px]" />
+      <Select aria-label="Period" value={value.preset} onChange={(e) => { const preset = e.target.value; onChange(preset === 'custom' ? { ...value, preset } : { preset, ...presetRange(preset) }); }} className="!w-[150px] shrink-0">{PRESETS.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</Select>
+      <Input type="date" aria-label="From" value={value.from} onChange={(e) => onChange({ preset: 'custom', from: e.target.value, to: value.to })} className="!w-[150px] shrink-0" />
       <span className="text-muted">–</span>
-      <Input type="date" aria-label="To" value={value.to} onChange={(e) => onChange({ preset: 'custom', from: value.from, to: e.target.value })} className="w-[150px]" />
+      <Input type="date" aria-label="To" value={value.to} onChange={(e) => onChange({ preset: 'custom', from: value.from, to: e.target.value })} className="!w-[150px] shrink-0" />
       {onGranularity && (
         <div className="ml-1 inline-flex rounded-lg border border-line bg-white p-0.5" role="radiogroup" aria-label="Granularity">
           {(['daily', 'weekly', 'monthly'] as Granularity[]).map((g) => <button key={g} type="button" role="radio" aria-checked={granularity === g} onClick={() => onGranularity(g)} className={cx('rounded-md px-3 py-1 text-xs font-semibold capitalize', granularity === g ? 'bg-ink-800 text-white' : 'text-muted hover:text-navy')}>{g}</button>)}

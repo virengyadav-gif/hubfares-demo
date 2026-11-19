@@ -39,16 +39,16 @@ export function PnrImport({ hub, base }: { hub?: boolean; base: string }) {
   }
   const toggle = (k: string) => setSel((s) => (s.includes(k) ? s.filter((x) => x !== k) : [...s, k]));
   return (
-    <div className="grid gap-6 xl:grid-cols-[340px_1fr]">
+    <div className="space-y-5">
       <BusyOverlay show={busy === 'import'} title="Importing PNRs…" detail="Retrieving each PNR and creating bookings." />
       <Card title="Find PNRs" subtitle="All fields are optional — leave them empty to list every PNR available to you, or fill any field to narrow the list.">
-        <form onSubmit={(e) => { e.preventDefault(); search(); }} className="space-y-3">
+        <form onSubmit={(e) => { e.preventDefault(); search(); }} className={cx('grid items-end gap-3 sm:grid-cols-2', hub ? 'lg:grid-cols-[1fr_1fr_1.2fr_150px_150px_1fr_auto]' : 'lg:grid-cols-[1fr_1fr_1.2fr_150px_150px_auto]')}>
           <Field label="PCC"><Input value={f.pcc} onChange={(e) => setF({ ...f, pcc: e.target.value.toUpperCase() })} placeholder={hub ? 'e.g. S9KY' : 'Your PCC, e.g. S9KY'} name="pcc" /></Field>
           <Field label="PNR"><Input value={f.pnr} onChange={(e) => setF({ ...f, pnr: e.target.value.toUpperCase() })} placeholder="e.g. SBD101" name="pnr" /></Field>
           <Field label="Passenger name"><Input value={f.passenger} onChange={(e) => setF({ ...f, passenger: e.target.value })} placeholder="e.g. Menon" name="passenger" /></Field>
-          <div className="grid grid-cols-2 gap-2"><Field label="Departure from"><Input type="date" value={f.from} onChange={(e) => setF({ ...f, from: e.target.value })} name="from" /></Field><Field label="Departure to"><Input type="date" value={f.to} onChange={(e) => setF({ ...f, to: e.target.value })} name="to" /></Field></div>
+          <Field label="Departure from"><Input type="date" value={f.from} onChange={(e) => setF({ ...f, from: e.target.value })} name="from" /></Field><Field label="Departure to"><Input type="date" value={f.to} onChange={(e) => setF({ ...f, to: e.target.value })} name="to" /></Field>
           {hub && <Field label="Agency"><Select value={f.targetAgencyId} onChange={(e) => setF({ ...f, targetAgencyId: e.target.value })} name="targetAgencyId"><option value="">All agencies</option>{agencies?.map((a) => <option key={a.id} value={a.id}>{a.displayName}</option>)}</Select></Field>}
-          <div className="flex gap-2"><Button className="flex-1" loading={busy === 'search'} icon={<Search className="h-4 w-4" />} data-testid="pnr-lookup">Search</Button><Button type="button" variant="ghost" icon={<RotateCcw className="h-4 w-4" />} onClick={() => { setF(EMPTY); search(EMPTY); }}>Reset</Button></div>
+          <div className="flex gap-2"><Button loading={busy === 'search'} icon={<Search className="h-4 w-4" />} data-testid="pnr-lookup">Search</Button><Button type="button" variant="ghost" icon={<RotateCcw className="h-4 w-4" />} onClick={() => { setF(EMPTY); search(EMPTY); }}>Reset</Button></div>
         </form>
       </Card>
       <div className="min-w-0 space-y-4">
@@ -80,7 +80,7 @@ export function PnrImport({ hub, base }: { hub?: boolean; base: string }) {
                     {hub && <Td>{r.ownerAgencyName ?? '—'}</Td>}
                     <Td className="whitespace-nowrap">{r.itinerary.origin} → {r.itinerary.destination}<div className="text-xs text-muted">{r.itinerary.airlineName} {r.itinerary.flightNumber}</div></Td>
                     <Td className="whitespace-nowrap text-muted">{fmtDate(r.itinerary.departureAt)}</Td>
-                    <Td className="max-w-[200px]">{r.passengers.join(', ')}</Td>
+                    <Td className="max-w-[220px]" title={r.passengers.join(', ')}>{r.passengers[0]}{r.passengers.length > 1 && <span className="ml-1 text-xs text-muted">+{r.passengers.length - 1}</span>}</Td>
                     <Td className="whitespace-nowrap">{r.ticketNumbers.length ? `${r.ticketNumbers.length} issued` : <Status value="NOT_ISSUED" />}</Td>
                     <Td className="whitespace-nowrap tabular">{inr(r.agencySellMinor)}</Td>
                     <Td className="whitespace-nowrap">{r.alreadyImported ? <span className="text-xs"><Badge tone="amber">Already imported</Badge> <Link className="font-semibold text-brand-700" href={`${base}/${r.alreadyImportedBookingId}`}>{r.alreadyImportedBookingId}</Link></span> : <Button size="sm" variant="secondary" onClick={() => doImport([k])} disabled={!!busy}>Import</Button>}</Td>

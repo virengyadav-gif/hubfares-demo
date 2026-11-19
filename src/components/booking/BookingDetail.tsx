@@ -264,7 +264,7 @@ function DateChangeModal({ booking, onClose }: { booking: any; onClose: (done: b
         {q && !q.permitted && <Notice tone="error" title="Date change not available">{q.reason}</Notice>}
         {q && q.permitted && (
           <div className="space-y-3" data-testid="date-change-quote">
-            <div className="rounded-lg border border-line p-3 text-sm"><div className="text-xs text-muted">New flight</div><div className="font-semibold">{q.airline} {q.flightNumber} · {q.route.replace('-', ' → ')}</div><div>{fmtDay(q.toDepartureAt, q.originTz)} · departs {fmtTime(q.toDepartureAt, q.originTz)} · arrives {fmtTime(q.toArrivalAt, q.destinationTz)}</div></div>
+            <div className="rounded-lg border border-line p-3 text-sm"><div className="text-xs text-muted">New flight</div><div className="font-semibold">{q.flightNumber} · {q.route.replace('-', ' → ')}</div><div>{fmtDay(q.toDepartureAt, q.originTz)} · departs {fmtTime(q.toDepartureAt, q.originTz)} · arrives {fmtTime(q.toArrivalAt, q.destinationTz)}</div></div>
             <Table dense head={['Charge', 'Per passenger', `Total (${q.adults})`]}>
               <tr><Td>Airline change fee</Td><Td className="tabular">{inr(q.perPassenger.airlineChangeFeeMinor)}</Td><Td className="tabular">{inr(q.breakdown.airlineChangeFeeMinor)}</Td></tr>
               <tr><Td>Fare difference</Td><Td className="tabular">{inr(q.perPassenger.fareDifferenceMinor)}</Td><Td className="tabular">{inr(q.breakdown.fareDifferenceMinor)}</Td></tr>
