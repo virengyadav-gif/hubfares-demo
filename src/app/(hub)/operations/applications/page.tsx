@@ -10,7 +10,7 @@ export default function Apps() {
   const rows = (data ?? []).filter((a) => t === 'all' || ['SUBMITTED', 'UNDER_REVIEW', 'MORE_INFO_REQUIRED'].includes(a.status));
   return (
     <div>
-      <PageHeader eyebrow="Operations" title="Agency onboarding" subtitle="Review submitted applications, run simulated verification and decide." />
+      <PageHeader eyebrow="Operations" title="Agency onboarding" subtitle="Review submitted applications, run verification and decide." />
       <Card pad={false}>
         <Tabs className="px-4" value={t} onChange={setT} tabs={[{ id: 'pending', label: 'Pending review', count: (data ?? []).filter((a) => ['SUBMITTED', 'UNDER_REVIEW', 'MORE_INFO_REQUIRED'].includes(a.status)).length }, { id: 'all', label: 'All', count: data?.length }]} />
         {!rows.length ? <Empty title="Queue is clear" /> : (

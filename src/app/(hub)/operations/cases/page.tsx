@@ -18,7 +18,7 @@ export default function Cases() {
     <div>
       <PageHeader eyebrow="Operations" title="Support cases" subtitle="Cases from the OTA Help assistant appear here with the same reference. Handling a case never cancels bookings or moves money." />
       <Card pad={false}>
-        <Tabs className="px-4" value={src} onChange={setSrc} tabs={[{ id: 'CHATBOT', label: 'Chatbot-originated' }, { id: 'ALL', label: 'All cases (incl. guided samples)' }]} />
+        <Tabs className="px-4" value={src} onChange={setSrc} tabs={[{ id: 'CHATBOT', label: 'Chatbot-originated' }, { id: 'ALL', label: 'All cases' }]} />
         <Table head={['Case', 'Agency', 'Category', 'PNR / booking', 'Summary', 'Priority', 'Owner', 'SLA', 'Status', 'Created']}>
           {(data ?? []).map((c) => { const breach = c.slaDueAt && Date.parse(c.slaDueAt) < now && !['RESOLVED', 'CLOSED'].includes(c.status); return (
             <tr key={c.id} className="cursor-pointer hover:bg-slate-50" onClick={() => setSel(c)} data-testid={`case-${c.id}`}><Td className="font-semibold text-brand-700">{c.id}</Td><Td>{c.agencyName}</Td><Td>{c.category.replace(/_/g, ' ').toLowerCase()}</Td><Td className="font-mono text-xs">{c.pnr ?? '—'}{c.bookingId && <div className="text-muted">{c.bookingId}</div>}</Td><Td className="max-w-[260px] truncate">{c.summary}</Td><Td><Badge tone={c.priority === 'HIGH' ? 'red' : c.priority === 'MEDIUM' ? 'amber' : 'gray'}>{c.priority.toLowerCase()}</Badge></Td><Td>{c.assignedToName ?? <span className="text-muted">Unassigned</span>}</Td><Td className={cx('text-xs', breach ? 'font-semibold text-bad-600' : 'text-muted')}>{c.slaDueAt ? (breach ? 'Breached' : fmtDate(c.slaDueAt)) : '—'}</Td><Td><Status value={c.status} /></Td><Td className="text-muted">{fmtDate(c.createdAt)}</Td></tr>
@@ -27,7 +27,7 @@ export default function Cases() {
       </Card>
       <Drawer open={!!sel} onClose={() => setSel(null)} title={sel?.id}>
         {sel && <div className="space-y-4">
-          <div className="flex flex-wrap gap-2"><Status value={sel.status} /><Badge tone="gray">{sel.source.toLowerCase()}</Badge><Badge tone="blue">{sel.category.replace(/_/g, ' ').toLowerCase()}</Badge>{sel.source !== 'CHATBOT' && <SimTag kind="Guided demo" />}</div>
+          <div className="flex flex-wrap gap-2"><Status value={sel.status} /><Badge tone="gray">{sel.source.toLowerCase()}</Badge><Badge tone="blue">{sel.category.replace(/_/g, ' ').toLowerCase()}</Badge></div>
           <div className="text-sm"><b>{sel.agencyName}</b> · {sel.summary}</div>
           {sel.bookingId && <Link href={`/operations/bookings/${sel.bookingId}`} className="text-sm font-semibold text-brand-700">Open booking {sel.bookingId}</Link>}
           {sel.details && <div className="rounded-lg bg-slate-50 p-3 text-sm">{sel.details}</div>}
@@ -37,7 +37,7 @@ export default function Cases() {
             <div className="flex flex-wrap gap-1.5">{(NEXT[sel.status] ?? []).map((st) => <Button key={st} size="sm" variant="secondary" onClick={() => upd({ status: st })} data-testid={`case-to-${st}`}>{st.replace(/_/g, ' ').toLowerCase()}</Button>)}</div>
           </div>}
           <Timeline items={sel.events.map((e: any) => ({ at: e.createdAt, status: e.toStatus ?? e.action, note: e.note, by: e.actorName }))} />
-          <p className="text-xs text-muted">Email/SMS/WhatsApp notifications and SLA automation are planned integrations.</p>
+          
         </div>}
       </Drawer>
     </div>

@@ -23,7 +23,7 @@ export function CurrencySwitcher({ compact }: { compact?: boolean }) {
           <button key={c} role="radio" aria-checked={currency === c} onClick={() => setCurrency(c)} className={cx('rounded-md px-2.5 py-1 text-xs font-bold transition', currency === c ? 'bg-ink-800 text-white' : 'text-muted hover:text-navy')}>{c}</button>
         ))}
       </div>
-      {!compact && currency !== 'INR' && r && <span className="hidden text-[11px] text-muted xl:inline">1 {currency} = ₹{r.inrPerUnit} · {r.effectiveDate} · Demo rates</span>}
+      {!compact && currency !== 'INR' && r && <span className="hidden text-[11px] text-muted xl:inline">1 {currency} = ₹{r.inrPerUnit} · {r.effectiveDate}</span>}
     </div>
   );
 }
@@ -35,7 +35,7 @@ export function Price({ minor, className, showOriginal = true, size = 'md' }: { 
   if (currency === 'INR') return <span className={cx('font-bold tabular', sz, className)} data-testid="price">{inrText}</span>;
   const rate = rates.find((r) => r.quoteCurrency === currency) ?? null;
   const conv = convertForDisplay(minor, rate);
-  if (conv === null) return <span className={cx('font-bold tabular', sz, className)} data-testid="price">{inrText}<span className="ml-1 text-[11px] font-medium text-warn-600">Demo conversion unavailable</span></span>;
+  if (conv === null) return <span className={cx('font-bold tabular', sz, className)} data-testid="price">{inrText}<span className="ml-1 text-[11px] font-medium text-warn-600">Conversion unavailable</span></span>;
   return (
     <span className={cx('inline-flex flex-col leading-tight', className)}>
       <span className={cx('font-bold tabular', sz)} data-testid="price">{formatDisplay(conv, currency)}</span>
@@ -47,5 +47,5 @@ export function FxNotice() {
   const { currency, rates } = useCurrency();
   const r = rates.find((x) => x.quoteCurrency === currency);
   if (currency === 'INR') return null;
-  return <div className="flex flex-wrap items-center gap-2 text-xs text-muted"><SimTag kind="Demo rates" /> Display only — 1 {currency} = ₹{r?.inrPerUnit} (rate date {r?.effectiveDate}). Booking, wallet and settlement stay in INR; no point-of-sale change.</div>;
+  return <div className="flex flex-wrap items-center gap-2 text-xs text-muted">Display only — 1 {currency} = ₹{r?.inrPerUnit} (rate date {r?.effectiveDate}). Booking, wallet and settlement stay in INR; no point-of-sale change.</div>;
 }

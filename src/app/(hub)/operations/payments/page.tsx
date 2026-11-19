@@ -1,8 +1,8 @@
 'use client';
-/** OPS-07 — Payment matching queue: automated matcher, exceptions, guided manual resolution, replay control. */
+/** OPS-07 — Payment reconciliation: received → awaiting match → matched / unmatched (with reason). */
 import { useState } from 'react';
 import { apiFetch, useApi, inr, fmtDate, newKey } from '@/lib/client';
-import { Card, PageHeader, Table, Td, Status, Button, Modal, Field, Select, Input, Notice, SimTag, Badge, useToast } from '@/components/ui';
+import { Card, PageHeader, Table, Td, Button, Modal, Field, Select, Input, Badge, useToast, cx } from '@/components/ui';
 import { useSession, can } from '@/components/shell/AppShell';
 export default function Payments() {
   const s = useSession(); const toast = useToast();
@@ -12,12 +12,12 @@ export default function Payments() {
   const write = can(s, 'PAYMENT_MATCH');
   return (
     <div>
-      <PageHeader eyebrow="Finance & Operations" title="Payment matching" subtitle="Received → matched → credited. Unmatched, wrong-amount and unsupported-currency events never credit a wallet." badges={<SimTag kind="Demo" />} />
-      <Notice tone="info" className="mb-4">Simulated bank events (provider BANK_VA). Matching checks currency, a recognised agency virtual reference and any declared intimation amount. Each UTR can credit at most once.</Notice>
+      <PageHeader eyebrow="Finance & Operations" title="Payment matching" subtitle="Every bank transfer is Received, then Awaiting Match until the matcher runs; it ends Matched (wallet credited once) or Unmatched with the exception reason." />
+      <div className="mb-4 grid gap-3 sm:grid-cols-4">{(['Received', 'Awaiting Match', 'Matched', 'Unmatched'] as const).map((k) => <Card key={k}><div className="text-xs font-semibold text-muted">{k}</div><div className="mt-1 text-2xl font-bold" data-testid={`recon-${k}`}>{k === 'Received' ? (data ?? []).length : (data ?? []).filter((p) => p.reconStatus === k || (k === 'Unmatched' && p.reconStatus === 'Rejected')).length}</div></Card>)}</div>
       <Card pad={false}>
-        <Table head={['Received', 'UTR', 'Agency ref', 'Amount', 'Status', 'Agency', 'Reason / evidence', '']}>
+        <Table head={['Received', 'UTR', 'Agency ref', 'Amount', 'Bank status', 'Reconciliation', 'Agency', 'Exception reason / evidence', '']}>
           {(data ?? []).map((p) => (
-            <tr key={p.id} data-testid={`pay-${p.externalPaymentRef}`}><Td className="whitespace-nowrap text-muted">{fmtDate(p.receivedAt)}</Td><Td className="font-mono text-[12.5px] font-semibold">{p.externalPaymentRef}</Td><Td className="font-mono text-[12px]">{p.agencyHint}</Td><Td className="tabular">{p.currency === 'INR' ? inr(p.grossAmountMinor) : <Badge tone="red">{p.currency} {(p.grossAmountMinor / 100).toFixed(2)}</Badge>}</Td><Td><Status value={p.status} /></Td><Td>{p.agencyId?.replace('agency_', '') ?? '—'}</Td><Td className="max-w-[260px] text-xs text-muted">{p.matching?.reason ?? (p.matching?.ledgerEntryId ? `Ledger ${p.matching.ledgerEntryId}` : '')}{p.replayCount > 0 && <Badge tone="gray" className="ml-1">{p.replayCount} replay(s) ignored</Badge>}</Td>
+            <tr key={p.id} data-testid={`pay-${p.externalPaymentRef}`}><Td className="whitespace-nowrap text-muted">{fmtDate(p.receivedAt)}</Td><Td className="font-mono text-[12.5px] font-semibold">{p.externalPaymentRef}</Td><Td className="font-mono text-[12px]">{p.agencyHint}</Td><Td className="tabular">{p.currency === 'INR' ? inr(p.grossAmountMinor) : <Badge tone="red">{p.currency} {(p.grossAmountMinor / 100).toFixed(2)}</Badge>}</Td><Td><Badge tone="blue">{p.bankStatus}</Badge></Td><Td><Badge tone={p.reconStatus === 'Matched' ? 'green' : p.reconStatus === 'Awaiting Match' ? 'amber' : 'red'} data-testid={`recon-status-${p.externalPaymentRef}`}>{p.reconStatus}</Badge></Td><Td>{p.agencyName ?? '—'}</Td><Td className={cx('max-w-[280px] text-xs', p.exceptionReason ? 'font-medium text-bad-600' : 'text-muted')}>{p.exceptionReason ?? (p.reconStatus === 'Matched' ? p.matching?.reason ?? 'Matched to agency virtual account' : 'Waiting for the matcher')}{p.replayCount > 0 && <Badge tone="gray" className="ml-1">{p.replayCount} replay(s) ignored</Badge>}</Td>
               <Td className="whitespace-nowrap">{write && <div className="flex gap-1.5">
                 {p.status === 'RECEIVED' && <Button size="sm" loading={busy === p.id} onClick={() => act(p.id, () => apiFetch(`/payment-events/${p.id}/match`, { method: 'POST', idem: newKey() }))}>Run matcher</Button>}
                 {p.status === 'CREDITED' && <Button size="sm" variant="secondary" loading={busy === p.id} onClick={() => act(p.id, () => apiFetch('/payment-events/replay', { body: { externalRef: p.externalPaymentRef } }))}>Replay webhook</Button>}
@@ -27,8 +27,8 @@ export default function Payments() {
           ))}
         </Table>
       </Card>
-      <Modal open={!!res} onClose={() => setRes(null)} title={`Resolve ${res?.externalPaymentRef}`} subtitle="Guided manual resolution — auditable assignment, then the matcher runs once." footer={<><Button variant="secondary" onClick={() => setRes(null)}>Cancel</Button><Button disabled={!f.agencyId || f.note.length < 3} loading={busy === 'res'} onClick={async () => { setBusy('res'); try { const r = await apiFetch<any>(`/payment-events/${res.id}/resolve`, { idem: newKey(), body: f }); toast({ tone: 'success', title: `Payment ${r.data.status.toLowerCase()}` }); setRes(null); reload(); } catch (e: any) { toast({ tone: 'error', title: 'Not resolved', body: e.message }); } finally { setBusy(null); } }}>Assign & match</Button></>}>
-        <div className="space-y-3"><Field label="Verified agency"><Select value={f.agencyId} onChange={(e) => setF({ ...f, agencyId: e.target.value })}><option value="">Select…</option>{agencies?.map((a) => <option key={a.id} value={a.id}>{a.displayName}</option>)}</Select></Field><Field label="Verification note (audited)"><Input value={f.note} onChange={(e) => setF({ ...f, note: e.target.value })} placeholder="e.g. Confirmed with agency finance by phone (demo)" /></Field></div>
+      <Modal open={!!res} onClose={() => setRes(null)} title={`Resolve ${res?.externalPaymentRef}`} subtitle="Assign the verified agency (audited); the matcher then runs once." footer={<><Button variant="secondary" onClick={() => setRes(null)}>Cancel</Button><Button disabled={!f.agencyId || f.note.length < 3} loading={busy === 'res'} onClick={async () => { setBusy('res'); try { const r = await apiFetch<any>(`/payment-events/${res.id}/resolve`, { idem: newKey(), body: f }); toast({ tone: 'success', title: `Payment ${r.data.status.toLowerCase()}` }); setRes(null); reload(); } catch (e: any) { toast({ tone: 'error', title: 'Not resolved', body: e.message }); } finally { setBusy(null); } }}>Assign & match</Button></>}>
+        <div className="space-y-3"><Field label="Verified agency"><Select value={f.agencyId} onChange={(e) => setF({ ...f, agencyId: e.target.value })}><option value="">Select…</option>{agencies?.map((a) => <option key={a.id} value={a.id}>{a.displayName}</option>)}</Select></Field><Field label="Verification note (audited)"><Input value={f.note} onChange={(e) => setF({ ...f, note: e.target.value })} placeholder="e.g. Confirmed with agency finance by phone" /></Field></div>
       </Modal>
     </div>
   );

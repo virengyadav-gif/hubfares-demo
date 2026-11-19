@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { apiFetch, useApi, fmtDate } from '@/lib/client';
 import { Card, PageHeader, Table, Td, Status, Badge, Button, Tabs, Select, useToast } from '@/components/ui';
 import { useSession } from '@/components/shell/AppShell';
-const CATALOG = [['SUPER_ADMIN', 'All configuration, demo reset, all agencies'], ['HUB_ADMIN_FINANCE', 'Credit, refund & commercial policy, payouts, payment matching'], ['HUB_OPS', 'Approvals, bookings, supplier receipts, cases, imports'], ['HUB_CXO', 'Read-only executive analytics & reports'], ['AGENCY_ADMIN', 'Own agency: users, markup UI, wallet, bookings'], ['AGENCY_AGENT', 'Own agency: search/book/service (restrictable)'], ['AGENCY_FINANCE_VIEWER', 'Own agency: wallet, passbook, reports only']];
+const CATALOG = [['SUPER_ADMIN', 'All configuration and all agencies'], ['HUB_ADMIN_FINANCE', 'Credit, refund & commercial policy, payouts, payment matching'], ['HUB_OPS', 'Approvals, bookings, supplier receipts, cases, imports'], ['HUB_CXO', 'Read-only executive analytics & reports'], ['AGENCY_ADMIN', 'Own agency: users, markup UI, wallet, bookings'], ['AGENCY_AGENT', 'Own agency: search/book/service (restrictable)'], ['AGENCY_FINANCE_VIEWER', 'Own agency: wallet, passbook, reports only']];
 export default function Users() {
   const s = useSession(); const toast = useToast();
   const [t, setT] = useState<'hub' | 'agency' | 'roles'>('hub');

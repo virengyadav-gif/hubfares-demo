@@ -11,7 +11,7 @@ export default function Users() {
   const s = useSession(); const toast = useToast();
   const { data, reload } = useApi<any[]>('/agency-users');
   const [open, setOpen] = useState(false); const [f, setF] = useState({ name: '', email: '', mobile: '', role: 'AGENCY_AGENT', permissions: { BOOK: true, CANCEL: true, FINANCE_VIEW: false } }); const [err, setErr] = useState<string | null>(null); const [busy, setBusy] = useState(false);
-  async function create() { setBusy(true); setErr(null); try { await apiFetch('/agency-users', { body: f }); toast({ tone: 'success', title: 'User created', body: `${f.email} can sign in with the operator demo password.` }); setOpen(false); reload(); } catch (e: any) { setErr(e.message); } finally { setBusy(false); } }
+  async function create() { setBusy(true); setErr(null); try { await apiFetch('/agency-users', { body: f }); toast({ tone: 'success', title: 'User created', body: `${f.email} can sign in with the default initial password.` }); setOpen(false); reload(); } catch (e: any) { setErr(e.message); } finally { setBusy(false); } }
   async function patch(id: string, body: any) { try { await apiFetch(`/agency-users/${id}`, { method: 'PATCH', body }); reload(); toast({ tone: 'success', title: 'User updated' }); } catch (e: any) { toast({ tone: 'error', title: 'Not allowed', body: e.message }); } }
   return (
     <div>

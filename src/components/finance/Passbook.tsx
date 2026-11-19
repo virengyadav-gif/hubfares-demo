@@ -10,7 +10,7 @@ export function Passbook({ agencyId, bookingBase = '/agency/bookings' }: { agenc
   const qs = useMemo(() => new URLSearchParams(Object.entries({ ...f, agencyId: agencyId ?? '' }).filter(([, v]) => v).map(([k, v]) => [k, k === 'from' ? `${v}T00:00:00Z` : k === 'to' ? `${v}T23:59:59Z` : v])).toString(), [f, agencyId]);
   const { data, loading, error } = useApi<any>(`/wallet/passbook?${qs}`, [qs]);
   return (
-    <Card pad={false} title="Wallet passbook" subtitle="Opening balance + credits − debits = closing balance. Derived live from the ledger." actions={<SimTag kind="Live demo data" />}>
+    <Card pad={false} title="Wallet passbook" subtitle="Opening balance + credits − debits = closing balance. Derived live from the ledger.">
       <div className="grid gap-2 border-b border-line p-4 sm:grid-cols-3"><Input type="date" aria-label="From" value={f.from} onChange={(e) => setF({ ...f, from: e.target.value })} /><Input type="date" aria-label="To" value={f.to} onChange={(e) => setF({ ...f, to: e.target.value })} /><Input placeholder="Booking / payment / refund reference" value={f.q} onChange={(e) => setF({ ...f, q: e.target.value })} aria-label="Reference filter" /></div>
       {error && <div className="p-4"><ErrorBox error={error} /></div>}
       {loading && !data ? <Loading /> : data && (

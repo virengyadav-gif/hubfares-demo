@@ -1,14 +1,15 @@
 'use client';
-import { useState } from 'react';
-import { Card, PageHeader, Toggle, SimTag, Notice } from '@/components/ui';
-const RULES = ['Auto-assign chatbot refund cases to Operations queue', 'Alert Finance when a payment is unmatched for > 2 hours', 'Notify agency when wallet balance < ₹25,000', 'Escalate supplier refunds pending > 7 days', 'Auto-approval of applications after all mock checks are green (still requires checks)', 'Send booking confirmation by email / SMS / WhatsApp'];
+/** Workflow & notification settings — saved per environment and audited. */
+import { apiFetch, useApi } from '@/lib/client';
+import { Card, PageHeader, Toggle, Loading, useToast } from '@/components/ui';
 export default function Page() {
-  const [on, setOn] = useState<boolean[]>([true, true, false, true, false, false]);
+  const toast = useToast();
+  const { data, setData } = useApi<any>('/settings/automation');
+  const flip = async (id: number, enabled: boolean) => { try { const r = await apiFetch<any>('/settings/automation', { method: 'PUT', body: { id, enabled }, quiet: true }); setData(r.data); toast({ tone: 'success', title: enabled ? 'Automation enabled' : 'Automation disabled' }); } catch (e: any) { toast({ tone: 'error', title: 'Not saved', body: e.message }); } };
   return (
     <div className="max-w-3xl">
-      <PageHeader eyebrow="Admin" title="Workflow & notification settings" subtitle="Preview of configurable automations." badges={<SimTag kind="Guided demo" />} />
-      <Notice tone="info" className="mb-4">Toggles here are an interactive preview and are not persisted. Real email/SMS/WhatsApp delivery and SLA automation are planned integrations; in-app notifications are live.</Notice>
-      <Card>{RULES.map((r, i) => <div key={r} className="flex items-center justify-between border-b border-line py-3 last:border-0"><span className="text-sm">{r}</span><Toggle checked={on[i]} onChange={(v) => setOn(on.map((x, j) => (j === i ? v : x)))} /></div>)}</Card>
+      <PageHeader eyebrow="Admin" title="Workflow & notification settings" subtitle="Turn workflow automations on or off. Changes are saved immediately and recorded in the audit trail." />
+      {!data ? <Loading /> : <Card>{data.rules.map((r: any) => <div key={r.id} className="flex items-center justify-between border-b border-line py-3 last:border-0"><span className="text-sm">{r.label}</span><Toggle checked={r.enabled} onChange={(v) => flip(r.id, v)} /></div>)}</Card>}
     </div>
   );
 }

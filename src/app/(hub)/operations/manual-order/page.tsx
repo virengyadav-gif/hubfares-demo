@@ -12,7 +12,7 @@ export default function Page() {
   const valid = f.agencyId && f.travelDate && f.passengerName.length > 2 && f.supplierReference.length > 3 && Number(f.amount) > 0;
   return (
     <div className="max-w-3xl">
-      <PageHeader eyebrow="Operations" title="Manual / offline order" subtitle="Record an offline booking made directly with a supplier." badges={<SimTag kind="Guided demo" />} />
+      <PageHeader eyebrow="Operations" title="Manual / offline order" subtitle="Record an offline booking made directly with a supplier." />
       {err && <Notice tone="error" className="mb-4">{err}</Notice>}
       {step === 'done' && res ? <Notice tone="success" title={`Recorded ${res.bookingId}`}>{res.label}. <Link className="font-semibold underline" href={`/operations/bookings/${res.bookingId}`}>Open record</Link> — no ticket, no wallet/credit posting, excluded from ticketed KPIs.</Notice> : (
         <Card>
@@ -23,10 +23,10 @@ export default function Page() {
             <Field label="Destination"><Input value={f.destination} maxLength={3} onChange={(e) => setF({ ...f, destination: e.target.value.toUpperCase() })} /></Field>
             <Field label="Travel date" required><Input type="date" value={f.travelDate} onChange={(e) => setF({ ...f, travelDate: e.target.value })} /></Field>
             <Field label="Airline"><Input value={f.airline} maxLength={3} onChange={(e) => setF({ ...f, airline: e.target.value.toUpperCase() })} /></Field>
-            <Field label="Passenger (synthetic)" required><Input value={f.passengerName} onChange={(e) => setF({ ...f, passengerName: e.target.value })} /></Field>
+            <Field label="Passenger name" required><Input value={f.passengerName} onChange={(e) => setF({ ...f, passengerName: e.target.value })} /></Field>
             <Field label="Amount (INR)" required><Input type="number" value={f.amount} onChange={(e) => setF({ ...f, amount: e.target.value })} /></Field>
             <div className="sm:col-span-2 flex justify-end"><Button disabled={!valid} onClick={() => setStep('review')}>Review</Button></div>
-          </div> : <div className="space-y-4"><DL items={Object.entries(f).map(([k, v]) => [k, v || '—'])} /><Notice tone="warn">This creates a demo offline record only. No supplier order, ticket or payment is executed.</Notice><div className="flex justify-end gap-2"><Button variant="secondary" onClick={() => setStep('form')}>Back</Button><Button onClick={submit}>Confirm demo manual order</Button></div></div>}
+          </div> : <div className="space-y-4"><DL items={Object.entries(f).map(([k, v]) => [k, v || '—'])} /><Notice tone="warn">This records an offline booking. No supplier order, ticket or payment is executed.</Notice><div className="flex justify-end gap-2"><Button variant="secondary" onClick={() => setStep('form')}>Back</Button><Button onClick={submit}>Confirm manual order</Button></div></div>}
         </Card>
       )}
     </div>
