@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # HUBFARES POC
 
 **B2B Travel Distribution & Operations Platform**  
@@ -252,3 +253,6 @@ At handoff, the implementer must provide:
 - Known risks, unavailable external integrations and client-ready disclosure wording.
 
 **Operating principle:** Six sources, one approved scope, one canonical demo database, deterministic mock providers, tests before completion claims, and a repeatable honest demonstration.
+=======
+# hubfares-demo
+>>>>>>> 528126c78595311f34a2baf909dc648828cab2a2
